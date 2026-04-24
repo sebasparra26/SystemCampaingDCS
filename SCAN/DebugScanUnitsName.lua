@@ -1,0 +1,48 @@
+local function debugAirbasesCarrier()
+    env.info("===== DEBUG AIRBASES START =====")
+
+    local abs = world.getAirbases() or {}
+    for _, ab in ipairs(abs) do
+        local id = ab:getID()
+        local name = ab:getName()
+        local cat = "nil"
+
+        local okDesc, desc = pcall(function()
+            return Airbase.getDesc(ab)
+        end)
+
+        if okDesc and desc and desc.category ~= nil then
+            cat = tostring(desc.category)
+        end
+
+        env.info("[AIRBASE_DEBUG] ID=" .. tostring(id) .. " | NAME=" .. tostring(name) .. " | CAT=" .. tostring(cat))
+    end
+
+    local posibles = {
+        "Marshall-Unit",
+        "Marshall",
+        "Marshall_RUNTIME_U01",
+        "Tarawa_RUNTIME",
+        "Tarawa_RUNTIME_U01",
+        "LHA_Tarawa",
+        "USS Tarawa"
+    }
+
+    for _, n in ipairs(posibles) do
+        local ok, ab = pcall(function()
+            return Airbase.getByName(n)
+        end)
+
+        if ok and ab then
+            env.info("[AIRBASE_BY_NAME] " .. n .. " -> OK | ID=" .. tostring(ab:getID()) .. " | NAME=" .. tostring(ab:getName()))
+        else
+            env.info("[AIRBASE_BY_NAME] " .. n .. " -> NIL")
+        end
+    end
+
+    env.info("===== DEBUG AIRBASES END =====")
+end
+
+timer.scheduleFunction(function()
+    debugAirbasesCarrier()
+end, {}, timer.getTime() + 5)

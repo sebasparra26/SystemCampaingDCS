@@ -1,0 +1,457 @@
+----------------------------------------------------------------
+-- HDEV_SoundFlags.lua
+-- Sistema de banderas para disparar sonidos desde el .miz
+--
+-- SOPORTA:
+-- - target = "all"
+-- - target = "coalition"
+-- - target = "group"
+-- - target = "unit"
+--
+-- COMPORTAMIENTO:
+-- - Dispara una vez cuando la flag alcanza el valor configurado
+-- - Puede rearmarse cuando la flag salga de ese valor
+-- - Puede mostrar texto junto al sonido
+-- - Soporta delay opcional por regla
+----------------------------------------------------------------
+
+HDEV_SoundFlags = HDEV_SoundFlags or {}
+local SF = HDEV_SoundFlags
+
+SF.CONFIG = {
+    DEBUG = false,
+    CHECK_INTERVAL = 1
+}
+
+SF.RULES = {
+
+    ----------------------------------------------------------------
+    -- INIT
+    ----------------------------------------------------------------
+
+    {
+        key = "SONIDO_GLOBAL_3000",
+        flag = {"1020", "1021"},              -- numero de flag o nombre de flag
+        value = 1,
+        target = "all",                  -- all | coalition | group | unit
+        sound = "Audio/Beep.ogg",
+        text = "Mercado abierto",
+        textTime = 8,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+------------------------------INI AUDIO CAS----------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+    {
+        key = "Kill 01",
+        flag = 1001,
+        value = 1,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill1.ogg",
+        text = "kill 01",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+     {
+        key = "Kill 03",
+        flag = 1001,
+        value = 2,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill3.ogg",
+        text = "kill 02",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+      {
+        key = "Kill 04",
+        flag = 1001,
+        value = 3,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill4.ogg",
+        text = "kill 04",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 05",
+        flag = 1001,
+        value = 4,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill5.ogg",
+        text = "kill 05",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 06",
+        flag = 1001,
+        value = 5,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill6.ogg",
+        text = "kill 06",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 07",
+        flag = 1001,
+        value = 6,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill7.ogg",
+        text = "kill 07",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 08",
+        flag = 1001,
+        value = 7,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill8.ogg",
+        text = "kill 08",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 09",
+        flag = 1001,
+        value = 8,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill9.ogg",
+        text = "kill 09",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+     {
+        key = "Kill 10",
+        flag = 1001,
+        value = 9,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill10.ogg",
+        text = "kill 10",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+     {
+        key = "Kill 11",
+        flag = 1001,
+        value = 10,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill11.ogg",
+        text = "kill 11",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "Kill 12",
+        flag = 1001,
+        value = 11,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill12.ogg",
+        text = "kill 12",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+    {
+        key = "Kill 14",
+        flag = 1001,
+        value = 12,
+        target = "all",
+        coalition = 2,                   -- 1 rojo, 2 azul
+        sound = "Audio/Kill14.ogg",
+        text = "kill 14",
+        textTime = 2,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+------------------------------FIN AUDIO CAS----------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+    {
+        key = "SONIDO_GRUPO_3002",
+        flag = 3002,
+        value = 1,
+        target = "group",
+        groupName = "Pontiac11",         -- nombre exacto del grupo
+        sound = "l10n/DEFAULT/group_call.ogg",
+        text = "Mensaje para tu grupo",
+        textTime = 8,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+
+    {
+        key = "SONIDO_UNIDAD_3003",
+        flag = 3003,
+        value = 1,
+        target = "unit",
+        unitName = "Pilot-1-1",          -- nombre exacto de la unidad
+        sound = "l10n/DEFAULT/unit_call.ogg",
+        text = "Mensaje para tu unidad",
+        textTime = 8,
+        delay = 0,
+        fireAtStart = false,
+        rearmWhenLeavesValue = true
+    },
+}
+
+SF.STATE = SF.STATE or {
+    started = false,
+    armed = {}
+}
+
+local function log(msg)
+    env.info("[HDEV_SOUND_FLAGS] " .. tostring(msg))
+    if SF.CONFIG.DEBUG then
+        trigger.action.outText("[HDEV_SOUND_FLAGS] " .. tostring(msg), 5)
+    end
+end
+
+local function getFlagValue(flagNameOrNumber)
+    return tonumber(trigger.misc.getUserFlag(tostring(flagNameOrNumber))) or 0
+end
+
+local function groupExistsByName(groupName)
+    if not groupName or groupName == "" then
+        return nil
+    end
+
+    local grp = Group.getByName(groupName)
+    if not grp then
+        return nil
+    end
+
+    local ok, exists = pcall(function()
+        return grp:isExist()
+    end)
+
+    if ok and exists then
+        return grp
+    end
+
+    return nil
+end
+
+local function unitExistsByName(unitName)
+    if not unitName or unitName == "" then
+        return nil
+    end
+
+    local unit = Unit.getByName(unitName)
+    if not unit then
+        return nil
+    end
+
+    local ok, exists = pcall(function()
+        return unit:isExist()
+    end)
+
+    if ok and exists then
+        return unit
+    end
+
+    return nil
+end
+
+local function playText(rule, groupId, unitId)
+    if not rule.text or rule.text == "" then
+        return
+    end
+
+    local t = tonumber(rule.textTime) or 8
+    local target = string.lower(rule.target or "all")
+
+    if target == "all" then
+        trigger.action.outText(rule.text, t)
+
+    elseif target == "coalition" then
+        local coa = tonumber(rule.coalition) or 2
+        trigger.action.outTextForCoalition(coa, rule.text, t)
+
+    elseif target == "group" then
+        if groupId then
+            trigger.action.outTextForGroup(groupId, rule.text, t, false)
+        end
+
+    elseif target == "unit" then
+        if unitId and trigger.action.outTextForUnit then
+            trigger.action.outTextForUnit(unitId, rule.text, t, false)
+        elseif groupId then
+            trigger.action.outTextForGroup(groupId, rule.text, t, false)
+        end
+    end
+end
+
+local function playSound(rule)
+    local target = string.lower(rule.target or "all")
+    local sound = tostring(rule.sound or "")
+
+    if sound == "" then
+        log("Regla sin sound: " .. tostring(rule.key))
+        return
+    end
+
+    if target == "all" then
+        trigger.action.outSound(sound)
+        playText(rule)
+
+    elseif target == "coalition" then
+        local coa = tonumber(rule.coalition) or 2
+        trigger.action.outSoundForCoalition(coa, sound)
+        playText(rule)
+
+    elseif target == "group" then
+        local grp = groupExistsByName(rule.groupName)
+        if not grp then
+            log("No existe el grupo para sonido: " .. tostring(rule.groupName))
+            return
+        end
+
+        local gid = grp:getID()
+        trigger.action.outSoundForGroup(gid, sound)
+        playText(rule, gid)
+
+    elseif target == "unit" then
+        local unit = unitExistsByName(rule.unitName)
+        if not unit then
+            log("No existe la unidad para sonido: " .. tostring(rule.unitName))
+            return
+        end
+
+        local uid = unit:getID()
+        local grp = unit:getGroup()
+        local gid = grp and grp:getID() or nil
+
+        if trigger.action.outSoundForUnit then
+            trigger.action.outSoundForUnit(uid, sound)
+        elseif gid then
+            -- fallback por si la version no soporta outSoundForUnit
+            trigger.action.outSoundForGroup(gid, sound)
+        else
+            trigger.action.outSound(sound)
+        end
+
+        playText(rule, gid, uid)
+
+    else
+        log("target no valido en regla: " .. tostring(rule.key))
+        return
+    end
+
+    log("Sonido disparado | key=" .. tostring(rule.key) .. " | sound=" .. sound)
+end
+
+local function delayedPlay(rule, time)
+    playSound(rule)
+    return nil
+end
+
+local function initRuleState(rule)
+    local key = tostring(rule.key or ("RULE_" .. tostring(rule.flag)))
+    local current = getFlagValue(rule.flag)
+    local wanted = tonumber(rule.value) or 1
+    local fireAtStart = rule.fireAtStart and true or false
+
+    if current == wanted and not fireAtStart then
+        SF.STATE.armed[key] = false
+    else
+        SF.STATE.armed[key] = true
+    end
+end
+
+local function checkRule(rule)
+    local key = tostring(rule.key or ("RULE_" .. tostring(rule.flag)))
+    local current = getFlagValue(rule.flag)
+    local wanted = tonumber(rule.value) or 1
+    local rearm = (rule.rearmWhenLeavesValue ~= false)
+
+    if current == wanted then
+        if SF.STATE.armed[key] then
+            SF.STATE.armed[key] = false
+
+            local delay = tonumber(rule.delay) or 0
+            if delay > 0 then
+                timer.scheduleFunction(delayedPlay, rule, timer.getTime() + delay)
+                log("Regla programada con delay | key=" .. key .. " | delay=" .. delay)
+            else
+                playSound(rule)
+            end
+        end
+    else
+        if rearm then
+            SF.STATE.armed[key] = true
+        end
+    end
+end
+
+local function mainLoop(_, now)
+    for _, rule in ipairs(SF.RULES) do
+        checkRule(rule)
+    end
+
+    return now + (tonumber(SF.CONFIG.CHECK_INTERVAL) or 1)
+end
+
+local function start()
+    if SF.STATE.started then
+        return
+    end
+
+    for _, rule in ipairs(SF.RULES) do
+        initRuleState(rule)
+    end
+
+    SF.STATE.started = true
+    timer.scheduleFunction(mainLoop, nil, timer.getTime() + 1)
+    log("Sistema de sonidos por banderas iniciado")
+end
+
+start()
