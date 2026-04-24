@@ -332,8 +332,8 @@ MDB.MISSIONS = {
                 id = "OBJ_MULTI_WAREHOUSE",
                 name = "Sacar aviones y armamento",
                 drawName = "Sacar aviones y armamento",
-                enabled = false,
-                requiredForMission = false,
+                enabled = true,
+                requiredForMission = true,
 
                 monitor = {
                     kind = "warehouse",
@@ -342,18 +342,18 @@ MDB.MISSIONS = {
 
                     items = {
                         --AVIONES:
-                        { category = "aircraft", itemName = "UH-1H", label = "UH-1H - HUEY", removedAtLeast = 1 },
-                        --{ category = "aircraft", itemName = "AH-64D_BLK_II", label = "AH-64D - APACHE", removedAtLeast = 2 },
-                        --{ category = "aircraft", itemName = "FA-18C_hornet", label = "FA-18C - HORNET", removedAtLeast = 2 },
-                        --{ category = "aircraft", itemName = "F-16C_50", label = "F-16C - VIPER", removedAtLeast = 2 },
+                        --{ category = "aircraft", itemName = "UH-1H", label = "UH-1H - HUEY", removedAtLeast = 1 },
+                        { category = "aircraft", itemName = "AH-64D_BLK_II", label = "AH-64D - APACHE", removedAtLeast = 2 },
+                        { category = "aircraft", itemName = "FA-18C_hornet", label = "FA-18C - HORNET", removedAtLeast = 2 },
+                        { category = "aircraft", itemName = "F-16C_50", label = "F-16C - VIPER", removedAtLeast = 2 },
                         
                         --WEAPONS:
-                        --{ category = "weapon",   itemName = "weapons.containers.AAQ-28_LITENING", label = "POD LITENING LEFT", removedAtLeast = 2 },
-                       -- { category = "weapon",   itemName = "weapons.containers.aaq-28LEFT litening", label = "POD LITENING LEFT", removedAtLeast = 2 },
-                        --{ category = "weapon",   itemName = "weapons.containers.ah-64d_radar", label = "FCR CONTROL APACHE", removedAtLeast = 2 },
-                        --{ category = "weapon",   itemName = "weapons.containers.alq-184long", label = "POD CONTRAMEDIDAS ELECTRONICAS", removedAtLeast = 2 },
-                        --{ category = "weapon",   itemName = "weapons.missiles.AIM_120C", label = "AIM 120 C", removedAtLeast = 40 },
-                        --{ category = "weapon",   itemName = "weapons.missiles.AIM_9X", label = "AIM 9 X", removedAtLeast = 80 },
+                        { category = "weapon",   itemName = "weapons.containers.AAQ-28_LITENING", label = "POD LITENING LEFT", removedAtLeast = 2 },
+                        { category = "weapon",   itemName = "weapons.containers.aaq-28LEFT litening", label = "POD LITENING LEFT", removedAtLeast = 2 },
+                        { category = "weapon",   itemName = "weapons.containers.ah-64d_radar", label = "FCR CONTROL APACHE", removedAtLeast = 2 },
+                        { category = "weapon",   itemName = "weapons.containers.alq-184long", label = "POD CONTRAMEDIDAS ELECTRONICAS", removedAtLeast = 2 },
+                        { category = "weapon",   itemName = "weapons.missiles.AIM_120C", label = "AIM 120 C", removedAtLeast = 40 },
+                        { category = "weapon",   itemName = "weapons.missiles.AIM_9X", label = "AIM 9 X", removedAtLeast = 80 },
 
            
                     }
