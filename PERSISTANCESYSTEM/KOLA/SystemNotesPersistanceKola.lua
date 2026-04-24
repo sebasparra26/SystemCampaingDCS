@@ -10,20 +10,28 @@
 -- Si editas la marca, actualiza el JSON.
 -- Si borras la marca, elimina esa nota del JSON.
 -- Al reiniciar, restaura las notas guardadas en el mapa.
+--
+-- Tambien intenta guardar el autor real:
+-- playerName, unitName, groupName, groupId, coalition.
 ----------------------------------------------------------------
 
 HDEV_PersistentNotes = HDEV_PersistentNotes or {}
 local PN = HDEV_PersistentNotes
 
+if PN.STATE and PN.STATE.initialized then
+    env.info("[HDEV_NOTES] Sistema ya inicializado. No se vuelve a cargar.")
+    return
+end
+
 ----------------------------------------------------------------
 -- CONFIGURACION
 ----------------------------------------------------------------
 PN.CONFIG = {
-    DEBUG = false,
+    DEBUG = true,
 
     KEYWORD = "save",
 
-    FILE_PATH = lfs.writedir() .. "Config\\HorizontDev\\KOLA\\PersistentNotes.json",
+    jsonRelativePath = "Config\\HorizontDev\\PersistentNotes.json",
 
     RESTORE_ON_START = true,
     RESTORE_DELAY = 3,
@@ -33,42 +41,35 @@ PN.CONFIG = {
     RESTORED_MARK_READ_ONLY = false,
 
     SHOW_MESSAGES = true,
-    MESSAGE_TIME = 6
+    MESSAGE_TIME = 6,
+
+    MENU_ENABLED = false,
+    MENU_NAME = "Notas persistentes"
 }
 
 ----------------------------------------------------------------
 -- ESTADO
 ----------------------------------------------------------------
-PN.STATE = PN.STATE or {
+PN.STATE = {
     initialized = false,
+
     notes = {},
     markToNoteId = {},
+
     nextNoteNumber = 1,
     nextMarkId = PN.CONFIG.MARK_ID_START,
+
     ignoreMarks = {},
-    lastPayload = ""
+    lastPayload = "",
+
+    menuRoot = nil
 }
 
 local CFG = PN.CONFIG
 local STATE = PN.STATE
 
 ----------------------------------------------------------------
--- LOG
-----------------------------------------------------------------
-local function log(msg)
-    env.info("[HDEV_NOTES] " .. tostring(msg))
-    if CFG.DEBUG and CFG.SHOW_MESSAGES then
-        trigger.action.outText("[HDEV_NOTES] " .. tostring(msg), CFG.MESSAGE_TIME)
-    end
-end
-
-local function warn(msg)
-    env.info("[HDEV_NOTES_ERROR] " .. tostring(msg))
-    trigger.action.outText("[HDEV_NOTES_ERROR] " .. tostring(msg), 12)
-end
-
-----------------------------------------------------------------
--- VALIDACION
+-- VALIDACION BASICA
 ----------------------------------------------------------------
 if not lfs or not lfs.writedir then
     trigger.action.outText("ERROR HDEV_NOTES: lfs no esta habilitado.", 15)
@@ -87,11 +88,32 @@ end
 
 ----------------------------------------------------------------
 -- EVENTOS DE MARCAS
--- Si por alguna razon DCS no expone las constantes, usamos fallback.
 ----------------------------------------------------------------
 local EVENT_MARK_ADDED  = world.event.S_EVENT_MARK_ADDED  or 25
 local EVENT_MARK_CHANGE = world.event.S_EVENT_MARK_CHANGE or 26
 local EVENT_MARK_REMOVE = world.event.S_EVENT_MARK_REMOVE or 27
+
+----------------------------------------------------------------
+-- LOG
+----------------------------------------------------------------
+local function log(msg)
+    env.info("[HDEV_NOTES] " .. tostring(msg))
+
+    if CFG.DEBUG and CFG.SHOW_MESSAGES then
+        trigger.action.outText("[HDEV_NOTES] " .. tostring(msg), CFG.MESSAGE_TIME or 6)
+    end
+end
+
+local function warn(msg)
+    env.info("[HDEV_NOTES_ERROR] " .. tostring(msg))
+    trigger.action.outText("[HDEV_NOTES_ERROR] " .. tostring(msg), 12)
+end
+
+local function out(msg, time)
+    if CFG.SHOW_MESSAGES then
+        trigger.action.outText(tostring(msg), time or CFG.MESSAGE_TIME or 6)
+    end
+end
 
 ----------------------------------------------------------------
 -- UTILS
@@ -115,34 +137,49 @@ local function sortedKeys(tbl)
     return keys
 end
 
+local function buildWriteDirPath(relativePath)
+    if not relativePath or relativePath == "" then
+        return nil
+    end
+
+    if relativePath:match("^%a:[\\/]") or relativePath:sub(1, 1) == "/" then
+        return relativePath
+    end
+
+    return lfs.writedir() .. relativePath
+end
+
+local function getJsonPath()
+    return buildWriteDirPath(CFG.jsonRelativePath or "Config\\HorizontDev\\PersistentNotes.json")
+end
+
 local function ensureDirectoryForFile(path)
     if not path or path == "" then
         return false
     end
 
-    local separator = "\\"
-    local parts = {}
-
-    for part in string.gmatch(path, "[^\\/]+") do
-        parts[#parts + 1] = part
-    end
-
-    if #parts <= 1 then
+    local dir = path:match("^(.*)[\\/][^\\/]*$")
+    if not dir or dir == "" then
         return false
     end
 
-    table.remove(parts, #parts)
-
-    local current = ""
-
-    if path:match("^%a:[\\/]") then
-        current = path:sub(1, 3)
-        table.remove(parts, 1)
-    elseif path:sub(1, 1) == "/" then
-        current = "/"
+    local separator = "\\"
+    if dir:find("/") then
+        separator = "/"
     end
 
-    for _, part in ipairs(parts) do
+    local current = ""
+    local rest = dir
+
+    if dir:match("^%a:[\\/]") then
+        current = dir:sub(1, 3)
+        rest = dir:sub(4)
+    elseif dir:sub(1, 1) == "/" then
+        current = "/"
+        rest = dir:sub(2)
+    end
+
+    for part in string.gmatch(rest, "[^\\/]+") do
         if current == "" or current:sub(-1) == "\\" or current:sub(-1) == "/" then
             current = current .. part
         else
@@ -247,7 +284,11 @@ local function encodeJsonValue(value, indent)
 
         for i = 1, #value do
             local comma = (i < #value) and "," or ""
-            lines[#lines + 1] = string.rep(" ", indent + 2) .. encodeJsonValue(value[i], indent + 2) .. comma
+
+            lines[#lines + 1] =
+                string.rep(" ", indent + 2) ..
+                encodeJsonValue(value[i], indent + 2) ..
+                comma
         end
 
         lines[#lines + 1] = pad .. "]"
@@ -259,6 +300,7 @@ local function encodeJsonValue(value, indent)
 
     for i, key in ipairs(keys) do
         local comma = (i < #keys) and "," or ""
+
         lines[#lines + 1] =
             string.rep(" ", indent + 2) ..
             "\"" .. jsonEscape(tostring(key)) .. "\": " ..
@@ -293,7 +335,7 @@ local function decodeJson(txt)
 end
 
 ----------------------------------------------------------------
--- PARSEO
+-- PARSEO DE MARCAS
 ----------------------------------------------------------------
 local function parseNoteText(text)
     local raw = trim(text)
@@ -309,6 +351,7 @@ local function parseNoteText(text)
 
     if rawLower:sub(1, #prefixColon) == prefixColon then
         local msg = trim(raw:sub(#prefixColon + 1))
+
         if msg ~= "" then
             return true, msg
         end
@@ -316,6 +359,7 @@ local function parseNoteText(text)
 
     if rawLower:sub(1, #prefixSpace) == prefixSpace then
         local msg = trim(raw:sub(#prefixSpace + 1))
+
         if msg ~= "" then
             return true, msg
         end
@@ -340,61 +384,286 @@ local function getPointFromEvent(event)
     }
 end
 
+----------------------------------------------------------------
+-- AUTOR DE LA MARCA
+----------------------------------------------------------------
+local function coalitionToText(coa)
+    coa = tonumber(coa)
+
+    if coalition and coalition.side then
+        if coa == coalition.side.RED then
+            return "RED"
+        elseif coa == coalition.side.BLUE then
+            return "BLUE"
+        elseif coa == coalition.side.NEUTRAL then
+            return "NEUTRAL"
+        end
+    end
+
+    if coa == 1 then
+        return "RED"
+    elseif coa == 2 then
+        return "BLUE"
+    elseif coa == 0 then
+        return "NEUTRAL"
+    end
+
+    return "UNKNOWN"
+end
+
+local function safeObjCall(obj, fnName)
+    if not obj or not obj[fnName] then
+        return nil
+    end
+
+    local ok, result = pcall(function()
+        return obj[fnName](obj)
+    end)
+
+    if ok then
+        return result
+    end
+
+    return nil
+end
+
+local function safeGetGroupFromUnit(unit)
+    if not unit or not unit.getGroup then
+        return nil
+    end
+
+    local ok, group = pcall(function()
+        return unit:getGroup()
+    end)
+
+    if ok then
+        return group
+    end
+
+    return nil
+end
+
+local function findGroupById(groupId)
+    groupId = tonumber(groupId)
+
+    if not groupId then
+        return nil
+    end
+
+    if not coalition or not coalition.getGroups then
+        return nil
+    end
+
+    local sides = {}
+
+    if coalition.side then
+        sides[#sides + 1] = coalition.side.RED
+        sides[#sides + 1] = coalition.side.BLUE
+        sides[#sides + 1] = coalition.side.NEUTRAL
+    else
+        sides[#sides + 1] = 1
+        sides[#sides + 1] = 2
+        sides[#sides + 1] = 0
+    end
+
+    local categories = {}
+
+    if Group and Group.Category then
+        categories[#categories + 1] = Group.Category.AIRPLANE
+        categories[#categories + 1] = Group.Category.HELICOPTER
+        categories[#categories + 1] = Group.Category.GROUND
+        categories[#categories + 1] = Group.Category.SHIP
+    end
+
+    for _, side in ipairs(sides) do
+        for _, category in ipairs(categories) do
+            if side ~= nil and category ~= nil then
+                local okGroups, groups = pcall(function()
+                    return coalition.getGroups(side, category)
+                end)
+
+                if okGroups and type(groups) == "table" then
+                    for _, group in ipairs(groups) do
+                        if group and group.getID then
+                            local okId, id = pcall(function()
+                                return group:getID()
+                            end)
+
+                            if okId and tonumber(id) == groupId then
+                                return group
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+local function getPlayerFromGroup(group)
+    if not group then
+        return nil, nil
+    end
+
+    local okUnits, units = pcall(function()
+        return group:getUnits()
+    end)
+
+    if not okUnits or type(units) ~= "table" then
+        return nil, nil
+    end
+
+    for _, unit in ipairs(units) do
+        if unit and unit.isExist then
+            local okExist, exists = pcall(function()
+                return unit:isExist()
+            end)
+
+            if okExist and exists and unit.getPlayerName then
+                local okPlayer, playerName = pcall(function()
+                    return unit:getPlayerName()
+                end)
+
+                if okPlayer and playerName and playerName ~= "" then
+                    return playerName, unit
+                end
+            end
+        end
+    end
+
+    return nil, nil
+end
+
 local function getAuthor(event)
     local author = {
-        playerName = nil,
-        unitName = nil,
-        groupName = nil,
-        coalition = nil
+        playerName = "UNKNOWN",
+        unitName = "UNKNOWN",
+        groupName = "UNKNOWN",
+        groupId = 0,
+        coalition = -1,
+        coalitionName = "UNKNOWN",
+        source = "unknown",
+
+        eventGroupId = 0,
+        eventCoalition = -1,
+        eventIdx = event and tonumber(event.idx) or 0
     }
 
-    if not event or not event.initiator then
+    if not event then
         return author
     end
 
-    local obj = event.initiator
+    local eventGroupId = tonumber(event.groupID or event.groupId) or 0
+    local eventCoalition = tonumber(event.coalition) or -1
 
-    if obj.getName then
-        local ok, value = pcall(function()
-            return obj:getName()
-        end)
-        if ok then
-            author.unitName = value
-        end
+    author.eventGroupId = eventGroupId
+    author.eventCoalition = eventCoalition
+
+    if eventGroupId ~= 0 then
+        author.groupId = eventGroupId
     end
 
-    if obj.getPlayerName then
-        local ok, value = pcall(function()
-            return obj:getPlayerName()
-        end)
-        if ok then
-            author.playerName = value
-        end
+    if eventCoalition ~= -1 then
+        author.coalition = eventCoalition
+        author.coalitionName = coalitionToText(eventCoalition)
     end
 
-    if obj.getCoalition then
-        local ok, value = pcall(function()
-            return obj:getCoalition()
-        end)
-        if ok then
-            author.coalition = value
+    ------------------------------------------------------------
+    -- 1. Intentar con event.initiator
+    ------------------------------------------------------------
+    local initiator = event.initiator
+
+    if initiator then
+        local playerName = safeObjCall(initiator, "getPlayerName")
+        local unitName = safeObjCall(initiator, "getName")
+        local unitCoalition = safeObjCall(initiator, "getCoalition")
+
+        if playerName and playerName ~= "" then
+            author.playerName = tostring(playerName)
+            author.source = "event.initiator"
         end
-    end
 
-    if obj.getGroup then
-        local ok, grp = pcall(function()
-            return obj:getGroup()
-        end)
+        if unitName and unitName ~= "" then
+            author.unitName = tostring(unitName)
+        end
 
-        if ok and grp and grp.getName then
-            local okName, groupName = pcall(function()
-                return grp:getName()
-            end)
+        if unitCoalition ~= nil then
+            author.coalition = tonumber(unitCoalition) or author.coalition
+            author.coalitionName = coalitionToText(author.coalition)
+        end
 
-            if okName then
-                author.groupName = groupName
+        local group = safeGetGroupFromUnit(initiator)
+        if group then
+            local groupName = safeObjCall(group, "getName")
+            local groupId = safeObjCall(group, "getID")
+            local groupCoalition = safeObjCall(group, "getCoalition")
+
+            if groupName and groupName ~= "" then
+                author.groupName = tostring(groupName)
+            end
+
+            if groupId ~= nil then
+                author.groupId = tonumber(groupId) or author.groupId
+            end
+
+            if groupCoalition ~= nil then
+                author.coalition = tonumber(groupCoalition) or author.coalition
+                author.coalitionName = coalitionToText(author.coalition)
             end
         end
+
+        if author.playerName ~= "UNKNOWN" then
+            return author
+        end
+    end
+
+    ------------------------------------------------------------
+    -- 2. Fallback por groupID del evento
+    ------------------------------------------------------------
+    if author.groupId and tonumber(author.groupId) ~= 0 then
+        local group = findGroupById(author.groupId)
+
+        if group then
+            local groupName = safeObjCall(group, "getName")
+            local groupCoalition = safeObjCall(group, "getCoalition")
+
+            if groupName and groupName ~= "" then
+                author.groupName = tostring(groupName)
+            end
+
+            if groupCoalition ~= nil then
+                author.coalition = tonumber(groupCoalition) or author.coalition
+                author.coalitionName = coalitionToText(author.coalition)
+            end
+
+            local playerName, playerUnit = getPlayerFromGroup(group)
+
+            if playerName and playerName ~= "" then
+                author.playerName = tostring(playerName)
+                author.source = "event.groupID"
+
+                local unitName = safeObjCall(playerUnit, "getName")
+                if unitName and unitName ~= "" then
+                    author.unitName = tostring(unitName)
+                end
+
+                return author
+            end
+
+            author.source = "event.groupID_no_player"
+            return author
+        end
+    end
+
+    ------------------------------------------------------------
+    -- 3. Solo coalicion o desconocido
+    ------------------------------------------------------------
+    if author.coalition ~= -1 then
+        author.source = "event.coalition"
+    else
+        author.source = "unknown"
     end
 
     return author
@@ -405,12 +674,18 @@ end
 ----------------------------------------------------------------
 local function buildDocument()
     return {
+        control = {
+            keyword = CFG.KEYWORD,
+            restoreOnStart = CFG.RESTORE_ON_START == true,
+            restoredMarkReadOnly = CFG.RESTORED_MARK_READ_ONLY == true
+        },
+
         meta = {
             source = "HDEV_PersistentNotes",
             missionTime = timer.getTime(),
             absTime = timer.getAbsTime(),
-            theatre = env.mission and env.mission.theatre or nil,
-            keyword = CFG.KEYWORD
+            theatre = env.mission and env.mission.theatre or "UNKNOWN",
+            jsonPath = getJsonPath()
         },
 
         nextNoteNumber = STATE.nextNoteNumber,
@@ -421,18 +696,35 @@ local function buildDocument()
 end
 
 local function saveJson(reason)
+    local path = getJsonPath()
+
+    if not path then
+        warn("Ruta JSON invalida.")
+        return false
+    end
+
     local doc = buildDocument()
     local payload = encodeJsonValue(doc, 0)
 
-    local ok = safeWriteFile(CFG.FILE_PATH, payload)
+    local ok = safeWriteFile(path, payload)
 
     if ok then
         STATE.lastPayload = payload
-        env.info("[HDEV_NOTES] JSON guardado: " .. tostring(CFG.FILE_PATH) .. " | reason=" .. tostring(reason))
+        env.info("[HDEV_NOTES] JSON guardado: " .. tostring(path) .. " | reason=" .. tostring(reason))
         return true
     end
 
     return false
+end
+
+local function rebuildMarkIndex()
+    STATE.markToNoteId = {}
+
+    for noteId, note in pairs(STATE.notes or {}) do
+        if type(note) == "table" and note.markId then
+            STATE.markToNoteId[tonumber(note.markId)] = noteId
+        end
+    end
 end
 
 local function loadJson()
@@ -441,10 +733,11 @@ local function loadJson()
     STATE.nextNoteNumber = 1
     STATE.nextMarkId = CFG.MARK_ID_START
 
-    local txt = safeReadFile(CFG.FILE_PATH)
+    local path = getJsonPath()
+    local txt = safeReadFile(path)
 
     if not txt then
-        log("No existia JSON. Creando archivo nuevo en: " .. tostring(CFG.FILE_PATH))
+        log("No existia JSON. Creando archivo nuevo en: " .. tostring(path))
         saveJson("create_new_file")
         return
     end
@@ -461,11 +754,45 @@ local function loadJson()
     STATE.nextMarkId = tonumber(doc.nextMarkId) or CFG.MARK_ID_START
     STATE.notes = type(doc.notes) == "table" and doc.notes or {}
 
-    for noteId, note in pairs(STATE.notes) do
-        if type(note) == "table" and note.markId then
-            STATE.markToNoteId[tonumber(note.markId)] = noteId
+    local maxNoteNumber = STATE.nextNoteNumber
+    local maxMarkId = STATE.nextMarkId
+
+    for noteId, note in pairs(STATE.notes or {}) do
+        if type(note) == "table" then
+            note.id = tostring(note.id or noteId)
+
+            if type(note.author) ~= "table" then
+                note.author = {
+                    playerName = "UNKNOWN",
+                    unitName = "UNKNOWN",
+                    groupName = "UNKNOWN",
+                    groupId = 0,
+                    coalition = -1,
+                    coalitionName = "UNKNOWN",
+                    source = "loaded_without_author"
+                }
+            end
+
+            if not note.restoreMarkId then
+                note.restoreMarkId = tonumber(note.markId) or STATE.nextMarkId
+            end
+
+            local n = tonumber(tostring(note.id):match("NOTE_(%d+)"))
+            if n and n >= maxNoteNumber then
+                maxNoteNumber = n + 1
+            end
+
+            local m = tonumber(note.restoreMarkId or note.markId)
+            if m and m >= maxMarkId then
+                maxMarkId = m + 1
+            end
         end
     end
+
+    STATE.nextNoteNumber = maxNoteNumber
+    STATE.nextMarkId = maxMarkId
+
+    rebuildMarkIndex()
 
     log("JSON de notas cargado. Notas: " .. tostring(#sortedKeys(STATE.notes)))
 end
@@ -495,9 +822,11 @@ local function createNote(event, message)
     end
 
     local noteId = newNoteId()
+    local author = getAuthor(event)
 
     STATE.notes[noteId] = {
         id = noteId,
+
         markId = markId,
         originalMarkId = markId,
         restoreMarkId = newMarkId(),
@@ -506,7 +835,9 @@ local function createNote(event, message)
         rawText = tostring(event.text or ""),
 
         point = getPointFromEvent(event),
-        author = getAuthor(event),
+
+        author = author,
+        lastEditor = author,
 
         createdAt = timer.getTime(),
         updatedAt = timer.getTime(),
@@ -518,9 +849,13 @@ local function createNote(event, message)
 
     saveJson("create_note")
 
-    if CFG.SHOW_MESSAGES then
-        trigger.action.outText("Nota guardada:\n" .. tostring(message), CFG.MESSAGE_TIME)
-    end
+    out(
+        "Nota guardada:\n" ..
+        tostring(message) .. "\n\n" ..
+        "Autor: " .. tostring(author.playerName) .. "\n" ..
+        "Unidad: " .. tostring(author.unitName),
+        CFG.MESSAGE_TIME
+    )
 end
 
 local function updateNote(noteId, event, message)
@@ -534,11 +869,24 @@ local function updateNote(noteId, event, message)
         return
     end
 
+    local editor = getAuthor(event)
+
+    local oldMarkId = tonumber(note.markId)
+    if oldMarkId and oldMarkId ~= markId then
+        STATE.markToNoteId[oldMarkId] = nil
+    end
+
     note.markId = markId
     note.text = tostring(message or "")
     note.rawText = tostring(event.text or "")
     note.point = getPointFromEvent(event)
-    note.author = getAuthor(event)
+
+    if type(note.author) ~= "table" or not note.author.playerName then
+        note.author = editor
+    end
+
+    note.lastEditor = editor
+
     note.updatedAt = timer.getTime()
     note.updatedAtAbs = timer.getAbsTime()
 
@@ -546,9 +894,13 @@ local function updateNote(noteId, event, message)
 
     saveJson("update_note")
 
-    if CFG.SHOW_MESSAGES then
-        trigger.action.outText("Nota actualizada:\n" .. tostring(message), CFG.MESSAGE_TIME)
-    end
+    out(
+        "Nota actualizada:\n" ..
+        tostring(message) .. "\n\n" ..
+        "Editor: " .. tostring(editor.playerName) .. "\n" ..
+        "Unidad: " .. tostring(editor.unitName),
+        CFG.MESSAGE_TIME
+    )
 end
 
 local function deleteNote(noteId)
@@ -565,16 +917,20 @@ local function deleteNote(noteId)
 
     saveJson("delete_note")
 
-    if CFG.SHOW_MESSAGES then
-        trigger.action.outText("Nota eliminada del JSON.", CFG.MESSAGE_TIME)
-    end
+    out("Nota eliminada del JSON.", CFG.MESSAGE_TIME)
 end
 
 ----------------------------------------------------------------
 -- RESTAURAR MARCAS
 ----------------------------------------------------------------
 local function ignoreMark(markId)
-    STATE.ignoreMarks[tonumber(markId)] = timer.getTime() + 5
+    markId = tonumber(markId)
+
+    if not markId then
+        return
+    end
+
+    STATE.ignoreMarks[markId] = timer.getTime() + 5
 end
 
 local function isIgnoredMark(markId)
@@ -606,12 +962,18 @@ local function restoreNotes()
     local count = 0
 
     for noteId, note in pairs(STATE.notes or {}) do
-        if type(note) == "table" and note.point then
+        if type(note) == "table" and type(note.point) == "table" then
             local restoreId = tonumber(note.restoreMarkId) or newMarkId()
             note.restoreMarkId = restoreId
-            note.markId = restoreId
 
+            local oldMarkId = tonumber(note.markId)
+            if oldMarkId then
+                STATE.markToNoteId[oldMarkId] = nil
+            end
+
+            note.markId = restoreId
             STATE.markToNoteId[restoreId] = noteId
+
             ignoreMark(restoreId)
 
             local text = tostring(CFG.KEYWORD) .. ": " .. tostring(note.text or "")
@@ -634,6 +996,74 @@ local function restoreNotes()
     saveJson("restore_notes")
 
     log("Notas restauradas en F10: " .. tostring(count))
+end
+
+----------------------------------------------------------------
+-- MENU OPCIONAL
+----------------------------------------------------------------
+local function countNotes()
+    local n = 0
+
+    for _, _ in pairs(STATE.notes or {}) do
+        n = n + 1
+    end
+
+    return n
+end
+
+local function showNotesSummary()
+    local lines = {
+        "NOTAS PERSISTENTES",
+        "Total: " .. tostring(countNotes()),
+        "JSON: " .. tostring(getJsonPath()),
+        ""
+    }
+
+    for _, noteId in ipairs(sortedKeys(STATE.notes)) do
+        local note = STATE.notes[noteId]
+
+        if note then
+            local authorName = "UNKNOWN"
+
+            if type(note.author) == "table" then
+                authorName = tostring(note.author.playerName or "UNKNOWN")
+            end
+
+            lines[#lines + 1] =
+                tostring(noteId) ..
+                " | markId=" .. tostring(note.markId) ..
+                " | autor=" .. authorName ..
+                " | " .. tostring(note.text or "")
+        end
+    end
+
+    trigger.action.outText(table.concat(lines, "\n"), 20)
+end
+
+local function buildMenu()
+    if not CFG.MENU_ENABLED then
+        return
+    end
+
+    if STATE.menuRoot then
+        missionCommands.removeItem(STATE.menuRoot)
+        STATE.menuRoot = nil
+    end
+
+    STATE.menuRoot = missionCommands.addSubMenu(CFG.MENU_NAME or "Notas persistentes")
+
+    missionCommands.addCommand("Mostrar notas", STATE.menuRoot, function()
+        showNotesSummary()
+    end)
+
+    missionCommands.addCommand("Guardar JSON ahora", STATE.menuRoot, function()
+        saveJson("manual_save")
+        trigger.action.outText("JSON de notas guardado.", 8)
+    end)
+
+    missionCommands.addCommand("Restaurar notas en mapa", STATE.menuRoot, function()
+        restoreNotes()
+    end)
 end
 
 ----------------------------------------------------------------
@@ -713,12 +1143,13 @@ local function start()
     local created = saveJson("startup_forced_create")
 
     if created then
-        log("Sistema iniciado. JSON: " .. tostring(CFG.FILE_PATH))
+        log("Sistema iniciado. JSON: " .. tostring(getJsonPath()))
     else
         warn("El sistema inicio, pero NO pudo crear el JSON.")
     end
 
     world.addEventHandler(handler)
+    buildMenu()
 
     timer.scheduleFunction(function()
         restoreNotes()
