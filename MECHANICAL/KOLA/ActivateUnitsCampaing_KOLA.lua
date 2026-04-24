@@ -82,7 +82,7 @@ local gruposPorBandera = {
 
     [119] = { 
         rojo = {"RU_119_Andoya"}, 
-        azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE"} 
+        azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE", "RU_119_Andoya_STRIKE2"} 
             },
     [120] = { 
         rojo = {"RU_120_Bardufoss"}, 
