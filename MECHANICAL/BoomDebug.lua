@@ -13,6 +13,7 @@
 --    spawn red T-90
 --    spawn blue M1A2C_SEP_V3
 --    unit blue M1097 Avenger
+--    spawn red Strela-10M3
 --
 -- NOTA:
 -- - Esta version spawnea SOLO vehiculos terrestres.

@@ -258,7 +258,7 @@ SF.RULES = {
 
     {
         key = "InitMission",
-        flag = {2100},
+        flag = {2100, 2200},
         value = 1,
         mode = "any",
         target = "all",
@@ -271,7 +271,7 @@ SF.RULES = {
 
     {
         key = "FailMission",
-        flag = {2102},
+        flag = {2102, 2202},
         value = 1,
         mode = "any",
         target = "all",

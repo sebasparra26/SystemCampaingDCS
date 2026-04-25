@@ -73,8 +73,8 @@ MS.CONFIG = MS.CONFIG or {
 MS.DEBUG_FORCE_STATUS = MS.DEBUG_FORCE_STATUS or {
     ENABLED = false,
     MISSIONS = {
-        -- M01 = 2,
-        -- M02 = 1,
+        --M01 = 2,
+        --M02 = 1,
     }
 }
 

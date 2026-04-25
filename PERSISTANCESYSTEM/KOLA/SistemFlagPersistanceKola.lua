@@ -3,8 +3,8 @@ SistemFlagPersistance = SistemFlagPersistance or {}
 SistemFlagPersistance.config = {
     rutaJSON = lfs.writedir() .. "Config\\HorizontDev\\KOLA\\SistemFlagPersistanceKola.json",
     intervalo = 1,
-    flagMin = 100,
-    flagMax = 1000,
+    flagMin = 2000,
+    flagMax = 2400,
 
     activarDCSaJSON = true,
     activarJSONaDCS = true,

@@ -4,7 +4,7 @@ if not mist or not mist.teleportToPoint then
 end
 
 ----------------------------------------------------------------
--- ActivateUnitsCampaing_SINAI.lua
+-- ActivateUnitsCampaing_KOLA.lua
 --
 -- BASE:
 --   Version estable de activaciones por flag
@@ -17,12 +17,23 @@ end
 --   SOLO estos grupos llevan persistencia JSON
 --
 -- PERSISTENCIA MODULO 2:
---   1 = habilitado para activarse
---   2 = muerto definitivamente, NO volver activar
+--   GRUPO:
+--     status = 1 habilitado para activarse
+--     status = 2 muerto definitivamente, NO volver activar
+--
+--   UNIDADES:
+--     status = 1 unidad habilitada/viva
+--     status = 2 unidad muerta, se destruye despues del spawn del grupo
 --
 -- REGLA DURA:
 --   Si un grupo esta en 2, JAMAS vuelve a 1 por script.
---   Si aparece vivo por cualquier motivo, se destruye.
+--   Si una unidad esta en 2, JAMAS vuelve a 1 por script.
+--   Si aparece viva por cualquier motivo, se destruye.
+--
+-- NOTA:
+--   DCS no expone una funcion estable para aplicar vida parcial exacta
+--   tipo Unit:setLife(). Este script guarda life/life0/lifePercent,
+--   pero solo restaura de forma segura las unidades muertas.
 ----------------------------------------------------------------
 
 local debugActivo = false
@@ -43,18 +54,18 @@ end
 -- 2 = AZUL
 ----------------------------------------------------------------
 local gruposPorBandera = {
-    [100] = { 
-        rojo = {"RU_100_Banak","RU_100_Banak_Ship","RU_100_Banak_SAM","RU_100_Banak_EWR", "RU_100_Banak_Shield" , "RU_100_Banak_Artillery"}, 
-        azul = {"US_100_Banak", "US_100_Banak_SAM", "US_100_Banak_Shield"} 
-        },
+    [100] = {
+        rojo = {"RU_100_Banak","RU_100_Banak_Ship","RU_100_Banak_SAM","RU_100_Banak_EWR", "RU_100_Banak_Shield" , "RU_100_Banak_Artillery"},
+        azul = {"US_100_Banak", "US_100_Banak_SAM", "US_100_Banak_Shield"}
+    },
     [101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" },
     [102] = { rojo = "RU_102_Kemi", azul = "US_102_Kemi" },
     [103] = { rojo = "RU_103_Vuojarvi", azul = "US_103_Vuojarvi" },
     [104] = { rojo = "RU_104_Kiruna", azul = "US_104_Kiruna" },
-    [105] = { 
-        rojo = {"RU_105_Severomorsk-3", "RU_105_Severomorsk-3_SAM", "RU_105_Severomorsk-3_EWR", "RU_105_Severomorsk-3_Shield", "RU_105_Severomorsk-3_Manpad"}, 
-        azul = {"US_105_Severomorsk-3"} 
-            },
+    [105] = {
+        rojo = {"RU_105_Severomorsk-3", "RU_105_Severomorsk-3_SAM", "RU_105_Severomorsk-3_EWR", "RU_105_Severomorsk-3_Shield", "RU_105_Severomorsk-3_Manpad"},
+        azul = {"US_105_Severomorsk-3"}
+    },
     [106] = { rojo = "RU_106_Bodo", azul = "US_106_Bodo" },
     [107] = { rojo = "RU_107_Severomorsk-1", azul = "US_107_Severomorsk-1" },
     [108] = { rojo = "RU_108_Olenya", azul = "US_108_Olenya" },
@@ -62,50 +73,49 @@ local gruposPorBandera = {
     [110] = { rojo = "RU_110_Jokkmokk", azul = "US_110_Jokkmokk" },
     [111] = { rojo = "RU_111_Murmansk", azul = "US_111_Murmansk" },
 
-    [112] = { 
-        rojo = {"RU_112_Kalixfors"}, 
-        azul = {"US_112_Kalixfors", "US_112_Kalixfors_SAM", "US_112_Kalixfors_Shield", "RU_112_Kalixfors_Troops", "RU_112_Kalixfors_SEAD" } 
-            },
+    [112] = {
+        rojo = {"RU_112_Kalixfors"},
+        azul = {"US_112_Kalixfors", "US_112_Kalixfors_SAM", "US_112_Kalixfors_Shield", "RU_112_Kalixfors_Troops", "RU_112_Kalixfors_SEAD", "RU_112_Kalixfors_ISKANDER" }
+    },
     [113] = { rojo = "RU_113_Kirkenes", azul = "US_113_Kirkenes" },
 
     [114] = {
         rojo = {"RU_114_Kallax", "RU_114_Kallax_SAM", "RU_114_Kallax_EWR", "RU_114_Kallax_Shield", "RU_114_Kallax_Ship"},
-        azul = {"US_114_Kallax", "US_114_Kallax_SAM", "US_114_Kallax_Shield"} 
-            },
-    [115] = { 
-        rojo = {"RU_115_Kuusamo", "RU_115_Kuusamo_SAM", "RU_115_Kuusamo_EWR", "RU_115_Kuusamo_Shield", "RU_115_Kuusamo_Manpad"}, 
-        azul = {"US_115_Kuusamo" , "US_115_Kuusamo_SAM", "US_115_Kuusamo_Shield"} 
-            },
+        azul = {"US_114_Kallax", "US_114_Kallax_SAM", "US_114_Kallax_Shield"}
+    },
+    [115] = {
+        rojo = {"RU_115_Kuusamo", "RU_115_Kuusamo_SAM", "RU_115_Kuusamo_EWR", "RU_115_Kuusamo_Shield", "RU_115_Kuusamo_Manpad"},
+        azul = {"US_115_Kuusamo" , "US_115_Kuusamo_SAM", "US_115_Kuusamo_Shield"}
+    },
     [116] = { rojo = "RU_116_Vidsel", azul = "US_116_Vidsel" },
     [117] = { rojo = "RU_117_Ivalo", azul = "US_117_Ivalo" },
     [118] = { rojo = "RU_118_Alakurtti", azul = "US_118_Alakurtti" },
 
-    [119] = { 
-        rojo = {"RU_119_Andoya"}, 
-        azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE", "RU_119_Andoya_STRIKE2"} 
-            },
-    [120] = { 
-        rojo = {"RU_120_Bardufoss"}, 
-        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops"} 
-            },
+    [119] = {
+        rojo = {"RU_119_Andoya"},
+        azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE", "RU_119_Andoya_STRIKE2"}
+    },
+    [120] = {
+        rojo = {"RU_120_Bardufoss"},
+        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops"}
+    },
 
-    [121] = { 
-        rojo = {"RU_121_Kittila", "RU_121_Kittila_SAM","RU_121_Kittila_SAM_2","RU_121_Kittila_EWR", "RU_121_Kittila_Shield", "RU_121_Kittila_Shield_2", "RU_121_Kittila_Manpad"}, 
-        azul = {"US_121_Kittila", "US_121_Kittila_SAM", "US_121_Kittila_Shield"} 
-            },
+    [121] = {
+        rojo = {"RU_121_Kittila", "RU_121_Kittila_SAM","RU_121_Kittila_SAM_2","RU_121_Kittila_EWR", "RU_121_Kittila_Shield", "RU_121_Kittila_Shield_2", "RU_121_Kittila_Manpad"},
+        azul = {"US_121_Kittila", "US_121_Kittila_SAM", "US_121_Kittila_Shield"}
+    },
 
     [122] = { rojo = "RU_122_Hosio", azul = "US_122_Hosio" },
     [123] = { rojo = "RU_123_Alta", azul = "US_123_Alta" },
 
-    [124] = { 
-        rojo = {"RU_124_Evenes"}, 
-        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_Ship", "RU_112_Kalixfors_STRIKE" } 
+    [124] = {
+        rojo = {"RU_124_Evenes"},
+        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_Ship", "RU_112_Kalixfors_STRIKE" }
     },
-    [125] = { 
-        rojo = {"RU_125_Enontekio"}, 
-        azul = {"US_125_Enontekio", "US_125_Enontekio_SAM", "RU_125_Enontekio_SEAD"} 
-            },
-
+    [125] = {
+        rojo = {"RU_125_Enontekio"},
+        azul = {"US_125_Enontekio", "US_125_Enontekio_SAM", "RU_125_Enontekio_SEAD"}
+    },
 
     [126] = { rojo = "RU_126_Sodankyla", azul = "US_126_Sodankyla" },
     [127] = { rojo = "RU_127_Kilpyavr", azul = "US_127_Kilpyavr" },
@@ -114,18 +124,18 @@ local gruposPorBandera = {
     [130] = { rojo = "RU_130_Poduzhemye", azul = "US_130_Poduzhemye" },
     [131] = { rojo = "RU_131_Kalevala", azul = "US_131_Kalevala" },
     [132] = { rojo = "RU_132_Afrikanda", azul = "US_132_Afrikanda" },
-    [133] = { 
-        rojo = {"RU_133_Boden"}, 
-        azul = {"US_133_Boden", "US_133_Boden_SAM"} 
-            },
-    [134] = { 
-        rojo = {"RU_134_Hemavan"}, 
-        azul = {"US_134_Hemavan", "US_134_Hemavan_SAM", "RU_134_Hemavan_TROOPS", "RU_134_Hemavan_STRIKE"} 
-        },
-    [135] = { 
-        rojo = {"RU_135_Arvidsjaur"}, 
-        azul = {"US_135_Arvidsjaur", "US_135_Arvidsjaur_SAM",} 
-            },
+    [133] = {
+        rojo = {"RU_133_Boden"},
+        azul = {"US_133_Boden", "US_133_Boden_SAM"}
+    },
+    [134] = {
+        rojo = {"RU_134_Hemavan"},
+        azul = {"US_134_Hemavan", "US_134_Hemavan_SAM", "RU_134_Hemavan_TROOPS", "RU_134_Hemavan_STRIKE"}
+    },
+    [135] = {
+        rojo = {"RU_135_Arvidsjaur"},
+        azul = {"US_135_Arvidsjaur", "US_135_Arvidsjaur_SAM"}
+    },
 }
 
 ----------------------------------------------------------------
@@ -141,17 +151,32 @@ local activacionesPorFlag = {
             "MT_01_SHIP",
             --"RU_EWR_154_Khalkhalah",
             --"RU_SHIELD_154_Khalkhalah"
-           --"US_TROOP"
-
+            --"US_TROOP"
         }
     },
 
-    --[2200] = {
-    --    valor = 1,
-    --    grupos = {
-    --        "RU_Tanque"
-    --    }
-    --},
+    [2200] = {
+        valor = 1,
+        grupos = {
+            "US_TROOP_01"
+        }
+    },
+
+    [106] = {
+        valor = 2,
+        grupos = {
+            "TGT01",
+            "TGT02",
+            "TGT03",
+            "TGT04",
+            "TGT05",
+            "TGT06",
+            "TGT07",
+            "TGT08",
+            "TGT09",
+            "TGT10",
+        }
+    },
 }
 
 ----------------------------------------------------------------
@@ -165,6 +190,17 @@ local ACTSYNC = {
     INJECT_DURATION = 30,
     INJECT_INTERVAL = 1,
     EXPORT_INTERVAL = 350,
+
+    TRACK_UNIT_STATUS = true,
+
+    -- Aplica unidades muertas despues de activar el grupo.
+    -- Esto elimina unidades con status = 2 o life <= 0 en el JSON.
+    APPLY_DEAD_UNITS_ON_SPAWN = true,
+    APPLY_DEAD_UNITS_DELAY = 1,
+
+    -- DCS no tiene Unit:setLife() estable/documentado.
+    -- Se deja en false para no usar explosiones ni trucos peligrosos.
+    APPLY_PARTIAL_LIFE = false
 }
 
 local ACTSTATE = {
@@ -196,7 +232,7 @@ local function debug(msg, tiempo)
 end
 
 local function log(msg)
-    env.info("[ActivateUnitsCampaing_SINAI] " .. tostring(msg))
+    env.info("[ActivateUnitsCampaing_KOLA] " .. tostring(msg))
     if debugActivo then
         trigger.action.outText("[ActivateUnits] " .. tostring(msg), 8)
     end
@@ -282,8 +318,16 @@ local function sortedNumericListFromMap(tbl)
     end
 
     table.sort(out, function(a, b)
-        return tonumber(a) < tonumber(b)
+        local na = tonumber(a)
+        local nb = tonumber(b)
+
+        if na and nb then
+            return na < nb
+        end
+
+        return tostring(a) < tostring(b)
     end)
+
     return out
 end
 
@@ -325,20 +369,392 @@ local function countAliveUnitsInGroup(groupName)
         return 0
     end
 
-    local units = grp:getUnits() or {}
+    local okUnits, units = pcall(function()
+        return grp:getUnits()
+    end)
+
+    if not okUnits or type(units) ~= "table" then
+        return 0
+    end
+
     local alive = 0
 
     for i = 1, #units do
         local u = units[i]
-        if u and u:isExist() then
-            local life = ensureNumber(u:getLife())
-            if life > 0 then
-                alive = alive + 1
+        if u then
+            local okExist, exists = pcall(function()
+                return u:isExist()
+            end)
+
+            if okExist and exists then
+                local okLife, life = pcall(function()
+                    return u:getLife()
+                end)
+
+                if okLife and ensureNumber(life) > 0 then
+                    alive = alive + 1
+                end
             end
         end
     end
 
     return alive
+end
+
+local function safeCall(obj, methodName)
+    if not obj or not methodName or not obj[methodName] then
+        return nil
+    end
+
+    local ok, result = pcall(function()
+        return obj[methodName](obj)
+    end)
+
+    if ok then
+        return result
+    end
+
+    return nil
+end
+
+----------------------------------------------------------------
+-- MODULO 2
+-- SNAPSHOT DE UNIDADES DEL GRUPO
+----------------------------------------------------------------
+local function getTemplateGroupData(groupName)
+    if not groupName then
+        return nil
+    end
+
+    if mist and mist.DBs and mist.DBs.MEgroupsByName and mist.DBs.MEgroupsByName[groupName] then
+        return mist.DBs.MEgroupsByName[groupName]
+    end
+
+    if mist and mist.DBs and mist.DBs.groupsByName and mist.DBs.groupsByName[groupName] then
+        return mist.DBs.groupsByName[groupName]
+    end
+
+    if mist and mist.getGroupData then
+        local ok, data = pcall(function()
+            return mist.getGroupData(groupName, true)
+        end)
+
+        if ok and type(data) == "table" then
+            return data
+        end
+    end
+
+    return nil
+end
+
+local function getUnitNameFromTemplate(unitData, groupName, index)
+    if type(unitData) ~= "table" then
+        return tostring(groupName) .. "_UNIT_" .. tostring(index)
+    end
+
+    return unitData.unitName or unitData.name or tostring(groupName) .. "_UNIT_" .. tostring(index)
+end
+
+local function buildTemplateUnitsSnapshot(groupName)
+    local out = {}
+    local groupData = getTemplateGroupData(groupName)
+
+    if type(groupData) ~= "table" or type(groupData.units) ~= "table" then
+        return out
+    end
+
+    for i, unitData in pairs(groupData.units) do
+        if type(unitData) == "table" then
+            local unitName = getUnitNameFromTemplate(unitData, groupName, i)
+
+            out[unitName] = {
+                name = unitName,
+                groupName = groupName,
+                index = tonumber(i) or i,
+
+                type = unitData.type or unitData.typeName,
+                templateUnitId = unitData.unitId,
+
+                status = 1,
+                alive = false,
+                life = nil,
+                life0 = nil,
+                lifePercent = nil,
+
+                everSeenAlive = false,
+                lastSeenAliveAt = nil,
+                lastChangeTime = nil,
+
+                source = "template"
+            }
+        end
+    end
+
+    return out
+end
+
+local function normalizeUnitRecord(unitName, groupName, data)
+    data = type(data) == "table" and data or {}
+
+    data.name = data.name or unitName
+    data.groupName = data.groupName or groupName
+
+    local status = tonumber(data.status) or 1
+    if status ~= 2 then
+        status = 1
+    end
+
+    data.status = status
+
+    if status == 2 then
+        data.alive = false
+        data.life = 0
+        data.lifePercent = 0
+    end
+
+    return data
+end
+
+local function mergeTemplateIntoUnitState(groupName, previousUnits)
+    local unitsMap = {}
+
+    if type(previousUnits) == "table" then
+        for unitName, data in pairs(previousUnits) do
+            if type(data) == "table" then
+                unitsMap[unitName] = normalizeUnitRecord(unitName, groupName, deepCopy(data))
+            end
+        end
+    end
+
+    local templateUnits = buildTemplateUnitsSnapshot(groupName)
+    for unitName, data in pairs(templateUnits) do
+        if not unitsMap[unitName] then
+            unitsMap[unitName] = data
+        else
+            unitsMap[unitName].name = unitsMap[unitName].name or data.name
+            unitsMap[unitName].groupName = groupName
+            unitsMap[unitName].index = unitsMap[unitName].index or data.index
+            unitsMap[unitName].type = unitsMap[unitName].type or data.type
+            unitsMap[unitName].templateUnitId = unitsMap[unitName].templateUnitId or data.templateUnitId
+        end
+    end
+
+    return unitsMap
+end
+
+local function collectGroupUnitsSnapshot(groupName, previousUnits, markMissingAsDead)
+    local now = round(timer.getTime(), 3)
+    local unitsMap = mergeTemplateIntoUnitState(groupName, previousUnits)
+
+    local grp = groupExistsByName(groupName)
+    if not grp then
+        return unitsMap
+    end
+
+    local okUnits, runtimeUnits = pcall(function()
+        return grp:getUnits()
+    end)
+
+    if not okUnits or type(runtimeUnits) ~= "table" then
+        return unitsMap
+    end
+
+    local runtimeSeen = {}
+
+    for i = 1, #runtimeUnits do
+        local unit = runtimeUnits[i]
+        if unit then
+            local unitName = safeCall(unit, "getName") or tostring(groupName) .. "_UNIT_" .. tostring(i)
+            runtimeSeen[unitName] = true
+
+            local row = unitsMap[unitName] or {
+                name = unitName,
+                groupName = groupName,
+                index = i,
+                status = 1,
+                everSeenAlive = false
+            }
+
+            local lockedDead = tonumber(row.status) == 2
+
+            local exists = safeCall(unit, "isExist") and true or false
+            local typeName = safeCall(unit, "getTypeName")
+            local life = ensureNumber(safeCall(unit, "getLife"))
+            local life0 = ensureNumber(safeCall(unit, "getLife0"))
+
+            local alive = exists and life > 0
+
+            row.name = unitName
+            row.groupName = groupName
+            row.index = row.index or i
+            row.type = typeName or row.type
+            row.runtimeUnitId = safeCall(unit, "getID")
+            row.coalition = safeCall(unit, "getCoalition")
+            row.country = safeCall(unit, "getCountry")
+            row.source = "runtime"
+
+            if lockedDead then
+                row.status = 2
+                row.alive = false
+                row.life = 0
+                row.lifePercent = 0
+            else
+                row.status = alive and 1 or 2
+                row.alive = alive
+                row.life = round(life, 3)
+                row.life0 = life0 > 0 and round(life0, 3) or row.life0
+
+                if life0 > 0 then
+                    row.lifePercent = round((life / life0) * 100, 2)
+                elseif row.life0 and row.life0 > 0 then
+                    row.lifePercent = round((life / row.life0) * 100, 2)
+                else
+                    row.lifePercent = nil
+                end
+
+                if alive then
+                    row.everSeenAlive = true
+                    row.lastSeenAliveAt = now
+                else
+                    row.lastChangeTime = row.lastChangeTime or now
+                end
+            end
+
+            local point = safeCall(unit, "getPoint")
+            if point then
+                row.point = {
+                    x = round(point.x, 3),
+                    y = round(point.y, 3),
+                    z = round(point.z, 3)
+                }
+            end
+
+            unitsMap[unitName] = normalizeUnitRecord(unitName, groupName, row)
+        end
+    end
+
+    if markMissingAsDead then
+        for unitName, row in pairs(unitsMap) do
+            if type(row) == "table" and not runtimeSeen[unitName] then
+                if tonumber(row.status) ~= 2 and row.everSeenAlive then
+                    row.status = 2
+                    row.alive = false
+                    row.life = 0
+                    row.lifePercent = 0
+                    row.lastChangeTime = now
+                    row.source = row.source or "lastKnown"
+                end
+            end
+        end
+    end
+
+    return unitsMap
+end
+
+local function countUnitsInSnapshot(unitsMap)
+    local total = 0
+    local alive = 0
+    local dead = 0
+
+    for _, data in pairs(unitsMap or {}) do
+        if type(data) == "table" then
+            total = total + 1
+
+            if tonumber(data.status) == 2 then
+                dead = dead + 1
+            elseif data.alive then
+                alive = alive + 1
+            end
+        end
+    end
+
+    return total, alive, dead
+end
+
+local function forceDeadUnitsInRecord(rec)
+    if type(rec) ~= "table" or type(rec.units) ~= "table" then
+        return
+    end
+
+    for _, unitData in pairs(rec.units) do
+        if type(unitData) == "table" then
+            unitData.status = 2
+            unitData.alive = false
+            unitData.life = 0
+            unitData.lifePercent = 0
+        end
+    end
+
+    rec.aliveUnits = 0
+end
+
+local function applySavedUnitStateToRuntime(groupName)
+    if not ACTSYNC.APPLY_DEAD_UNITS_ON_SPAWN then
+        return
+    end
+
+    local rec = ACTSTATE.trackedGroups[groupName]
+    if not rec or type(rec.units) ~= "table" then
+        return
+    end
+
+    if tonumber(rec.status) == 2 then
+        return
+    end
+
+    for unitName, unitState in pairs(rec.units) do
+        if type(unitState) == "table" then
+            local unitStatus = tonumber(unitState.status) or 1
+            local savedLife = tonumber(unitState.life)
+
+            if unitStatus == 2 or (savedLife ~= nil and savedLife <= 0) then
+                local unit = Unit.getByName(unitName)
+
+                if unit then
+                    local okExist, exists = pcall(function()
+                        return unit:isExist()
+                    end)
+
+                    if okExist and exists then
+                        pcall(function()
+                            unit:destroy()
+                        end)
+
+                        unitState.status = 2
+                        unitState.alive = false
+                        unitState.life = 0
+                        unitState.lifePercent = 0
+                        unitState.lastChangeTime = round(timer.getTime(), 3)
+
+                        ACTSTATE.dirty = true
+                        syncLog("Unidad bloqueada en 2 destruida por persistencia: " .. tostring(unitName))
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function scheduleApplySavedUnitState(groupName, delay)
+    delay = tonumber(delay) or ACTSYNC.APPLY_DEAD_UNITS_DELAY or 1
+
+    timer.scheduleFunction(function(args)
+        if args and args.groupName then
+            applySavedUnitStateToRuntime(args.groupName)
+
+            local rec = ACTSTATE.trackedGroups[args.groupName]
+            local rt = ACTSTATE.runtime[args.groupName]
+
+            if rec then
+                rec.units = collectGroupUnitsSnapshot(args.groupName, rec.units, rt and rt.seenAliveOnce)
+                local totalUnits, aliveUnits, deadUnits = countUnitsInSnapshot(rec.units)
+                rec.totalUnits = totalUnits
+                rec.aliveUnits = aliveUnits
+                rec.deadUnits = deadUnits
+                ACTSTATE.dirty = true
+            end
+        end
+    end, { groupName = groupName }, timer.getTime() + delay)
 end
 
 ----------------------------------------------------------------
@@ -584,12 +1000,12 @@ local function clonarConNombreFijo(templateName, bandera, lado)
 
     if ok and result then
         debug("Grupo " .. string.upper(lado) .. " '" .. runtimeName .. "' clonado por bandera " .. bandera, 10)
-        env.info("[ActivateUnitsCampaing_SINAI] Grupo " .. string.upper(lado) .. " '" .. runtimeName .. "' clonado por bandera " .. bandera)
+        env.info("[ActivateUnitsCampaing_KOLA] Grupo " .. string.upper(lado) .. " '" .. runtimeName .. "' clonado por bandera " .. bandera)
         return true
     end
 
     debug("ERROR clonando '" .. tostring(templateName) .. "' como '" .. tostring(runtimeName) .. "'", 10)
-    env.info("[ActivateUnitsCampaing_SINAI] ERROR clonando '" .. tostring(templateName) .. "' como '" .. tostring(runtimeName) .. "'")
+    env.info("[ActivateUnitsCampaing_KOLA] ERROR clonando '" .. tostring(templateName) .. "' como '" .. tostring(runtimeName) .. "'")
     return false
 end
 
@@ -629,12 +1045,25 @@ local function ensureTrackedGroup(groupName, sourceFlag)
             sourceFlags = {},
             lastChangeTime = 0,
             lastActivatedAt = nil,
-            lastSeenAliveAt = nil
+            lastSeenAliveAt = nil,
+
+            units = {},
+            totalUnits = 0,
+            aliveUnits = 0,
+            deadUnits = 0
         }
     end
 
+    local rec = ACTSTATE.trackedGroups[groupName]
+
+    rec.units = collectGroupUnitsSnapshot(groupName, rec.units, false)
+    local totalUnits, aliveUnits, deadUnits = countUnitsInSnapshot(rec.units)
+    rec.totalUnits = totalUnits
+    rec.aliveUnits = aliveUnits
+    rec.deadUnits = deadUnits
+
     if sourceFlag ~= nil then
-        ACTSTATE.trackedGroups[groupName].sourceFlags[sourceFlag] = true
+        rec.sourceFlags[sourceFlag] = true
     end
 
     if not ACTSTATE.runtime[groupName] then
@@ -675,6 +1104,11 @@ local function setTrackedStatus(groupName, newStatus)
     if rec.status ~= newStatus then
         rec.status = newStatus
         rec.lastChangeTime = round(timer.getTime(), 3)
+
+        if newStatus == 2 then
+            forceDeadUnitsInRecord(rec)
+        end
+
         ACTSTATE.dirty = true
         syncLog("Estado actualizado | " .. tostring(groupName) .. " => " .. tostring(newStatus))
     end
@@ -684,12 +1118,30 @@ local function buildDocFromState()
     local groups = {}
 
     for groupName, rec in pairs(ACTSTATE.trackedGroups or {}) do
+        local rt = ACTSTATE.runtime[groupName]
+
+        rec.units = collectGroupUnitsSnapshot(groupName, rec.units, rt and rt.seenAliveOnce)
+        local totalUnits, aliveUnits, deadUnits = countUnitsInSnapshot(rec.units)
+
+        rec.totalUnits = totalUnits
+        rec.aliveUnits = aliveUnits
+        rec.deadUnits = deadUnits
+
+        if tonumber(rec.status) == 2 then
+            forceDeadUnitsInRecord(rec)
+        end
+
         groups[groupName] = {
             status = tonumber(rec.status) or 1,
             sourceFlags = sortedNumericListFromMap(rec.sourceFlags or {}),
             lastChangeTime = rec.lastChangeTime,
             lastActivatedAt = rec.lastActivatedAt,
-            lastSeenAliveAt = rec.lastSeenAliveAt
+            lastSeenAliveAt = rec.lastSeenAliveAt,
+
+            totalUnits = rec.totalUnits or 0,
+            aliveUnits = rec.aliveUnits or 0,
+            deadUnits = rec.deadUnits or 0,
+            units = rec.units or {}
         }
     end
 
@@ -697,12 +1149,16 @@ local function buildDocFromState()
         control = {
             injectDuration = ACTSYNC.INJECT_DURATION,
             injectInterval = ACTSYNC.INJECT_INTERVAL,
-            exportInterval = ACTSYNC.EXPORT_INTERVAL
+            exportInterval = ACTSYNC.EXPORT_INTERVAL,
+            trackUnitStatus = ACTSYNC.TRACK_UNIT_STATUS,
+            applyDeadUnitsOnSpawn = ACTSYNC.APPLY_DEAD_UNITS_ON_SPAWN,
+            applyPartialLife = ACTSYNC.APPLY_PARTIAL_LIFE
         },
         meta = {
             mode = ACTSTATE.injecting and "inject" or "live",
             missionTime = round(timer.getTime(), 3),
-            source = "ActivateUnitsCampaing_SINAI"
+            source = "ActivateUnitsCampaing_KOLA",
+            unitRestoreMode = "deadUnitsOnly"
         },
         groups = groups
     }
@@ -728,8 +1184,29 @@ local function applyDocToState(doc)
             rec.lastActivatedAt = saved.lastActivatedAt or rec.lastActivatedAt
             rec.lastSeenAliveAt = saved.lastSeenAliveAt or rec.lastSeenAliveAt
 
-            if savedStatus == 2 and ACTSTATE.runtime[groupName] then
-                ACTSTATE.runtime[groupName].seenAliveOnce = true
+            if type(saved.units) == "table" then
+                rec.units = saved.units
+
+                for unitName, unitData in pairs(rec.units) do
+                    if type(unitData) == "table" then
+                        rec.units[unitName] = normalizeUnitRecord(unitName, groupName, unitData)
+                    end
+                end
+            end
+
+            rec.units = collectGroupUnitsSnapshot(groupName, rec.units, false)
+
+            local totalUnits, aliveUnits, deadUnits = countUnitsInSnapshot(rec.units)
+            rec.totalUnits = tonumber(saved.totalUnits) or totalUnits
+            rec.aliveUnits = tonumber(saved.aliveUnits) or aliveUnits
+            rec.deadUnits = tonumber(saved.deadUnits) or deadUnits
+
+            if savedStatus == 2 then
+                forceDeadUnitsInRecord(rec)
+
+                if ACTSTATE.runtime[groupName] then
+                    ACTSTATE.runtime[groupName].seenAliveOnce = true
+                end
             end
         end
     end
@@ -742,6 +1219,11 @@ end
 
 local function enforceDeadLock(groupName, reason)
     if isLockedDead(groupName) then
+        local rec = ACTSTATE.trackedGroups[groupName]
+        if rec then
+            forceDeadUnitsInRecord(rec)
+        end
+
         local destroyed = destroyGroupIfExists(groupName)
         if destroyed then
             syncLog("Grupo bloqueado en 2 destruido por seguridad: " .. tostring(groupName) .. " | motivo=" .. tostring(reason or "N/A"))
@@ -770,7 +1252,7 @@ local function activarGrupoOriginalPersistente(nombreGrupo, bandera)
     local grp = Group.getByName(nombreGrupo)
     if not grp then
         debug("No existe grupo en ME: " .. tostring(nombreGrupo), 10)
-        env.info("[ActivateUnitsCampaing_SINAI] No existe grupo en ME: " .. tostring(nombreGrupo))
+        env.info("[ActivateUnitsCampaing_KOLA] No existe grupo en ME: " .. tostring(nombreGrupo))
         return false
     end
 
@@ -789,18 +1271,21 @@ local function activarGrupoOriginalPersistente(nombreGrupo, bandera)
 
         if rec then
             rec.lastActivatedAt = round(timer.getTime(), 3)
+
             if tonumber(rec.status) ~= 2 then
                 setTrackedStatus(nombreGrupo, 1)
             end
         end
 
+        scheduleApplySavedUnitState(nombreGrupo, ACTSYNC.APPLY_DEAD_UNITS_DELAY)
+
         debug("Grupo activado por flag " .. tostring(bandera) .. ": " .. tostring(nombreGrupo), 10)
-        env.info("[ActivateUnitsCampaing_SINAI] Grupo activado por flag " .. tostring(bandera) .. ": " .. tostring(nombreGrupo))
+        env.info("[ActivateUnitsCampaing_KOLA] Grupo activado por flag " .. tostring(bandera) .. ": " .. tostring(nombreGrupo))
         return true
     end
 
     debug("ERROR activando grupo '" .. tostring(nombreGrupo) .. "' por flag " .. tostring(bandera), 10)
-    env.info("[ActivateUnitsCampaing_SINAI] ERROR activando grupo '" .. tostring(nombreGrupo) .. "' por flag " .. tostring(bandera) .. ": " .. tostring(err))
+    env.info("[ActivateUnitsCampaing_KOLA] ERROR activando grupo '" .. tostring(nombreGrupo) .. "' por flag " .. tostring(bandera) .. ": " .. tostring(err))
     return false
 end
 
@@ -839,13 +1324,19 @@ end
 local function monitorTrackedGroups()
     for groupName, rec in pairs(ACTSTATE.trackedGroups or {}) do
         local rt = ACTSTATE.runtime[groupName]
-        local alive = countAliveUnitsInGroup(groupName)
 
         if tonumber(rec.status) == 2 then
+            forceDeadUnitsInRecord(rec)
+
+            local alive = countAliveUnitsInGroup(groupName)
             if alive > 0 then
                 enforceDeadLock(groupName, "monitorTrackedGroups")
             end
         else
+            applySavedUnitStateToRuntime(groupName)
+
+            local alive = countAliveUnitsInGroup(groupName)
+
             if alive > 0 then
                 if rt then
                     rt.seenAliveOnce = true
@@ -854,11 +1345,19 @@ local function monitorTrackedGroups()
                 end
 
                 rec.lastSeenAliveAt = round(timer.getTime(), 3)
+                rec.units = collectGroupUnitsSnapshot(groupName, rec.units, true)
             else
+                rec.units = collectGroupUnitsSnapshot(groupName, rec.units, rt and rt.seenAliveOnce)
+
                 if rt and rt.seenAliveOnce then
                     setTrackedStatus(groupName, 2)
                 end
             end
+
+            local totalUnits, aliveUnits, deadUnits = countUnitsInSnapshot(rec.units)
+            rec.totalUnits = totalUnits
+            rec.aliveUnits = aliveUnits
+            rec.deadUnits = deadUnits
         end
     end
 end
@@ -911,7 +1410,11 @@ local function registerSyncEventHandler()
                 rt.activationRequested = true
             end
 
-            rec.lastSeenAliveAt = round(timer.getTime(), 3)
+            if rec then
+                rec.lastSeenAliveAt = round(timer.getTime(), 3)
+            end
+
+            scheduleApplySavedUnitState(groupName, ACTSYNC.APPLY_DEAD_UNITS_DELAY)
 
             syncLog("BIRTH detectado en grupo persistente: " .. tostring(groupName))
         end
@@ -944,6 +1447,8 @@ local function injectFromJson()
     for groupName, rec in pairs(ACTSTATE.trackedGroups or {}) do
         if tonumber(rec.status) == 2 then
             enforceDeadLock(groupName, "injectFromJson")
+        else
+            applySavedUnitStateToRuntime(groupName)
         end
     end
 end

@@ -17,11 +17,14 @@ MDB.MISSIONS = {
     {
         id = "M01",
         order = 1,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Recuperación",
         shortName = "M01",
-        generalObjective = "Captura, Neutraliza y extrae los recursos del enemigo",
+        generalObjective = "Captura, Neutraliza y extrae los recursos del enemigo\n"..
+                            "Lat Long Decimal Minutes: N 69°17.588'   E 16°08.456'\n"..
+                            "MGRS GRID: 33 W WS 45020 87468\n"..
+                            "Altitude: 6 m / 21 feet\n",
 
         briefing =
             "OBJETIVO:\n" ..
@@ -39,9 +42,9 @@ MDB.MISSIONS = {
             "Mision Completada: 500.000.000\n\n" ..
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
-            "Lat Long Precise: N 33°04'36.91  E 36°33'13.30\n"..
-            "MGRS GRID: 37 S BS 71646 62476\n"..
-            "Altitude: 715 m / 2346 feet\n",
+            "Lat Long Decimal Minutes: N 69°17.588'   E 16°08.456'\n"..
+            "MGRS GRID: 33 W WS 45020 87468\n"..
+            "Altitude: 6 m / 21 feet\n",
 
         autoStart = true,
 
@@ -248,8 +251,8 @@ MDB.MISSIONS = {
                  id = "OBJ_CAPTURAR_BASE",
                  name = "Capturar Andoya",
                  drawName = "Capturar base Andoya",
-                enabled = true,
-                 requiredForMission = true,
+                enabled = false,
+                 requiredForMission = false,
             
                  monitor = {
                      kind = "base_capture",
@@ -294,8 +297,8 @@ MDB.MISSIONS = {
                 id = "OBJ_DESTRUIR_GRUPO_SHIP",
                 name = "SHIP",
                 drawName = "Destruir el barco enemigo",
-                enabled = true,
-                requiredForMission = true,
+                enabled = false,
+                requiredForMission = false,
 
                 monitor = {
                     kind = "group",
@@ -332,8 +335,8 @@ MDB.MISSIONS = {
                 id = "OBJ_MULTI_WAREHOUSE",
                 name = "Sacar aviones y armamento",
                 drawName = "Sacar aviones y armamento",
-                enabled = true,
-                requiredForMission = true,
+                enabled = false,
+                requiredForMission = false,
 
                 monitor = {
                     kind = "warehouse",
@@ -474,13 +477,13 @@ MDB.MISSIONS = {
                  },
             
                  setFlagOnPass = {
-                     flag = 2006,
+                     flag = 2008,
                      value = 1,
                      elseValue = 0
                  },
             
                  setFlagOnActive = {
-                     flag = 2007,
+                     flag = 2009,
                      value = 1,
                      elseValue = 0
                  },
@@ -519,74 +522,199 @@ MDB.MISSIONS = {
             -- { flag = 2999, op = "==", value = 1 }
         }
     },
-
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
     ----------------------------------------------------------------
     -- PLANTILLA BASE PARA M02
     ----------------------------------------------------------------
-    -- {
-    --     id = "M02",
-    --     order = 2,
-    --     enabled = true,
-    --
-    --     name = "Nombre M02",
-    --     shortName = "M02",
-    --     briefing = "Briefing de la mision 02",
-    --
-    --     autoStart = true,
-    --
-    --     activationConditions = {
-    --         { flag = 2101, op = "==", value = 1 }
-    --     },
-    --
-    --     map = {
-    --         enabled = true,
-    --         mode = "zone",
-    --         point = {
-    --             x = 0,
-    --             z = 0
-    --         },
-    --         zoneName = "ZONA_MISION_02",
-    --         title = "M02",
-    --         text = "Texto de mapa M02"
-    --     },
-    --
-    --     flags = {
-    --         onActivate = {
-    --             { flag = 2200, value = 1 },
-    --         },
-    --         onSuccess = {
-    --             { flag = 2201, value = 1 },
-    --         },
-    --         onFail = {
-    --             { flag = 2202, value = 1 },
-    --         }
-    --     },
-    --
-    --     missionFlagRules = {
-    --     },
-    --
-    --     validators = {
-    --         warehouse = {
-    --         },
-    --         groupChecks = {
-    --         },
-    --         unitChecks = {
-    --         }
-    --     },
-    --
-    --     secondaryObjectives = {
-    --     },
-    --
-    --     rewards = {
-    --         enabled = true,
-    --         coalition = 2,
-    --         missionSuccessAmount = 10000000
-    --     },
-    --
-    --     successConditions = {
-    --     },
-    --
-    --     failConditions = {
-    --     }
-    -- },
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+     {
+         id = "M02",
+         order = 2,
+         enabled = true,
+    
+        name = "Operación - Pajaro Herido",
+        shortName = "M02",
+        generalObjective = "Rescata al técnico herido en la zona\n\n"..
+                            "Lat Long Decimal Minutes: N 69°27.938'   E 25°30.347'\n"..
+                            "MGRS GRID: 35 W MT 41511 06998\n"..
+                            "Altitude: 130 m / 426 feet\n\n\n"..
+                            "Llevalo a la base principal (BODO).\n\n",
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Rescata al técnico herido en la zona, Asegura la zona para la llegada de los grupos de rescate.\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Rescata al técnico\n" ..
+
+            "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+         
+            "IMPORTANTE:\n" ..
+            "Coordenadas:\n" ..
+            "Lat Long Decimal Minutes: N 69°27.938'   E 25°30.347'\n"..
+            "MGRS GRID: 35 W MT 41511 06998\n"..
+            "Altitude: 130 m / 426 feet\n",
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = 169159,
+                z = 113617
+            },
+
+            zoneName = nil,
+
+            title = "M02 - Pajaro Herido",
+            text =
+                "MISION 02\n" ..
+                "Rescata al técnico herido en la zona, Asegura la zona para la llegada de los grupos de rescate.\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M02 - Pajaro Herido",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2200, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2201, value = 1 },
+            },
+            onFail = {
+                { flag = 2202, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+                {
+            key = "TECNICO_HERIDO_MUERTO",
+            unitName = "US_TROOP_01",
+            metric = "alive",
+            op = "==",
+            value = 0,
+
+            setFlagOnPass = {
+                flag = 2999,
+                value = 1,
+                elseValue = 0
+            }
+        }
+             }
+         },
+    
+         secondaryObjectives = {
+            {
+                 id = "OBJ_RADAR_LLEGA_VIVO_ZONA",
+                 name = "Rescata al técnico herido",
+                 drawName = "Rescata al técnico herido",
+                 enabled = true,
+                requiredForMission = true,
+            
+                 monitor = {
+                    kind = "unit_alive_in_zone",
+                     unitName = "US_TROOP_01",
+                     -- o usa un grupo completo:
+                     -- groupName = "US_TROOP_GROUP",
+                     -- groupMode = "any", -- any | all | count
+                     zoneName = "ACA",
+                     op = "==",
+                     value = 1,
+
+                     -- Alternativa si no quieres usar zoneName:
+                     -- point = { x = 425249, z = 391031 },
+                     -- radius = 1000,
+
+                     smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = true,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "green",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+
+                     cleanupOnPass = {
+                         enabled = true,
+                         delaySeconds = 20,
+
+                         -- auto:
+                         -- si usas groupName destruye el grupo
+                         -- si usas unitName destruye la unidad
+                         targetKind = "auto",
+
+                         -- si al destruir unit falla, intenta destruir su grupo padre
+                         fallbackToGroup = true
+                     }
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2006,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 2007,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                    coalition = 2,
+                     amount = 5000000
+                 }
+             },
+         },
+    
+         rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 10000000
+         },
+    
+         successConditions = {
+         },
+    
+         failConditions = {
+            { flag = 2999, op = "==", value = 1 },
+            
+         }
+     },
 }
