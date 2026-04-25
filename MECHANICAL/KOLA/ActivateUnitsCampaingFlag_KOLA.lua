@@ -193,6 +193,51 @@ SYS.ACTIVATIONS = {
             },
 
         }
+    },
+    {
+        flag = 123,
+        value = 2,
+        groups = {
+            {
+                groupName = "Grupo_HeliCargo_12",
+                unitNames = { "helicargo12" },
+                ctldEnabled = true,
+                preloadEnabled = true,
+                preloadAmount = 1,
+                preloadTroops = false
+            },
+
+        }
+    },
+    {
+        flag = 126,
+        value = 2,
+        groups = {
+            {
+                groupName = "Grupo_HeliCargo_13",
+                unitNames = { "helicargo13" },
+                ctldEnabled = true,
+                preloadEnabled = true,
+                preloadAmount = 1,
+                preloadTroops = false
+            },
+
+        }
+    },
+    {
+        flag = 102,
+        value = 2,
+        groups = {
+            {
+                groupName = "Grupo_HeliCargo_14",
+                unitNames = { "helicargo14" },
+                ctldEnabled = true,
+                preloadEnabled = true,
+                preloadAmount = 1,
+                preloadTroops = false
+            },
+
+        }
     }
 }
 

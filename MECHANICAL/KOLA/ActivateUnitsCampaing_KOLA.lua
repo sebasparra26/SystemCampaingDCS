@@ -59,7 +59,12 @@ local gruposPorBandera = {
         azul = {"US_100_Banak", "US_100_Banak_SAM", "US_100_Banak_Shield"}
     },
     [101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" },
-    [102] = { rojo = "RU_102_Kemi", azul = "US_102_Kemi" },
+
+    [102] = { 
+            rojo = {"RU_102_Kemi"}, 
+            azul = {"US_102_Kemi"} 
+            },
+
     [103] = { rojo = "RU_103_Vuojarvi", azul = "US_103_Vuojarvi" },
     [104] = { rojo = "RU_104_Kiruna", azul = "US_104_Kiruna" },
     [105] = {
@@ -106,7 +111,11 @@ local gruposPorBandera = {
     },
 
     [122] = { rojo = "RU_122_Hosio", azul = "US_122_Hosio" },
-    [123] = { rojo = "RU_123_Alta", azul = "US_123_Alta" },
+
+    [123] = {  
+            rojo = {"RU_123_Alta", "RU_123_Alta_SAM"}, 
+            azul = {"US_123_Alta", "RU_123_Alta_HELI", "US_123_Alta_SAM"} 
+            },
 
     [124] = {
         rojo = {"RU_124_Evenes"},
@@ -117,7 +126,11 @@ local gruposPorBandera = {
         azul = {"US_125_Enontekio", "US_125_Enontekio_SAM", "RU_125_Enontekio_SEAD"}
     },
 
-    [126] = { rojo = "RU_126_Sodankyla", azul = "US_126_Sodankyla" },
+    [126] = { 
+            rojo = {"RU_126_Sodankyla", "RU_126_Sodankyla_SAM"}, 
+            azul = {"US_126_Sodankyla", "US_126_Sodankyla_SAM"} 
+            },
+
     [127] = { rojo = "RU_127_Kilpyavr", azul = "US_127_Kilpyavr" },
     [128] = { rojo = "RU_128_Luostari", azul = "US_128_Luostari" },
     [129] = { rojo = "RU_129_Koshka", azul = "US_129_Koshka" },
@@ -125,7 +138,7 @@ local gruposPorBandera = {
     [131] = { rojo = "RU_131_Kalevala", azul = "US_131_Kalevala" },
     [132] = { rojo = "RU_132_Afrikanda", azul = "US_132_Afrikanda" },
     [133] = {
-        rojo = {"RU_133_Boden"},
+        rojo = {"RU_133_Boden", "RU_133_Boden_SAM"},
         azul = {"US_133_Boden", "US_133_Boden_SAM"}
     },
     [134] = {
@@ -144,6 +157,7 @@ local gruposPorBandera = {
 -- ESTOS GRUPOS NO SE CLONAN
 ----------------------------------------------------------------
 local activacionesPorFlag = {
+    --MISION 01------------------------------------------------------------------------
     [2100] = {
         valor = 1,
         grupos = {
@@ -154,7 +168,7 @@ local activacionesPorFlag = {
             --"US_TROOP"
         }
     },
-
+    --MISION 02------------------------------------------------------------------------
     [2200] = {
         valor = 1,
         grupos = {
@@ -175,6 +189,10 @@ local activacionesPorFlag = {
             "TGT08",
             "TGT09",
             "TGT10",
+            "TGT11",
+            "TGT12",
+            "TGT13",
+
         }
     },
 }
