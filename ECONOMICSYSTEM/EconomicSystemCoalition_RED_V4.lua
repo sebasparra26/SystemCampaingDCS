@@ -28,7 +28,7 @@ Economy.registerFactoryGenerator({
     staticNames = {
         "Factory_RED_1"
     },
-    amountPerTick = 1000, -- 18515
+    amountPerTick = 827, -- 18515
     interval = 10
 })
 

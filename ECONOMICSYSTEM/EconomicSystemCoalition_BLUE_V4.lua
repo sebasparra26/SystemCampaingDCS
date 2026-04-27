@@ -29,7 +29,7 @@ Economy.registerFactoryGenerator({
         "Factory_Blue_1", "Factory_Blue_2", "Factory_Blue_3", "Factory_Blue_4", "Factory_Blue_5",
         "Factory_Blue_6", "Factory_Blue_7", "Factory_Blue_8", "Factory_Blue_9", "Factory_Blue_10"
     },
-    amountPerTick = 1650, --18515
+    amountPerTick = 827, --18515
     interval = 10
 })
 

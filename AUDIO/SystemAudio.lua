@@ -258,7 +258,7 @@ SF.RULES = {
 
     {
         key = "InitMission",
-        flag = {2100, 2200},
+        flag = {2100, 2200, 2300, 2400},
         value = 1,
         mode = "any",
         target = "all",
@@ -271,7 +271,7 @@ SF.RULES = {
 
     {
         key = "FailMission",
-        flag = {2102, 2202},
+        flag = {2102, 2202, 2302, 2402},
         value = 1,
         mode = "any",
         target = "all",
@@ -284,12 +284,25 @@ SF.RULES = {
 
     {
         key = "SecundaryMission",
-        flag = {2000, 2004, 2001},
+        flag = {2000, 2004, 2001, 2006, 2008, 2010, 2012, 2014, 2015, 2017},
         value = 1,
         mode = "any",
         target = "all",
         sound = "Audio/Hi-Tech.ogg",
         text = "Objetivo Secuendaria Completado",
+        textTime = 5,
+        delay = 0,
+        fireAtStart = false
+    },
+
+     {
+        key = "DetectMissile",
+        flag = {9001},
+        value = 1,
+        mode = "any",
+        target = "all",
+        sound = "Audio/air-raid-siren-UI.ogg",
+        text = "El sistema de defensa ha detectado un ataque inminente",
         textTime = 5,
         delay = 0,
         fireAtStart = false

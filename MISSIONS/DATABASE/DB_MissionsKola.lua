@@ -251,8 +251,8 @@ MDB.MISSIONS = {
                  id = "OBJ_CAPTURAR_BASE",
                  name = "Capturar Andoya",
                  drawName = "Capturar base Andoya",
-                enabled = false,
-                 requiredForMission = false,
+                enabled = true,
+                 requiredForMission = true,
             
                  monitor = {
                      kind = "base_capture",
@@ -297,8 +297,8 @@ MDB.MISSIONS = {
                 id = "OBJ_DESTRUIR_GRUPO_SHIP",
                 name = "SHIP",
                 drawName = "Destruir el barco enemigo",
-                enabled = false,
-                requiredForMission = false,
+                enabled = true,
+                requiredForMission = true,
 
                 monitor = {
                     kind = "group",
@@ -335,8 +335,8 @@ MDB.MISSIONS = {
                 id = "OBJ_MULTI_WAREHOUSE",
                 name = "Sacar aviones y armamento",
                 drawName = "Sacar aviones y armamento",
-                enabled = false,
-                requiredForMission = false,
+                enabled = true,
+                requiredForMission = true,
 
                 monitor = {
                     kind = "warehouse",
@@ -532,7 +532,7 @@ MDB.MISSIONS = {
      {
          id = "M02",
          order = 2,
-         enabled = true,
+         enabled = false,
     
         name = "Operación - Pajaro Herido",
         shortName = "M02",
@@ -547,15 +547,17 @@ MDB.MISSIONS = {
             "Rescata al técnico herido en la zona, Asegura la zona para la llegada de los grupos de rescate.\n\n\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
             "1. Rescata al técnico\n" ..
+            "2. (Opcional) Recoje los sumnistros en la zona y llevalos a la base.\n\n\n" ..
 
-            "PAGOS:\n" ..
+            --"PAGOS:\n" ..
             --"Captura: 0 --\n" ..
          
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
             "Lat Long Decimal Minutes: N 69°27.938'   E 25°30.347'\n"..
             "MGRS GRID: 35 W MT 41511 06998\n"..
-            "Altitude: 130 m / 426 feet\n",
+            "Altitude: 130 m / 426 feet\n"..
+            "NDB Radio baliza de rescate 338 Hz (20 Millas del Objetivo)\n..",
 
         autoStart = true,
     
@@ -717,4 +719,623 @@ MDB.MISSIONS = {
             
          }
      },
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M03
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+     {
+         id = "M03",
+         order = 3,
+         enabled = false,
+    
+        name = "Operación - Brecha en el canal.",
+        shortName = "M03",
+        generalObjective = "Eliminar la division que a sido desplegada por los enemigos al sur de los fiordos\n\n"..
+                            "Lat Long Decimal Minutes: N 65°44.705'   E 15°07.428'\n"..
+                            "MGRS GRID: 33 W WN 05675 91503\n"..
+                            "Altitude: 461 m / 1511 feet\n\n\n",
+                
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Eliminar la division que a sido desplegada por los enemigos al sur de los fiordos.\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Destuye los Botes de asalto en el canal\n" ..
+            "2. Localiza la patrulla blindada y destruyela.\n" ..
+            "3. Inteligencia informa que tambien se desplego un grupo de WAGNER en la zona, encuentralo y destruyelo.\n" ..
+            "4. Destruye el cuartel general de WAGNER\n" ..
+            "5. (OPCIONAL)Encuentra los recursos del grupo WAGNER y traelos a la base\n",
+            "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+            "Objetivo Botes de Asalto: 5.000.000\n" ..
+            "Objetivo Blindados: 50.000.000\n" ..
+            "Division Wagner: 20.000.000\n" ..
+            "Cuartel General Wagner: 300.000.000\n" ..
+         
+            "IMPORTANTE:\n" ..
+            "Coordenadas:\n" ..
+            "Lat Long Decimal Minutes: N 65°44.705'   E 15°07.428'\n"..
+            "MGRS GRID: 33 W WN 05675 91503\n"..
+            "Altitude: 461 m / 1511 feet\n",
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = -239534,
+                z = -331748
+            },
+
+            zoneName = nil,
+
+            title = "M03 - Brecha en el canal",
+            text =
+                "MISION 03\n" ..
+                "Eliminar la division que a sido desplegada por los enemigos al sur de los fiordos.\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M03 - Brecha en el canal",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2300, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2301, value = 1 },
+            },
+            onFail = {
+                { flag = 2302, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+             }
+         },
+    
+         secondaryObjectives = {
+            --Primer Obejtivo 
+            {
+                id = "OBJ_DESTRUIR_GRUPO_BOAT",
+                name = "BOAT",
+                drawName = "Destruir la patrulla maritima enemiga",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_03_SHIP",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2008,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2009,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 5000000
+                }
+            },
+            --Segundo Obejtivo 
+            {
+                id = "OBJ_DESTRUIR_GRUPO_ROAD",
+                name = "BOAT",
+                drawName = "Destruir la columna Blindada enemiga",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_03_ROAD",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2010,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2011,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 20000000
+                }
+            },
+
+            --Tercer Objetivo 
+            {
+                id = "OBJ_DESTRUIR_GRUPO_ROAD",
+                name = "BOAT",
+                drawName = "Destruir la brigada de WAGNER en la zona.",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_03_ROAD",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2012,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2013,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 20000000
+                }
+            },
+            
+
+             ------------------------------------------------------------
+            -- EJEMPLO OPCIONAL: destruir una unidad concreta
+            ------------------------------------------------------------
+             {
+                 id = "OBJ_DESTRUIR_HQ_WAGNER_01",
+                 name = "Destruye el cuartel general de WAGNER",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "WagnerCommand01",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2014,
+                     value = 1,
+                     elseValue = 0
+                },
+            
+                reward = {
+                    enabled = true,
+                     coalition = 2,
+                     amount = 300000000
+                 }
+             },
+            
+         },
+    
+         rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 10000000
+         },
+    
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+        }
+
+    
+     },
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M04
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+     {
+         id = "M04",
+         order = 4,
+         enabled = true,
+    
+        name = "Operación - Velo Negro",
+        shortName = "M04",
+        generalObjective = "Destruye el bunker de municiones en el sector\n\n"..
+                            "Lat Long Decimal Minutes: N 69°00.635'   E 23°03.087'\n"..
+                            "MGRS GRID: 34 W EB 81993 56913\n"..
+                            "Altitude: 304 m / 996 feet\n\n\n"..
+                            "(OPCIONAL) Extrae a los grupo seal del sector (Humo azul) y llevalos a la base (BODO)\n\n",
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Destruye el bunker de municiones en el sector\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Destruye el bunker de municiones.\n" ..
+            "2. Extrae a los grupo seal del sector (Humo azul).\n\n\n" ..
+
+            "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+            "Objetivo bunker de municiones: 500.000.000\n" ..
+            "Equipos Seal x 3 : 1.500.000\n" ..
+
+            "IMPORTANTE:\n" ..
+            "Coordenadas:\n" ..
+            "Lat Long Decimal Minutes: N 69°00.635'   E 23°03.087'\n"..
+            "MGRS GRID: 34 W EB 81993 56913\n"..
+            "Altitude: 304 m / 996 feet\n"..
+            "(OPCIONAL) Extrae a los grupo seal del sector (Humo azul).\n..",
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = 113177,
+                z = 19227
+            },
+
+            zoneName = nil,
+
+            title = "M04 - Velo Negro",
+            text =
+                "MISION 04\n" ..
+                "Destruye el bunker de municiones en el sector.\n\n" ..
+                "(OPCIONAL) Extrae a los grupo seal del sector (Humo azul)\n",
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M02 - Exfil",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2400, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2401, value = 1 },
+            },
+            onFail = {
+                { flag = 2402, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+            },
+                    },
+         secondaryObjectives = {
+            --01-------------------------------------------------------------------
+            {
+                 id = "OBJ_RADAR_LLEGA_VIVO_ZONA",
+                 name = "Extrae al Equipo SEAL",
+                 drawName = "Extrae al Equipo SEAL",
+                 enabled = true,
+                requiredForMission = true,
+            
+                 monitor = {
+                    kind = "unit_alive_in_zone",
+                     unitName = "US_TROOP_02",
+                     -- o usa un grupo completo:
+                     -- groupName = "US_TROOP_GROUP",
+                     -- groupMode = "any", -- any | all | count
+                     zoneName = "ACA",
+                     op = "==",
+                     value = 1,
+
+                     -- Alternativa si no quieres usar zoneName:
+                     -- point = { x = 425249, z = 391031 },
+                     -- radius = 1000,
+
+                     smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = true,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "blue",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+
+                     cleanupOnPass = {
+                         enabled = true,
+                         delaySeconds = 20,
+
+                         -- auto:
+                         -- si usas groupName destruye el grupo
+                         -- si usas unitName destruye la unidad
+                         targetKind = "auto",
+
+                         -- si al destruir unit falla, intenta destruir su grupo padre
+                         fallbackToGroup = true
+                     }
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2015,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 2016,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                    coalition = 2,
+                     amount = 5000000
+                 }
+             },
+              --02-------------------------------------------------------------------
+            {
+                 id = "OBJ_RADAR_LLEGA_VIVO_ZONA_2",
+                 name = "Extrae al Equipo SEAL",
+                 drawName = "Extrae al Equipo SEAL",
+                 enabled = true,
+                requiredForMission = false,
+            
+                 monitor = {
+                    kind = "unit_alive_in_zone",
+                     unitName = "US_TROOP_03",
+                     -- o usa un grupo completo:
+                     -- groupName = "US_TROOP_GROUP",
+                     -- groupMode = "any", -- any | all | count
+                     zoneName = "ACA",
+                     op = "==",
+                     value = 1,
+
+                     -- Alternativa si no quieres usar zoneName:
+                     -- point = { x = 425249, z = 391031 },
+                     -- radius = 1000,
+
+                     smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = true,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "blue",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+
+                     cleanupOnPass = {
+                         enabled = true,
+                         delaySeconds = 20,
+
+                         -- auto:
+                         -- si usas groupName destruye el grupo
+                         -- si usas unitName destruye la unidad
+                         targetKind = "auto",
+
+                         -- si al destruir unit falla, intenta destruir su grupo padre
+                         fallbackToGroup = true
+                     }
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2017,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 2018,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                    coalition = 2,
+                     amount = 5000000
+                 }
+             },
+               --03-------------------------------------------------------------------
+            {
+                 id = "OBJ_RADAR_LLEGA_VIVO_ZONA_3",
+                 name = "Extrae al Equipo SEAL",
+                 drawName = "Extrae al Equipo SEAL",
+                 enabled = true,
+                requiredForMission = false,
+            
+                 monitor = {
+                    kind = "unit_alive_in_zone",
+                     unitName = "US_TROOP_04",
+                     -- o usa un grupo completo:
+                     -- groupName = "US_TROOP_GROUP",
+                     -- groupMode = "any", -- any | all | count
+                     zoneName = "ACA",
+                     op = "==",
+                     value = 1,
+
+                     -- Alternativa si no quieres usar zoneName:
+                     -- point = { x = 425249, z = 391031 },
+                     -- radius = 1000,
+
+                     smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = true,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "blue",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+
+                     cleanupOnPass = {
+                         enabled = true,
+                         delaySeconds = 20,
+
+                         -- auto:
+                         -- si usas groupName destruye el grupo
+                         -- si usas unitName destruye la unidad
+                         targetKind = "auto",
+
+                         -- si al destruir unit falla, intenta destruir su grupo padre
+                         fallbackToGroup = true
+                     }
+
+                     
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2019,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 2020,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                    coalition = 2,
+                     amount = 5000000
+                 }
+             },
+             --03-------------------------------------------------------------------
+             {
+                 id = "OBJ_DESTRUIR_AMMO_01",
+                 name = "Destruye el Suministro de municiones del enemigo en el sector.",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "Command02",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2021,
+                     value = 1,
+                     elseValue = 0
+                },
+            
+                reward = {
+                    enabled = true,
+                     coalition = 2,
+                     amount = 500000000
+                 }
+             },
+         },
+    
+         rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 10000000
+         },
+    
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+            
+         }
+     },
+     
+
+     
 }
+
+
+

@@ -164,7 +164,7 @@ SYS.ACTIVATIONS = {
 
         }
     },
-     {
+    {
         flag = 135,
         value = 2,
         groups = {

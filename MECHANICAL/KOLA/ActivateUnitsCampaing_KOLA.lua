@@ -143,7 +143,7 @@ local gruposPorBandera = {
     },
     [134] = {
         rojo = {"RU_134_Hemavan"},
-        azul = {"US_134_Hemavan", "US_134_Hemavan_SAM", "RU_134_Hemavan_TROOPS", "RU_134_Hemavan_STRIKE"}
+        azul = {"US_134_Hemavan", "US_134_Hemavan_SAM", "RU_134_Hemavan_TROOPS", "RU_134_Hemavan_STRIKE", "RU_134_Hemavan_ISKANDER" }
     },
     [135] = {
         rojo = {"RU_135_Arvidsjaur"},
@@ -163,6 +163,7 @@ local activacionesPorFlag = {
         grupos = {
             "MT_01_EWR",
             "MT_01_SHIP",
+            
             --"RU_EWR_154_Khalkhalah",
             --"RU_SHIELD_154_Khalkhalah"
             --"US_TROOP"
@@ -172,7 +173,38 @@ local activacionesPorFlag = {
     [2200] = {
         valor = 1,
         grupos = {
-            "US_TROOP_01"
+            "US_TROOP_01",
+            --"US_AWACS_01"
+        }
+    },
+    --MISION 03------------------------------------------------------------------------
+    [2300] = {
+        valor = 1,
+        grupos = {
+            "MT_03_SHIP",
+            "MT_03_HELI_01",
+            "MT_03_HELI_02",
+            "MT_03_ROAD",
+            "MT_03_WAGNER",
+            "WagnerCommand01",
+            
+        }
+    },
+        --MISION 04------------------------------------------------------------------------
+    [2400] = {
+        valor = 1,
+        grupos = {
+            "US_TROOP_02",
+            "US_TROOP_03",
+            "US_TROOP_04",
+            --"US_TROOP_03",
+            "MT_04_RU_TROOP_03",
+            "MT_04_RU_TROOP_04",
+            "MT_04_RU_TROOP_05",
+            "MT_04_RU_TROOP_06",
+            "MT_04_RU_AMMO_01",
+            
+            
         }
     },
 
@@ -194,7 +226,8 @@ local activacionesPorFlag = {
             "TGT13",
 
         }
-    },
+    }
+
 }
 
 ----------------------------------------------------------------

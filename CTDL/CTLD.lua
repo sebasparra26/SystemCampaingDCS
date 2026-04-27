@@ -724,7 +724,6 @@ ctld.transportPilotNames = {
     "helicargo8",
     "helicargo9",
     "helicargo10",
-
     "helicargo11",
     "helicargo12",
     "helicargo13",
@@ -735,7 +734,6 @@ ctld.transportPilotNames = {
     "helicargo18",
     "helicargo19",
     "helicargo20",
-
     "helicargo21",
     "helicargo22",
     "helicargo23",
