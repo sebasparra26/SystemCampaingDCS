@@ -203,6 +203,7 @@ local activacionesPorFlag = {
             "MT_04_RU_TROOP_05",
             "MT_04_RU_TROOP_06",
             "MT_04_RU_AMMO_01",
+            "US_AWACS_01",
             
             
         }

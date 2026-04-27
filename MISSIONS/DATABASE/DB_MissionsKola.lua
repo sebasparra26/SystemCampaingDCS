@@ -351,7 +351,7 @@ MDB.MISSIONS = {
                         { category = "aircraft", itemName = "F-16C_50", label = "F-16C - VIPER", removedAtLeast = 2 },
                         
                         --WEAPONS:
-                        { category = "weapon",   itemName = "weapons.containers.AAQ-28_LITENING", label = "POD LITENING LEFT", removedAtLeast = 2 },
+                        { category = "weapon",   itemName = "weapons.containers.AAQ-28_LITENING", label = "POD LITENING CENTER", removedAtLeast = 2 },
                         { category = "weapon",   itemName = "weapons.containers.aaq-28LEFT litening", label = "POD LITENING LEFT", removedAtLeast = 2 },
                         { category = "weapon",   itemName = "weapons.containers.ah-64d_radar", label = "FCR CONTROL APACHE", removedAtLeast = 2 },
                         { category = "weapon",   itemName = "weapons.containers.alq-184long", label = "POD CONTRAMEDIDAS ELECTRONICAS", removedAtLeast = 2 },
@@ -759,7 +759,9 @@ MDB.MISSIONS = {
             "Coordenadas:\n" ..
             "Lat Long Decimal Minutes: N 65°44.705'   E 15°07.428'\n"..
             "MGRS GRID: 33 W WN 05675 91503\n"..
-            "Altitude: 461 m / 1511 feet\n",
+            "Altitude: 461 m / 1511 feet\n\n\n"..
+
+            "NOTA: al ganar esta mision, se desbloqueara un AWACS permanete para la coalición\n\n",
 
         autoStart = true,
     
