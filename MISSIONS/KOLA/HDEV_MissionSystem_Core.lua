@@ -2574,7 +2574,7 @@ local function buildWarehouseObjectivePendingLines(objectiveDef, oState)
 
         if remaining > 0 then
             lines[#lines + 1] =
-                "  " .. getWarehouseDisplayLabel(mon) .. ": falta " .. tostring(remaining)
+                "  " .. getWarehouseDisplayLabel(mon) .. ": Extraer " .. tostring(remaining)
         end
 
         return lines
@@ -2598,7 +2598,7 @@ local function buildWarehouseObjectivePendingLines(objectiveDef, oState)
 
         if remaining > 0 then
             lines[#lines + 1] =
-                "  " .. getWarehouseDisplayLabel(itemDef) .. ": falta " .. tostring(remaining)
+                "  " .. getWarehouseDisplayLabel(itemDef) .. ": Extraer " .. tostring(remaining)
         end
     end
 

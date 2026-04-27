@@ -17,7 +17,7 @@ MDB.MISSIONS = {
     {
         id = "M01",
         order = 1,
-        enabled = false,
+        enabled = true,
 
                 name = "Operación - Recuperación",
         shortName = "M01",
@@ -532,7 +532,7 @@ MDB.MISSIONS = {
      {
          id = "M02",
          order = 2,
-         enabled = false,
+         enabled = true,
     
         name = "Operación - Pajaro Herido",
         shortName = "M02",
@@ -729,7 +729,7 @@ MDB.MISSIONS = {
      {
          id = "M03",
          order = 3,
-         enabled = false,
+         enabled = true,
     
         name = "Operación - Brecha en el canal.",
         shortName = "M03",
@@ -1080,7 +1080,7 @@ MDB.MISSIONS = {
                  name = "Extrae al Equipo SEAL",
                  drawName = "Extrae al Equipo SEAL",
                  enabled = true,
-                requiredForMission = true,
+                requiredForMission = false,
             
                  monitor = {
                     kind = "unit_alive_in_zone",
