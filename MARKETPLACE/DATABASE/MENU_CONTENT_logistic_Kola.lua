@@ -412,7 +412,8 @@ subvariantesAvion = {
         ["COUNTER-MEASURES"] = "COUNTERMEASURES",
         ["TARGET PODS"] = "TARGETING",
         ["AN/AAQ-33-ADVANCE-TARGETING-POD"] = "SNIPER_POD",
-        ["JET-FUEL 100.000"] = "JETFUEL-100K"
+        ["JET-FUEL 100.000"] = "JETFUEL-100K",
+        ["GAU 12 Gunpod"] = "GUN_POD_AV_8B"
     },
     ["BOMBASGP/GUIADAS"] = {
         ["MK-82/MK-82-SNAKEYE"] = "MK82",
@@ -439,14 +440,16 @@ subvariantesAvion = {
         ["AGM-88C HARM"] = "SEAD01",
         ["AGM-45A Shrike"] = "SEAD02",
         ["Kh-58U / Kh-58U"] = "SEAD03",
-        ["LD-10"] = "SEAD04"
+        ["LD-10"] = "SEAD04",
+        ["AGM 122 Sidearm"] = "SEAD05"
     },
     --ATGMGUIADOS
     ["ATGMGUIADOS"] = {
         ["MAVERIK AGM-65D / E"] = "ATGM01",
         ["Hellfire AGM-114 L / K "] = "ATGM02",
         ["9M120/F - 9M127 Vikhr"] = "ATGM03",
-        ["HOT-3 ATGM"] = "ATGM04"
+        ["HOT-3 ATGM"] = "ATGM04",
+        ["MAVERIK AGM-65H / F"] = "ATGM05"
     },
     --COHETES
     ["COHETES"] = {
@@ -664,6 +667,8 @@ destinosPorSubvariante = {
     ["TARGETING"] = destinosBase,
     ["SNIPER_POD"] = destinosBase,
     ["JETFUEL-100K"] = destinosBase,
+    ["GUN_POD_AV_8B"] = destinosBase,
+
 --Bombas GP y GUIADAS
      ["MK82"] = destinosBase,
     ["GBUL"] = destinosBase,
@@ -687,11 +692,14 @@ destinosPorSubvariante = {
     ["SEAD02"] = destinosBase,
     ["SEAD03"] = destinosBase,
     ["SEAD04"] = destinosBase,
+    ["SEAD05"] = destinosBase,
+
      --ATGMGUIADOS
     ["ATGM01"] = destinosBase,
     ["ATGM02"] = destinosBase,
     ["ATGM03"] = destinosBase,
     ["ATGM04"] = destinosBase,
+    ["ATGM05"] = destinosBase,
     --COHETES
     ["COHETES01"] = destinosBase,
     ["COHETES02"] = destinosBase,
@@ -865,6 +873,10 @@ nombresSubvariantes = {
     ["TARGETING"] = "TARGET PODS",
     ["SNIPER_POD"] = "AN/AAQ-33-ADVANCE-TARGETING-POD",
     ["JETFUEL-100K"] = "JET-FUEL 100.000",
+    ["GUN_POD_AV_8B"] = "GAU 12 Gunpod",
+
+   
+
 
 
 --BOMBAS GP Y bombas_guiadas
@@ -891,11 +903,13 @@ nombresSubvariantes = {
     ["SEAD02"] = "AGM-45A Shrike",
     ["SEAD03"] = "Kh-58U / Kh-58U",
     ["SEAD04"] = "LD-10",
+    ["SEAD05"] = "AGM 122 Sidearm",
     --ATGMGUIADOS
     ["ATGM01"] = "MAVERIK AGM-65D / E",
     ["ATGM02"] = "Hellfire AGM-114 L / K ",
     ["ATGM03"] = "9M120/F - 9M127 Vikhr",
     ["ATGM04"] = "HOT-3 ATGM",
+    ["ATGM05"] = "MAVERIK AGM-65H / F",
      --COHETES
     ["COHETES01"] = "APKWS M151 / M282",
     ["COHETES02"] = "Hydra 70 HE / HEAT",

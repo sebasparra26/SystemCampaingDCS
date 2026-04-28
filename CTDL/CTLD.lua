@@ -661,7 +661,7 @@ ctld.wpZones = {
 ctld.aircraftTypeTable = {
     --%%%%% MODS %%%%%
         --"Bronco-OV-10A",
-        "Hercules",
+        "C-130J-30",
         --"SK-60",
         "UH-60L",
         "UH-60L_DAP",
@@ -956,6 +956,7 @@ ctld.vehicleTransportEnabled = {
     "76MD", -- the il-76 mod doesnt use a normal - sign so il-76md wont match... !!!! GRR
 --"CH-47Fbl1",
      "Mi-8MT",
+     --"C-130J-30",
 }
 
 -- ************** Units able to use DCS dynamic cargo system ******************
@@ -983,7 +984,7 @@ ctld.unitLoadLimits = {
 
     --%%%%% MODS %%%%%
         --["Bronco-OV-10A"] = 4,
-        ["Hercules"] = 33,
+        --["Hercules"] = 33,
         --["SK-60"] = 1,
         ["UH-60L"] = 12,
         ["UH-60L_DAP"] = 12,
@@ -1042,7 +1043,7 @@ ctld.internalCargoLimits = {
     ["CH-47Fbl1"] = 8,
     ["UH-1H"]= 1,
     ["Mi-24P"]= 2,
-    ["Hercules"] = 20,
+    ["C-130J-30"] = 20,
     ["SA342L"]= 1,
     ["SA342M"]= 1,
     ["OH58D"] = 1,
@@ -1074,7 +1075,7 @@ ctld.unitActions = {
 
     --%%%%% MODS %%%%%
         --["Bronco-OV-10A"] = {crates=true, troops=true},
-        ["Hercules"] = {crates=true, troops=true},
+        ["C-130J-30"] = {crates=true, troops=true},
         ["SK-60"] = {crates=true, troops=true},
         ["UH-60L"] = {crates=true, troops=true},
         ["UH-60L_DAP"] = {crates=true, troops=true},
@@ -1237,10 +1238,10 @@ ctld.spawnableCrates = {
         
 
         --- Both
-        { weight = 1001.21, desc = ctld.i18n_translate("EWR Radar"), unit="FPS-117", cratesRequired = 3 },
-        { multiple = {1001.21, 1001.21, 1001.21}, desc = ctld.i18n_translate("EWR Radar - $ 4,000,000") },
-        { weight = 1001.22, desc = ctld.i18n_translate("FOB Crate - Small"), unit = "FOB-SMALL", side = 0 ,cratesRequired = 3 }, -- Builds a FOB! - requires 3 * ctld.cratesRequiredForFOB
-        { multiple = {1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22}, desc = ctld.i18n_translate("FOB - $ 2,000,000") },
+        --{ weight = 1001.21, desc = ctld.i18n_translate("EWR Radar"), unit="FPS-117", cratesRequired = 3 },
+        --{ multiple = {1001.21, 1001.21, 1001.21}, desc = ctld.i18n_translate("EWR Radar - $ 4,000,000") },
+        --{ weight = 1001.22, desc = ctld.i18n_translate("FOB Crate - Small"), unit = "FOB-SMALL", side = 0 ,cratesRequired = 3 }, -- Builds a FOB! - requires 3 * ctld.cratesRequiredForFOB
+        --{ multiple = {1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22}, desc = ctld.i18n_translate("FOB - $ 2,000,000") },
 
     },
     ["Artilleria"] = {
@@ -1337,32 +1338,32 @@ ctld.spawnableCrates = {
         { multiple = {1004.31, 1004.32, 1004.33, 1007.56, 1007.56, 1007.56, 1007.56}, desc = ctld.i18n_translate("BUK FULL - $ 17,500,000"), side = 1 },
         -- END of BUK
     },
-    ["SAM Largo Alcance"] = {
+    --["SAM Largo Alcance"] = {
         --- BLUE
         -- Patriot System
-        { weight = 1009.92, desc = ctld.i18n_translate("M-818 Ammo Truck 4"), unit = "M 818", side = 0, cratesRequired = 2},
-        { weight = 1005.01, desc = ctld.i18n_translate("Patriot Launcher - $ 4,500,000"), unit = "Patriot ln", side = 0},
-        { weight = 1005.02, desc = ctld.i18n_translate("Patriot Radar - $ 6,000,000"), unit = "Patriot str" , side = 0 },
-        { weight = 1005.03, desc = ctld.i18n_translate("Patriot ECS - $ 3,500,000"), unit = "Patriot ECS", side = 0 },
-        { weight = 1005.04, desc = ctld.i18n_translate("Patriot ICC - $ 3,000,000"), unit = "Patriot cp", side = 0 },
-        { weight = 1005.05, desc = ctld.i18n_translate("Patriot EPP - $ 2,500,000"), unit = "Patriot EPP", side = 0 },
-        { weight = 1005.06, desc = ctld.i18n_translate("Patriot AMG (optional) - $ 2,000,000"), unit = "Patriot AMG" , side = 0 },
-        { weight = 1005.07, desc = ctld.i18n_translate("Patriot Repair - $ 1,500,000"), unit = "Patriot Repair" , side = 2 },
-        { multiple = {1005.01, 1005.02, 1005.03, 1005.04, 1005.05, 1005.06, 1009.92, 1009.92}, desc = ctld.i18n_translate("Patriot FULL - $ 26,000,000"), side = 2 },
+        --{ weight = 1009.92, desc = ctld.i18n_translate("M-818 Ammo Truck 4"), unit = "M 818", side = 0, cratesRequired = 2},
+       -- { weight = 1005.01, desc = ctld.i18n_translate("Patriot Launcher - $ 4,500,000"), unit = "Patriot ln", side = 0},
+        --{ weight = 1005.02, desc = ctld.i18n_translate("Patriot Radar - $ 6,000,000"), unit = "Patriot str" , side = 0 },
+       -- { weight = 1005.03, desc = ctld.i18n_translate("Patriot ECS - $ 3,500,000"), unit = "Patriot ECS", side = 0 },
+       -- { weight = 1005.04, desc = ctld.i18n_translate("Patriot ICC - $ 3,000,000"), unit = "Patriot cp", side = 0 },
+       -- { weight = 1005.05, desc = ctld.i18n_translate("Patriot EPP - $ 2,500,000"), unit = "Patriot EPP", side = 0 },
+       -- { weight = 1005.06, desc = ctld.i18n_translate("Patriot AMG (optional) - $ 2,000,000"), unit = "Patriot AMG" , side = 0 },
+       -- { weight = 1005.07, desc = ctld.i18n_translate("Patriot Repair - $ 1,500,000"), unit = "Patriot Repair" , side = 2 },
+       -- { multiple = {1005.01, 1005.02, 1005.03, 1005.04, 1005.05, 1005.06, 1009.92, 1009.92}, desc = ctld.i18n_translate("Patriot FULL - $ 26,000,000"), side = 2 },
         -- End of Patriot
 
         -- S-300 SYSTEM
-        { weight = 1007.24, desc = ctld.i18n_translate("Ural-375 Ammo Truck 4"), unit = "Ural-375", side = 0, cratesRequired = 3},
-        { weight = 1005.11, desc = ctld.i18n_translate("S-300 Grumble TEL C - $ 4,200,000"), unit = "S-300PS 5P85C ln", side = 0},
+       -- { weight = 1007.24, desc = ctld.i18n_translate("Ural-375 Ammo Truck 4"), unit = "Ural-375", side = 0, cratesRequired = 3},
+       -- { weight = 1005.11, desc = ctld.i18n_translate("S-300 Grumble TEL C - $ 4,200,000"), unit = "S-300PS 5P85C ln", side = 0},
         --{ weight = 1005.22, desc = ctld.i18n_translate("S-300 Grumble TEL D - $ 4,200,000"), unit = "S-300PS 5P85D ln", side = 0},
-        { weight = 1005.12, desc = ctld.i18n_translate("S-300 Grumble Flap Lid-A TR - $ 5,500,000"), unit = "S-300PS 40B6M tr", side = 0 },
-        { weight = 1005.13, desc = ctld.i18n_translate("S-300 Grumble Clam Shell SR - $ 4,000,000"), unit = "S-300PS 40B6MD sr", side = 0 },
-        { weight = 1005.14, desc = ctld.i18n_translate("S-300 Grumble Big Bird SR - $ 6,500,000"), unit = "S-300PS 64H6E sr", side = 0 },
-        { weight = 1005.15, desc = ctld.i18n_translate("S-300 Grumble C2 - $ 3,500,000"), unit = "S-300PS 54K6 cp", side = 0 },
-        { weight = 1005.16, desc = ctld.i18n_translate("S-300 Repair - $ 1,800,000"), unit = "S-300 Repair", side = 1 },
-        { multiple = {1005.11, 1005.12, 1005.13, 1005.14, 1005.15, 1007.24, 1007.24, 1007.24}, desc = ctld.i18n_translate("S-300 FULL - $ 32,100,000"), side = 1 },
+       -- { weight = 1005.12, desc = ctld.i18n_translate("S-300 Grumble Flap Lid-A TR - $ 5,500,000"), unit = "S-300PS 40B6M tr", side = 0 },
+       -- { weight = 1005.13, desc = ctld.i18n_translate("S-300 Grumble Clam Shell SR - $ 4,000,000"), unit = "S-300PS 40B6MD sr", side = 0 },
+       -- { weight = 1005.14, desc = ctld.i18n_translate("S-300 Grumble Big Bird SR - $ 6,500,000"), unit = "S-300PS 64H6E sr", side = 0 },
+       -- { weight = 1005.15, desc = ctld.i18n_translate("S-300 Grumble C2 - $ 3,500,000"), unit = "S-300PS 54K6 cp", side = 0 },
+       -- { weight = 1005.16, desc = ctld.i18n_translate("S-300 Repair - $ 1,800,000"), unit = "S-300 Repair", side = 1 },
+       -- { multiple = {1005.11, 1005.12, 1005.13, 1005.14, 1005.15, 1007.24, 1007.24, 1007.24}, desc = ctld.i18n_translate("S-300 FULL - $ 32,100,000"), side = 1 },
         -- End of S-300
-    },
+    --},
     ["Drones"] = {
         --- BLUE MQ-9 Repear
         { weight = 1006.05, desc = ctld.i18n_translate("MQ-9 Repear - $ 10,000,000"), unit = "MQ-9 Reaper", side = 2},

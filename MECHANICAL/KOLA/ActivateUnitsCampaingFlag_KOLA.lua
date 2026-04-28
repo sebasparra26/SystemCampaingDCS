@@ -238,7 +238,23 @@ SYS.ACTIVATIONS = {
             },
 
         }
+    },
+    {
+        flag = 109,
+        value = 2,
+        groups = {
+            {
+                groupName = "Grupo_HeliCargo_15",
+                unitNames = { "helicargo15" },
+                ctldEnabled = true,
+                preloadEnabled = true,
+                preloadAmount = 1,
+                preloadTroops = false
+            },
+
+        }
     }
+
 }
 
 ----------------------------------------------------------------

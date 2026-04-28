@@ -100,7 +100,7 @@ AIP.manualCapabilities = {
     ["Evenes"] = { aviones = true, helis = true, c130 = true, armas = false }, -- CAP
     ["Enontekio"] = { aviones = true, helis = true, c130 = false, armas = false }, --CAP
     ["Sodankyla"] = { aviones = false, helis = true, c130 = false, armas = false }, --CAP
-    ["Kilpyavr"] = { aviones = true, helis = true, c130 = false, armas = true }, --CAP
+    ["Kilpyavr"] = { aviones = true, helis = true, c130 = false, armas = false }, --CAP
     ["Luostari Pechenga"] = { aviones = false, helis = true, c130 = false, armas = false },--CAP
     ["Koshka Yavr"] = { aviones = true, helis = true, c130 = false, armas = true },-- CAP
     ["Poduzhemye"] = { aviones = true, helis = true, c130 = false, armas = false }, --CAP

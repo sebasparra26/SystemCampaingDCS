@@ -62,7 +62,7 @@ local gruposPorBandera = {
 
     [102] = { 
             rojo = {"RU_102_Kemi"}, 
-            azul = {"US_102_Kemi"} 
+            azul = {"US_102_Kemi", "US_102_Kemi_SAM"} 
             },
 
     [103] = { rojo = "RU_103_Vuojarvi", azul = "US_103_Vuojarvi" },
@@ -74,19 +74,24 @@ local gruposPorBandera = {
     [106] = { rojo = "RU_106_Bodo", azul = "US_106_Bodo" },
     [107] = { rojo = "RU_107_Severomorsk-1", azul = "US_107_Severomorsk-1" },
     [108] = { rojo = "RU_108_Olenya", azul = "US_108_Olenya" },
-    [109] = { rojo = "RU_109_Monchegorsk", azul = "US_109_Monchegorsk" },
+    
+    [109] = { 
+        rojo = {"RU_109_Monchegorsk", "RU_109_Monchegorsk_SAM"}, 
+        azul = {"US_109_Monchegorsk", "US_109_Monchegorsk_SAM", "US_109_Monchegorsk_SHIELD" } 
+            },
+
     [110] = { rojo = "RU_110_Jokkmokk", azul = "US_110_Jokkmokk" },
     [111] = { rojo = "RU_111_Murmansk", azul = "US_111_Murmansk" },
 
     [112] = {
-        rojo = {"RU_112_Kalixfors"},
+        rojo = {"RU_112_Kalixfors", "RU_112_Kalixfors_SAM" },
         azul = {"US_112_Kalixfors", "US_112_Kalixfors_SAM", "US_112_Kalixfors_Shield", "RU_112_Kalixfors_Troops", "RU_112_Kalixfors_SEAD", "RU_112_Kalixfors_ISKANDER" }
     },
     [113] = { rojo = "RU_113_Kirkenes", azul = "US_113_Kirkenes" },
 
     [114] = {
         rojo = {"RU_114_Kallax", "RU_114_Kallax_SAM", "RU_114_Kallax_EWR", "RU_114_Kallax_Shield", "RU_114_Kallax_Ship"},
-        azul = {"US_114_Kallax", "US_114_Kallax_SAM", "US_114_Kallax_Shield"}
+        azul = {"US_114_Kallax", "US_114_Kallax_SAM", "US_114_Kallax_Shield", "RU_114_Kallax_ISKANDER", "RU_114_Kallax_STRIKE"}
     },
     [115] = {
         rojo = {"RU_115_Kuusamo", "RU_115_Kuusamo_SAM", "RU_115_Kuusamo_EWR", "RU_115_Kuusamo_Shield", "RU_115_Kuusamo_Manpad"},
@@ -97,7 +102,7 @@ local gruposPorBandera = {
     [118] = { rojo = "RU_118_Alakurtti", azul = "US_118_Alakurtti" },
 
     [119] = {
-        rojo = {"RU_119_Andoya"},
+        rojo = {"RU_119_Andoya", "RU_119_Andoya_TROOPS" },
         azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE", "RU_119_Andoya_STRIKE2"}
     },
     [120] = {
@@ -107,7 +112,7 @@ local gruposPorBandera = {
 
     [121] = {
         rojo = {"RU_121_Kittila", "RU_121_Kittila_SAM","RU_121_Kittila_SAM_2","RU_121_Kittila_EWR", "RU_121_Kittila_Shield", "RU_121_Kittila_Shield_2", "RU_121_Kittila_Manpad"},
-        azul = {"US_121_Kittila", "US_121_Kittila_SAM", "US_121_Kittila_Shield"}
+        azul = {"US_121_Kittila", "US_121_Kittila_SAM", "US_121_Kittila_Shield", "RU_121_Kittila_SEAD"}
     },
 
     [122] = { rojo = "RU_122_Hosio", azul = "US_122_Hosio" },
@@ -142,7 +147,7 @@ local gruposPorBandera = {
         azul = {"US_133_Boden", "US_133_Boden_SAM"}
     },
     [134] = {
-        rojo = {"RU_134_Hemavan"},
+        rojo = {"RU_134_Hemavan", "RU_134_Hemavan_SAM"},
         azul = {"US_134_Hemavan", "US_134_Hemavan_SAM", "RU_134_Hemavan_TROOPS", "RU_134_Hemavan_STRIKE", "RU_134_Hemavan_ISKANDER" }
     },
     [135] = {
@@ -174,7 +179,7 @@ local activacionesPorFlag = {
         valor = 1,
         grupos = {
             "US_TROOP_01",
-            --"US_AWACS_01"
+            "RU_TROOP_02"
         }
     },
     --MISION 03------------------------------------------------------------------------
@@ -203,9 +208,19 @@ local activacionesPorFlag = {
             "MT_04_RU_TROOP_05",
             "MT_04_RU_TROOP_06",
             "MT_04_RU_AMMO_01",
-            "US_AWACS_01",
+            "US_EWR",
+            --"US_AWACS_01",
             
             
+        }
+    },
+
+     --MISION 05------------------------------------------------------------------------
+    [2500] = {
+        valor = 1,
+        grupos = {
+            "MT_05_SHIP",
+            "MT_05_SHIP-2"
         }
     },
 
@@ -225,6 +240,11 @@ local activacionesPorFlag = {
             "TGT11",
             "TGT12",
             "TGT13",
+            "TGT14",
+            "TGT15",
+            "TGT16",
+            "TGT17",
+            "TGT18",
 
         }
     }

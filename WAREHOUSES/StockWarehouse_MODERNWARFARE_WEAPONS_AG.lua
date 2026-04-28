@@ -256,6 +256,13 @@ tipoAviones["SEAD04"] = {
         ["LD-10"]  = {ws = {4, 4, 8, 305}, cantidad = 4}
        }
 }
+tipoAviones["SEAD05"] = {
+    costo = 2000000,
+
+    misiles = {
+        ["AGM 122 Sidearm"]  = {ws = {4, 4, 8, 68}, cantidad = 10}
+       }
+}
 tipoAviones["ATGM01"] = {
     costo = 2220000,
 
@@ -286,6 +293,14 @@ tipoAviones["ATGM04"] = {
 
     misiles_guiados = {
         ["HOT-3 ATGM. SACLOS HEAT"]  = {ws = {4, 4, 8, 407}, cantidad = 16}
+       }
+}
+tipoAviones["ATGM05"] = {
+    costo = 3400000,
+
+    misiles_guiados = {
+        ["AGM-65H - Maverick H (CCD imp ASM)"]  = {ws = {4, 4, 8, 138}, cantidad = 8},
+        ["AGM-65F - Maverick F (IIR ASM)"]  = {ws = {4, 4, 8, 271}, cantidad = 8},
        }
 }
 tipoAviones["COHETES01"] = {
@@ -365,6 +380,15 @@ tipoAviones["SNIPER_POD"] = {
 
     misc = {
         ["AN/AAQ-33-ADVANCE-TARGETING-POD"]  = {ws = {4, 15, 44, 2723}, cantidad = 1}
+       }
+}
+tipoAviones["GUN_POD_AV_8B"] = {
+    costo = 1000000,
+
+    misc = {
+        ["GAU 12 Gunpod w/AP M79"]  = {ws = {4, 15, 46, 824}, cantidad = 2},
+        ["GAU 12 Gunpod w/HE M792"]  = {ws = {4, 15, 46, 825}, cantidad = 2},
+        ["GAU 12 Gunpod w/SAPHEI-T"]  = {ws = {4, 15, 46, 300}, cantidad = 2},
        }
 }
 

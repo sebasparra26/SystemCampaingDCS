@@ -58,7 +58,13 @@ local gruposPorBandera = {
     [106] = { rojo = "RU_106_Bodo", azul = "US_106_Bodo" },
     [107] = { rojo = "RU_107_Severomorsk-1", azul = "US_107_Severomorsk-1" },
     [108] = { rojo = "RU_108_Olenya", azul = "US_108_Olenya" },
-    [109] = { rojo = "RU_109_Monchegorsk", azul = "US_109_Monchegorsk" },
+
+    [109] = { 
+        rojo = {"RU_109_Monchegorsk"}, 
+        azul = {"US_109_Monchegorsk"} 
+            },
+
+
     [110] = { rojo = "RU_110_Jokkmokk", azul = "US_110_Jokkmokk" },
     [111] = { rojo = "RU_111_Murmansk", azul = "US_111_Murmansk" },
 

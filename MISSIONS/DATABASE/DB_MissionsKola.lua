@@ -550,7 +550,8 @@ MDB.MISSIONS = {
             "2. (Opcional) Recoje los sumnistros en la zona y llevalos a la base.\n\n\n" ..
 
             --"PAGOS:\n" ..
-            --"Captura: 0 --\n" ..
+            "Tecnico Rescatado: 5.000.000\n\n"..
+            "Mision Completada: 10.000.000\n\n"..
          
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
@@ -754,6 +755,7 @@ MDB.MISSIONS = {
             "Objetivo Blindados: 50.000.000\n" ..
             "Division Wagner: 20.000.000\n" ..
             "Cuartel General Wagner: 300.000.000\n" ..
+            "Mision Completada: 10.000.000\n\n"..
          
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
@@ -761,7 +763,7 @@ MDB.MISSIONS = {
             "MGRS GRID: 33 W WN 05675 91503\n"..
             "Altitude: 461 m / 1511 feet\n\n\n"..
 
-            "NOTA: al ganar esta mision, se desbloqueara un AWACS permanete para la coalición\n\n",
+            "NOTA: al ganar esta mision, se desbloqueara un EWR en Frequencia 258.200 UHF\n\n",
 
         autoStart = true,
     
@@ -1007,6 +1009,7 @@ MDB.MISSIONS = {
             --"Captura: 0 --\n" ..
             "Objetivo bunker de municiones: 500.000.000\n" ..
             "Equipos Seal x 3 : 1.500.000\n" ..
+            "Mision Completada: 10.000.000\n\n"..
 
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
@@ -1336,7 +1339,372 @@ MDB.MISSIONS = {
      },
      
 
-     
+     ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M05
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+     {
+         id = "M05",
+         order = 5,
+         enabled = true,
+    
+        name = "Operación - A la caza del Octubre rojo.",
+        shortName = "M05",
+        generalObjective = "Busca en la zona al Octubre rojo y destruyelo.\n\n"..
+                           "(Opcional) Destruye la escolta del submarino.\n\n\n" ..
+                            "Lat Long Decimal Minutes: N 74°20.474'   E 22°26.547'\n"..
+                            "MGRS GRID: 35 X LC 62816 55366\n"..
+                            "Altitude: 0 m / 0 feet\n\n"..
+                            "NOTA: La zona tiene una extencion de 50 MN de radio desde el centro de la etiqueta.\n\n",
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Busca en la zona al Octubre rojo y destruyelo.\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Destruye al Octubre rojo\n" ..
+            "2. (Opcional) Destruye la escolta del submarino.\n\n\n" ..
+
+            "PAGOS:\n" ..
+            "Octubre rojo: 100.000.000\n" ..
+            "(OPCIONAL) Escolta Octubre rojo: 50.000.000\n"..
+            "Mision Completada: 800.000.000\n\n",
+            --"Captura: 0 --\n" ..
+         
+           
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = 707011,
+                z = -19248
+            },
+
+            zoneName = nil,
+
+            title = "M05 - A la caza del Octubre rojo",
+            text =
+                "MISION 05\n" ..
+                "Busca en la zona al Octubre rojo y destruyelo.\n\n" ..
+                "(Opcional) Destruye la escolta del submarino.\n\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M05 - A la caza del Octubre rojo",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2500, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2501, value = 1 },
+            },
+            onFail = {
+                { flag = 2502, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+                
+             }
+         },
+    
+         secondaryObjectives = {
+--01------------------------------------------------------------------
+            {
+                id = "OBJ_DESTRUIR_GRUPO_SAM",
+                name = "Octubre rojo",
+                drawName = "Destruir el Octubre rojo",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_05_SHIP",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2022,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2023,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 100000000
+                }
+            },
+--01------------------------------------------------------------------
+            {
+                id = "OBJ_DESTRUIR_GRUPO_SAM_2",
+                name = "Octubre rojo",
+                drawName = "Escolta de Octubre rojo",
+                enabled = true,
+                requiredForMission = false,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_05_SHIP-2",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2024,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2025,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 50000000
+                }
+            },            
+
+         },
+    
+        rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 800000000
+         },
+
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+         }
+     },
+     ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M06
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+     {
+         id = "M06",
+         order = 6,
+         enabled = true,
+    
+        name = "Operación - A la caza del Octubre rojo.",
+        shortName = "M06",
+        generalObjective = "Busca en la zona al Octubre rojo y destruyelo.\n\n"..
+                           "(Opcional) Destruye la escolta del submarino.\n\n\n" ..
+                            "Lat Long Decimal Minutes: N 74°20.474'   E 22°26.547'\n"..
+                            "MGRS GRID: 35 X LC 62816 55366\n"..
+                            "Altitude: 0 m / 0 feet\n\n"..
+                            "NOTA: La zona tiene una extencion de 50 MN de radio desde el centro de la etiqueta.\n\n",
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Busca en la zona al Octubre rojo y destruyelo.\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Destruye al Octubre rojo\n" ..
+            "2. (Opcional) Destruye la escolta del submarino.\n\n\n" ..
+
+            "PAGOS:\n" ..
+            "Octubre rojo: 100.000.000\n" ..
+            "(OPCIONAL) Escolta Octubre rojo: 50.000.000\n"..
+            "Mision Completada: 800.000.000\n\n",
+            --"Captura: 0 --\n" ..
+         
+           
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = 707011,
+                z = -19248
+            },
+
+            zoneName = nil,
+
+            title = "M05 - A la caza del Octubre rojo",
+            text =
+                "MISION 05\n" ..
+                "Busca en la zona al Octubre rojo y destruyelo.\n\n" ..
+                "(Opcional) Destruye la escolta del submarino.\n\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M05 - A la caza del Octubre rojo",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2500, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2501, value = 1 },
+            },
+            onFail = {
+                { flag = 2502, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+                
+             }
+         },
+    
+         secondaryObjectives = {
+--01------------------------------------------------------------------
+            {
+                id = "OBJ_DESTRUIR_GRUPO_SAM",
+                name = "Octubre rojo",
+                drawName = "Destruir el Octubre rojo",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_05_SHIP",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2022,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2023,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 100000000
+                }
+            },
+--01------------------------------------------------------------------
+            {
+                id = "OBJ_DESTRUIR_GRUPO_SAM_2",
+                name = "Octubre rojo",
+                drawName = "Escolta de Octubre rojo",
+                enabled = true,
+                requiredForMission = false,
+
+                monitor = {
+                    kind = "group",
+                    groupName = "MT_05_SHIP-2",
+                    metric = "aliveUnits",
+                    op = "==",
+                    value = 0
+                },
+
+                setFlagOnPass = {
+                    flag = 2024,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2025,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 50000000
+                }
+            },            
+
+         },
+    
+        rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 800000000
+         },
+
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+         }
+     },     
 }
 
 

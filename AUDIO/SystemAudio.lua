@@ -258,7 +258,7 @@ SF.RULES = {
 
     {
         key = "InitMission",
-        flag = {2100, 2200, 2300, 2400},
+        flag = {2100, 2200, 2300, 2400, 2500},
         value = 1,
         mode = "any",
         target = "all",
@@ -271,7 +271,7 @@ SF.RULES = {
 
     {
         key = "FailMission",
-        flag = {2102, 2202, 2302, 2402},
+        flag = {2102, 2202, 2302, 2402, 2502},
         value = 1,
         mode = "any",
         target = "all",
@@ -284,7 +284,7 @@ SF.RULES = {
 
     {
         key = "SecundaryMission",
-        flag = {2000, 2004, 2001, 2006, 2008, 2010, 2012, 2014, 2015, 2017, 2019, 2021},
+        flag = {2000, 2004, 2001, 2006, 2008, 2010, 2012, 2014, 2015, 2017, 2019, 2021, 2022, 2024},
         value = 1,
         mode = "any",
         target = "all",
