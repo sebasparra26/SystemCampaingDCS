@@ -64,8 +64,8 @@ local TASK_PROFILES = {
             viper  = { "SEAD_VIPER_A" },
             f4     = { "SEAD_F4_A" }
         },
-        maxActive = 6,
-        cooldownSeconds = 1 * 60,
+        maxActive = 1,
+        cooldownSeconds = 1000 * 60,
         ingressAltitude = 11000,
         ingressSpeed = 500,
         zoneRadius = 30000,
@@ -108,8 +108,8 @@ local TASK_PROFILES = {
             b1b   = { "STRIKE_B" },
             b52 = { "STRIKE_C"}
         },
-        maxActive = 6,
-        cooldownSeconds = 1 * 60,
+        maxActive = 1,
+        cooldownSeconds = 1000 * 60,
         ingressAltitude = 10000,
         ingressSpeed = 700,
         ingressOffsetNm = 80,

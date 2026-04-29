@@ -107,7 +107,7 @@ local gruposPorBandera = {
     },
     [120] = {
         rojo = {"RU_120_Bardufoss", "RU_120_Bardufoss_SAM"},
-        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops", "RU_120_Bardufoss_ISKANDER" }
+        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops", "RU_120_Bardufoss_ISKANDER", "RU_120_Bardufoss_SEAD" }
     },
 
     [121] = {
