@@ -51,6 +51,7 @@ MZD.CONFIG = {
     -- El nombre debe coincidir con weapon:getTypeName().
     missileTypes = {
         ["9M723"] = true,
+        ["9M723 HE"] = true,
         ["Kh-31"] = true,
         ["Kh-101"] = true,
 
