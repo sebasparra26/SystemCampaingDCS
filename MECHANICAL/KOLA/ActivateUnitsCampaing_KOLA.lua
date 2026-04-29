@@ -106,8 +106,8 @@ local gruposPorBandera = {
         azul = {"US_119_Andoya", "US_119_Andoya_SAM", "US_119_Andoya_Shield","RU_119_Andoya_STRIKE", "RU_119_Andoya_STRIKE2"}
     },
     [120] = {
-        rojo = {"RU_120_Bardufoss"},
-        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops"}
+        rojo = {"RU_120_Bardufoss", "RU_120_Bardufoss_SAM"},
+        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops", "RU_120_Bardufoss_ISKANDER" }
     },
 
     [121] = {
@@ -123,8 +123,8 @@ local gruposPorBandera = {
             },
 
     [124] = {
-        rojo = {"RU_124_Evenes"},
-        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_Ship", "RU_112_Kalixfors_STRIKE" }
+        rojo = {"RU_124_Evenes", "RU_124_Evenes_SAM"},
+        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_Ship", "RU_124_Evenes_STRIKE", "RU_124_Evenes_ISKANDER" }
     },
     [125] = {
         rojo = {"RU_125_Enontekio"},
