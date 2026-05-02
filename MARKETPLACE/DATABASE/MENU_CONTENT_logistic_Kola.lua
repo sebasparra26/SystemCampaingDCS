@@ -194,10 +194,10 @@ tiposAvion = {
 
 subvariantesAvion = {
     ["JET FUEL"]= {
-        ["Jet Fuel 500 Toneladas"] = "JETFUEL-500T",
-        ["Jet Fuel 1000 Toneladas"] = "JETFUEL-1000T",
-        ["Jet Fuel 2000 Toneladas"] = "JETFUEL-2000T",
-        ["Jet Fuel 5000 Toneladas"] = "JETFUEL-5000T"
+        ["Jet Fuel 50 Toneladas"] = "JETFUEL-50T",
+        ["Jet Fuel 100 Toneladas"] = "JETFUEL-100T",
+        ["Jet Fuel 150 Toneladas"] = "JETFUEL-150T",
+        ["Jet Fuel 200 Toneladas"] = "JETFUEL-200T"
     },
     --USA PLANES
     ["FA-18C_PAYLOAD"] = {
@@ -412,7 +412,7 @@ subvariantesAvion = {
         ["COUNTER-MEASURES"] = "COUNTERMEASURES",
         ["TARGET PODS"] = "TARGETING",
         ["AN/AAQ-33-ADVANCE-TARGETING-POD"] = "SNIPER_POD",
-        ["JET-FUEL 100.000"] = "JETFUEL-100K",
+        ["JET-FUEL"] = "JETFUEL",
         ["GAU 12 Gunpod"] = "GUN_POD_AV_8B"
     },
     ["BOMBASGP/GUIADAS"] = {
@@ -507,10 +507,10 @@ local destinosBase = {
 
 destinosPorSubvariante = {
     --USA PLANES
-    ["JETFUEL-500T"] = destinosBase,
-    ["JETFUEL-1000T"] = destinosBase,
-    ["JETFUEL-2000T"] = destinosBase,
-    ["JETFUEL-5000T"] = destinosBase,
+    ["JETFUEL-50T"] = destinosBase,
+    ["JETFUEL-100T"] = destinosBase,
+    ["JETFUEL-150T"] = destinosBase,
+    ["JETFUEL-200T"] = destinosBase,
 
     ["FA-18C-1"] = destinosBase,
     ["FA-18C-2"] = destinosBase,
@@ -666,7 +666,7 @@ destinosPorSubvariante = {
     ["COUNTERMEASURES"] = destinosBase,
     ["TARGETING"] = destinosBase,
     ["SNIPER_POD"] = destinosBase,
-    ["JETFUEL-100K"] = destinosBase,
+    ["JETFUEL"] = destinosBase,
     ["GUN_POD_AV_8B"] = destinosBase,
 
 --Bombas GP y GUIADAS
@@ -717,10 +717,10 @@ destinosPorSubvariante = {
 
 
 nombresSubvariantes = {
-    ["JETFUEL-500T"] = "Jet Fuel 500 Toneladas",
-    ["JETFUEL-1000T"] = "Jet Fuel 1000 Toneladas",
-    ["JETFUEL-2000T"] = "Jet Fuel 2000 Toneladas",
-    ["JETFUEL-5000T"] = "Jet Fuel 5000 Toneladas",
+    ["JETFUEL-50"] = "Jet Fuel 500 Toneladas",
+    ["JETFUEL-100T"] = "Jet Fuel 1000 Toneladas",
+    ["JETFUEL-150T"] = "Jet Fuel 2000 Toneladas",
+    ["JETFUEL-200T"] = "Jet Fuel 5000 Toneladas",
     --USA PLANES
     ["FA-18C-1"] = "FA-18C_hornet - Pack x 1",
     ["FA-18C-2"] = "FA-18C_hornet - Pack x 2",
@@ -872,7 +872,7 @@ nombresSubvariantes = {
     ["COUNTERMEASURES"] = "COUNTER-MEASURES",
     ["TARGETING"] = "TARGET PODS",
     ["SNIPER_POD"] = "AN/AAQ-33-ADVANCE-TARGETING-POD",
-    ["JETFUEL-100K"] = "JET-FUEL 100.000",
+    ["JETFUEL"] = "JET-FUEL",
     ["GUN_POD_AV_8B"] = "GAU 12 Gunpod",
 
    
@@ -980,42 +980,42 @@ plantillasLogisticaB = {
 }
 
 recargoAeropuertoB = {
-    ["Banak"] = 1.0,
-    ["Rovaniemi"] = 1.0,
-    ["Kemi Tornio"] = 1.0,
-    ["Vuojarvi"] = 1.0,
-    ["Kiruna"] = 1.0,
-    ["Severomorsk-3"] = 1.0,
+    ["Banak"] = 1.85,
+    ["Rovaniemi"] = 1.85,
+    ["Kemi Tornio"] = 2.1,
+    ["Vuojarvi"] = 1.95,
+    ["Kiruna"] = 1.82,
+    ["Severomorsk-3"] = 2.4,
     ["Bodo"] = 1.0,
-    ["Severomorsk-1"] = 1.0,
-    ["Olenya"] = 1.0,
-    ["Monchegorsk"] = 1.0,
-    ["Jokkmokk"] = 1.0,
+    ["Severomorsk-1"] = 2.3,
+    ["Olenya"] = 2.2,
+    ["Monchegorsk"] = 2.1,
+    ["Jokkmokk"] = 1.7,
     ["Murmansk International"] = 1.0,
-    ["Kalixfors"] = 1.0,
-    ["Kirkenes"] = 1.0,
-    ["Kallax"] = 1.0,
-    ["Kuusamo"] = 1.0,
-    ["Vidsel"] = 1.0,
-    ["Ivalo"] = 1.0,
-    ["Alakurtti"] = 1.0,
-    ["Andoya"] = 1.0,
-    ["Bardufoss"] = 1.0,
-    ["Kittila"] = 1.0,
-    ["Hosio"] = 1.0,
-    ["Alta"] = 1.0,
-    ["Evenes"] = 1.0,
-    ["Enontekio"] = 1.0,
-    ["Sodankyla"] = 1.0,
-    ["Kilpyavr"] = 1.0,
-    ["Luostari Pechenga"] = 1.0,
-    ["Koshka Yavr"] = 1.0,
-    ["Poduzhemye"] = 1.0,
-    ["Kalevala"] = 1.0,
-    ["Afrikanda"] = 1.0,
-    ["Boden Heli Base"] = 1.0,
-    ["Hemavan"] = 1.0,
-    ["Arvidsjaur"] = 1.0
+    ["Kalixfors"] = 1.4,
+    ["Kirkenes"] = 1.95,
+    ["Kallax"] = 1.9,
+    ["Kuusamo"] = 2.0,
+    ["Vidsel"] = 1.82,
+    ["Ivalo"] = 1.95,
+    ["Alakurtti"] = 2.2,
+    ["Andoya"] = 1.5,
+    ["Bardufoss"] = 1.6,
+    ["Kittila"] = 1.9,
+    ["Hosio"] = 1.9,
+    ["Alta"] = 1.7,
+    ["Evenes"] = 1.2,
+    ["Enontekio"] = 1.8,
+    ["Sodankyla"] = 1.9,
+    ["Kilpyavr"] = 1.96,
+    ["Luostari Pechenga"] = 1.8,
+    ["Koshka Yavr"] = 1.8,
+    ["Poduzhemye"] = 1.9,
+    ["Kalevala"] = 1.9,
+    ["Afrikanda"] = 2.0,
+    ["Boden Heli Base"] = 1.8,
+    ["Hemavan"] = 1.7,
+    ["Arvidsjaur"] = 1.8
  
 }
 

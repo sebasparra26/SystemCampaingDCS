@@ -56,7 +56,7 @@ local PARAMETROS_TANKER = {
   ["KC-135 low"] = { alt = 4500, spd = 121 },
   ["KC-135 MPRS"] = { alt = 7250, spd = 230 },
   ["KC130J"] = { alt = 5800, spd = 380 },
-  ["S-3B Tanker"] = { alt = 5200, spd = 190 }
+  ["S-3B Tanker"] = { alt = 5200, spd = 225 }
 }
 
 local COSTOS_TANKER = {

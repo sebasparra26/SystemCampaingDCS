@@ -3,39 +3,39 @@
 
 tipoAviones = tipoAviones or {}
 
-tipoAviones["JETFUEL-500T"] = {
+tipoAviones["JETFUEL-50T"] = {
     costo = 763500,
-    nombreAvion = "Jet Fuel 500 Toneladas",
+    nombreAvion = "Jet Fuel 50 Toneladas",
     liquids = {
         --jet_fuel = 2000000
-          jet_fuel = 500000
+          jet_fuel = 50000
     }
 }
 
-tipoAviones["JETFUEL-1000T"] = {
+tipoAviones["JETFUEL-100T"] = {
     costo = 1527000,
-    nombreAvion = "Jet Fuel 1000 Toneladas",
+    nombreAvion = "Jet Fuel 100 Toneladas",
     liquids = {
         --jet_fuel = 2000000
-          jet_fuel = 1000000
+          jet_fuel = 100000
     }
 }
 
-tipoAviones["JETFUEL-2000T"] = {
+tipoAviones["JETFUEL-150T"] = {
     costo = 3054000,
-    nombreAvion = "Jet Fuel 2000 Toneladas",
+    nombreAvion = "Jet Fuel 150 Toneladas",
     liquids = {
         --jet_fuel = 2000000
-          jet_fuel = 2000000
+          jet_fuel = 150000
     }
 }
 
-tipoAviones["JETFUEL-5000T"] = {
+tipoAviones["JETFUEL-200T"] = {
     costo = 7635000,
-    nombreAvion = "Jet Fuel 5000 Toneladas",
+    nombreAvion = "Jet Fuel 200 Toneladas",
     liquids = {
         --jet_fuel = 2000000
-          jet_fuel = 5000000
+          jet_fuel = 200000
     }
 }
 
@@ -101,12 +101,14 @@ tipoAviones["COUNTERMEASURES"] = {
     }
 }
 tipoAviones["TARGETING"] = {
-    costo = 31130000,
+    costo = 51130000,
 
     misc = {
         ["AN/AAQ-28 LITENING - Targeting Pod"]  = {ws = {4, 15, 44, 101}, cantidad = 4},
         ["AN/AAQ-28 LITENING - Targeting Pod2"]  = {ws = {4, 15, 44, 425}, cantidad = 2},
+        ["AN/ASQ-28 ATFLIR - Targeting Pod"]  = {ws = {4, 15, 44, 426}, cantidad = 2},
         ["AN/AAQ-14 LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 1718}, cantidad = 2},
+        ["LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 486}, cantidad = 2},
         ["AN/AVQ-23 Pave Spike - Targeting Pod Rack"]  = {ws = {4, 15, 44, 2148}, cantidad = 1},
         ["AVIC WMD7 FLIR/LDT POD"]  = {ws = {4, 15, 44, 463}, cantidad = 1},
         ["AN/ASQ-213 - HARM Targeting System"]  = {ws = {4, 15, 44, 808}, cantidad = 2},
@@ -213,8 +215,8 @@ tipoAviones["KH01"] = {
     costo = 2900000,
 
     misiles = {
-        ["Kh-25 ML (As-10 Karen) - 300kg, ASM, Semi-Act Laser"]  = {ws = {4, 4, 8, 45}, cantidad = 4},
-        ["Kh-29T (AS-14 Kedge) - 670kg, ASM, TV Guided"]  = {ws = {4, 4, 8, 75}, cantidad = 2}
+        ["Kh-25 ML (As-10 Karen) - 300kg, ASM, Semi-Act Laser"]  = {ws = {4, 4, 8, 45}, cantidad = 6},
+        ["Kh-29T (AS-14 Kedge) - 670kg, ASM, TV Guided"]  = {ws = {4, 4, 8, 75}, cantidad = 6}
        
     }
 }
