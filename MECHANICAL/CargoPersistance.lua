@@ -111,6 +111,16 @@ SCP.CONFIG = SCP.CONFIG or {
         "Cargo48",
         "Cargo49",
         "Cargo50",
+        "Cargo51",
+        "Cargo52",
+        "Cargo53",
+        "Cargo54",
+        "Cargo55",
+        "Cargo56",
+        "Cargo57",
+        "Cargo58",
+        "Cargo59",
+        "Cargo60",
     },
 
     -- Prefijos usados para autodeteccion por nombre.
