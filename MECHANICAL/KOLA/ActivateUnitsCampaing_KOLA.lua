@@ -119,12 +119,12 @@ local gruposPorBandera = {
 
     [123] = {  
             rojo = {"RU_123_Alta", "RU_123_Alta_SAM"}, 
-            azul = {"US_123_Alta", "RU_123_Alta_HELI", "US_123_Alta_SAM"} 
+            azul = {"US_123_Alta", "US_123_Alta_SAM"} 
             },
 
     [124] = {
         rojo = {"RU_124_Evenes", "RU_124_Evenes_SAM"},
-        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_Ship", "RU_124_Evenes_STRIKE", "RU_124_Evenes_ISKANDER" }
+        azul = {"US_124_Evenes", "US_124_Evenes_SAM", "US_124_Evenes_Shield", "RU_124_Evenes_STRIKE", "RU_124_Evenes_ISKANDER" }
     },
     [125] = {
         rojo = {"RU_125_Enontekio"},
@@ -247,7 +247,22 @@ local activacionesPorFlag = {
             "TGT18",
 
         }
-    }
+    },
+    [124] = {
+        valor = 2,
+        grupos = {
+            "RU_124_Evenes_Ship",
+        
+        }
+    },
+    [123] = {
+        valor = 2,
+        grupos = {
+            "RU_123_Alta_HELI",
+        
+        }
+    },
+
 
 }
 
