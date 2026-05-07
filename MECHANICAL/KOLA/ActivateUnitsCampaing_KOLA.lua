@@ -90,7 +90,7 @@ local gruposPorBandera = {
     [113] = { rojo = "RU_113_Kirkenes", azul = "US_113_Kirkenes" },
 
     [114] = {
-        rojo = {"RU_114_Kallax", "RU_114_Kallax_SAM", "RU_114_Kallax_EWR", "RU_114_Kallax_Shield", "RU_114_Kallax_Ship"},
+        rojo = {"RU_114_Kallax", "RU_114_Kallax_SAM", "RU_114_Kallax_EWR", "RU_114_Kallax_Shield"},
         azul = {"US_114_Kallax", "US_114_Kallax_SAM", "US_114_Kallax_Shield", "RU_114_Kallax_ISKANDER", "RU_114_Kallax_STRIKE"}
     },
     [115] = {
@@ -245,6 +245,8 @@ local activacionesPorFlag = {
             "TGT16",
             "TGT17",
             "TGT18",
+            "RU_100_Banak_Ship",
+            "RU_114_Kallax_Ship",
 
         }
     },
@@ -262,6 +264,21 @@ local activacionesPorFlag = {
         
         }
     },
+     [121] = {
+        valor = 2,
+        grupos = {
+            "RU_121_Kittila_TANKS",
+        
+        }
+    },
+     [100] = {
+        valor = 2,
+        grupos = {
+            "RU_100_Banak_TANKS",
+        
+        }
+    },
+
 
 
 }

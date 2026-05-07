@@ -65,8 +65,8 @@ local TASK_PROFILES = {
             f4     = { "SEAD_F4_A" }
         },
         maxActive = 1,
-        cooldownSeconds = 1000 * 60,
-        ingressAltitude = 11000,
+        cooldownSeconds = 60 * 60,
+        ingressAltitude = 7000,
         ingressSpeed = 500,
         zoneRadius = 30000,
         ingressOffsetNm = 35,
@@ -109,7 +109,7 @@ local TASK_PROFILES = {
             b52 = { "STRIKE_C"}
         },
         maxActive = 1,
-        cooldownSeconds = 1000 * 60,
+        cooldownSeconds = 60 * 60,
         ingressAltitude = 10000,
         ingressSpeed = 700,
         ingressOffsetNm = 80,
