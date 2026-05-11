@@ -709,7 +709,7 @@ MDB.MISSIONS = {
          rewards = {
              enabled = true,
              coalition = 2,
-             missionSuccessAmount = 10000000
+             missionSuccessAmount = 700000000
          },
     
          successConditions = {
