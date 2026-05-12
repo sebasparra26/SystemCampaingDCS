@@ -55,7 +55,7 @@ end
 ----------------------------------------------------------------
 local gruposPorBandera = {
     [100] = {
-        rojo = {"RU_100_Banak","RU_100_Banak_Ship","RU_100_Banak_SAM","RU_100_Banak_EWR", "RU_100_Banak_Shield" , "RU_100_Banak_Artillery"},
+        rojo = {"RU_100_Banak","RU_100_Banak_SAM","RU_100_Banak_EWR", "RU_100_Banak_Shield" , "RU_100_Banak_Artillery"},
         azul = {"US_100_Banak", "US_100_Banak_SAM", "US_100_Banak_Shield"}
     },
     [101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" },
@@ -85,7 +85,7 @@ local gruposPorBandera = {
 
     [112] = {
         rojo = {"RU_112_Kalixfors", "RU_112_Kalixfors_SAM" },
-        azul = {"US_112_Kalixfors", "US_112_Kalixfors_SAM", "US_112_Kalixfors_Shield", "RU_112_Kalixfors_Troops", "RU_112_Kalixfors_SEAD", "RU_112_Kalixfors_ISKANDER" }
+        azul = {"US_112_Kalixfors", "US_112_Kalixfors_SAM", "US_112_Kalixfors_Shield", "RU_112_Kalixfors_SEAD", "RU_112_Kalixfors_ISKANDER" }
     },
     [113] = { rojo = "RU_113_Kirkenes", azul = "US_113_Kirkenes" },
 
@@ -107,7 +107,7 @@ local gruposPorBandera = {
     },
     [120] = {
         rojo = {"RU_120_Bardufoss", "RU_120_Bardufoss_SAM"},
-        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_Troops", "RU_120_Bardufoss_ISKANDER", "RU_120_Bardufoss_SEAD" }
+        azul = {"US_120_Bardufoss", "US_120_Bardufoss_SAM", "US_120_Bardufoss_Shield", "RU_120_Bardufoss_ISKANDER", "RU_120_Bardufoss_SEAD" }
     },
 
     [121] = {
@@ -128,7 +128,7 @@ local gruposPorBandera = {
     },
     [125] = {
         rojo = {"RU_125_Enontekio"},
-        azul = {"US_125_Enontekio", "US_125_Enontekio_SAM", "RU_125_Enontekio_SEAD"}
+        azul = {"US_125_Enontekio", "US_125_Enontekio_SAM", "US_125_Enontekio_SHIELD", "RU_125_Enontekio_SEAD"}
     },
 
     [126] = { 
@@ -245,8 +245,10 @@ local activacionesPorFlag = {
             "TGT16",
             "TGT17",
             "TGT18",
-            "RU_100_Banak_Ship",
+            "TGT19",
+            "RU_100_Banak_Ship_1",
             "RU_114_Kallax_Ship",
+            
 
         }
     },
@@ -278,9 +280,16 @@ local activacionesPorFlag = {
         
         }
     },
+     [112] = {
+        valor = 1,
+        grupos = {
+            "RU_112_Kalixfors_Troops",
+        
+        }
+    },
 
 
-
+RU_112_Kalixfors_Troops
 }
 
 ----------------------------------------------------------------

@@ -53,6 +53,7 @@ MZD.CONFIG = {
         ["9M723"] = true,
         ["9M723 HE"] = true,
         ["Kh-31P"] = true,
+        ["Kh-31"] = true,
         ["Kh-101"] = true,
 
     },

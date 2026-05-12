@@ -519,15 +519,15 @@ ctld.hoverTime = 10 -- Time to hold hover above a crate for loading in seconds
 -- end of Simulated Sling load configuration
 
 -- ***************** AA SYSTEM CONFIG *****************
-ctld.aaLaunchers = 3 -- controls how many launchers to add to the AA systems when its spawned if no amount is specified in the template.
+ctld.aaLaunchers = 2 -- controls how many launchers to add to the AA systems when its spawned if no amount is specified in the template.
 -- Sets a limit on the number of active AA systems that can be built for RED.
 -- A system is counted as Active if its fully functional and has all parts
 -- If a system is partially destroyed, it no longer counts towards the total
 -- When this limit is hit, a player will still be able to get crates for an AA system, just unable
 -- to unpack them
 
-ctld.AASystemLimitRED = 3 -- Red side limit
-ctld.AASystemLimitBLUE = 3 -- Blue side limit
+ctld.AASystemLimitRED = 8 -- Red side limit
+ctld.AASystemLimitBLUE = 8 -- Blue side limit
 
 -- Allows players to create systems using as many crates as they like
 -- Example : an amount X of patriot launcher crates allows for Y launchers to be deployed, if a player brings 2*X+Z crates (Z being lower then X), then deploys the patriot site, 2*Y launchers will be in the group and Z launcher crate will be left over
@@ -1338,32 +1338,32 @@ ctld.spawnableCrates = {
         { multiple = {1004.31, 1004.32, 1004.33, 1007.56, 1007.56, 1007.56, 1007.56}, desc = ctld.i18n_translate("BUK FULL - $ 17,500,000"), side = 1 },
         -- END of BUK
     },
-    --["SAM Largo Alcance"] = {
-        --- BLUE
-        -- Patriot System
-        --{ weight = 1009.92, desc = ctld.i18n_translate("M-818 Ammo Truck 4"), unit = "M 818", side = 0, cratesRequired = 2},
-       -- { weight = 1005.01, desc = ctld.i18n_translate("Patriot Launcher - $ 4,500,000"), unit = "Patriot ln", side = 0},
-        --{ weight = 1005.02, desc = ctld.i18n_translate("Patriot Radar - $ 6,000,000"), unit = "Patriot str" , side = 0 },
-       -- { weight = 1005.03, desc = ctld.i18n_translate("Patriot ECS - $ 3,500,000"), unit = "Patriot ECS", side = 0 },
-       -- { weight = 1005.04, desc = ctld.i18n_translate("Patriot ICC - $ 3,000,000"), unit = "Patriot cp", side = 0 },
-       -- { weight = 1005.05, desc = ctld.i18n_translate("Patriot EPP - $ 2,500,000"), unit = "Patriot EPP", side = 0 },
-       -- { weight = 1005.06, desc = ctld.i18n_translate("Patriot AMG (optional) - $ 2,000,000"), unit = "Patriot AMG" , side = 0 },
-       -- { weight = 1005.07, desc = ctld.i18n_translate("Patriot Repair - $ 1,500,000"), unit = "Patriot Repair" , side = 2 },
-       -- { multiple = {1005.01, 1005.02, 1005.03, 1005.04, 1005.05, 1005.06, 1009.92, 1009.92}, desc = ctld.i18n_translate("Patriot FULL - $ 26,000,000"), side = 2 },
+    ["SAM Largo Alcance"] = {
+         --BLUE
+         --Patriot System
+        { weight = 1009.92, desc = ctld.i18n_translate("M-818 Ammo Truck 4"), unit = "M 818", side = 0, cratesRequired = 2},
+        { weight = 1005.01, desc = ctld.i18n_translate("Patriot Launcher - $ 4,500,000"), unit = "Patriot ln", side = 0},
+        { weight = 1005.02, desc = ctld.i18n_translate("Patriot Radar - $ 6,000,000"), unit = "Patriot str" , side = 0 },
+        { weight = 1005.03, desc = ctld.i18n_translate("Patriot ECS - $ 3,500,000"), unit = "Patriot ECS", side = 0 },
+        { weight = 1005.04, desc = ctld.i18n_translate("Patriot ICC - $ 3,000,000"), unit = "Patriot cp", side = 0 },
+        { weight = 1005.05, desc = ctld.i18n_translate("Patriot EPP - $ 2,500,000"), unit = "Patriot EPP", side = 0 },
+        { weight = 1005.06, desc = ctld.i18n_translate("Patriot AMG (optional) - $ 2,000,000"), unit = "Patriot AMG" , side = 0 },
+        { weight = 1005.07, desc = ctld.i18n_translate("Patriot Repair - $ 1,500,000"), unit = "Patriot Repair" , side = 2 },
+        { multiple = {1005.01, 1005.02, 1005.03, 1005.04, 1005.05, 1005.06, 1009.92, 1009.92}, desc = ctld.i18n_translate("Patriot FULL - $ 26,000,000"), side = 2 },
         -- End of Patriot
 
         -- S-300 SYSTEM
-       -- { weight = 1007.24, desc = ctld.i18n_translate("Ural-375 Ammo Truck 4"), unit = "Ural-375", side = 0, cratesRequired = 3},
-       -- { weight = 1005.11, desc = ctld.i18n_translate("S-300 Grumble TEL C - $ 4,200,000"), unit = "S-300PS 5P85C ln", side = 0},
-        --{ weight = 1005.22, desc = ctld.i18n_translate("S-300 Grumble TEL D - $ 4,200,000"), unit = "S-300PS 5P85D ln", side = 0},
-       -- { weight = 1005.12, desc = ctld.i18n_translate("S-300 Grumble Flap Lid-A TR - $ 5,500,000"), unit = "S-300PS 40B6M tr", side = 0 },
-       -- { weight = 1005.13, desc = ctld.i18n_translate("S-300 Grumble Clam Shell SR - $ 4,000,000"), unit = "S-300PS 40B6MD sr", side = 0 },
-       -- { weight = 1005.14, desc = ctld.i18n_translate("S-300 Grumble Big Bird SR - $ 6,500,000"), unit = "S-300PS 64H6E sr", side = 0 },
-       -- { weight = 1005.15, desc = ctld.i18n_translate("S-300 Grumble C2 - $ 3,500,000"), unit = "S-300PS 54K6 cp", side = 0 },
-       -- { weight = 1005.16, desc = ctld.i18n_translate("S-300 Repair - $ 1,800,000"), unit = "S-300 Repair", side = 1 },
-       -- { multiple = {1005.11, 1005.12, 1005.13, 1005.14, 1005.15, 1007.24, 1007.24, 1007.24}, desc = ctld.i18n_translate("S-300 FULL - $ 32,100,000"), side = 1 },
-        -- End of S-300
-    --},
+        { weight = 1007.24, desc = ctld.i18n_translate("Ural-375 Ammo Truck 4"), unit = "Ural-375", side = 0, cratesRequired = 3},
+        { weight = 1005.11, desc = ctld.i18n_translate("S-300 Grumble TEL C - $ 4,200,000"), unit = "S-300PS 5P85C ln", side = 0},
+        { weight = 1005.22, desc = ctld.i18n_translate("S-300 Grumble TEL D - $ 4,200,000"), unit = "S-300PS 5P85D ln", side = 0},
+        { weight = 1005.12, desc = ctld.i18n_translate("S-300 Grumble Flap Lid-A TR - $ 5,500,000"), unit = "S-300PS 40B6M tr", side = 0 },
+        { weight = 1005.13, desc = ctld.i18n_translate("S-300 Grumble Clam Shell SR - $ 4,000,000"), unit = "S-300PS 40B6MD sr", side = 0 },
+        { weight = 1005.14, desc = ctld.i18n_translate("S-300 Grumble Big Bird SR - $ 6,500,000"), unit = "S-300PS 64H6E sr", side = 0 },
+        { weight = 1005.15, desc = ctld.i18n_translate("S-300 Grumble C2 - $ 3,500,000"), unit = "S-300PS 54K6 cp", side = 0 },
+        { weight = 1005.16, desc = ctld.i18n_translate("S-300 Repair - $ 1,800,000"), unit = "S-300 Repair", side = 1 },
+        { multiple = {1005.11, 1005.12, 1005.13, 1005.14, 1005.15, 1007.24, 1007.24, 1007.24}, desc = ctld.i18n_translate("S-300 FULL - $ 32,100,000"), side = 1 },
+         --End of S-300
+    },
     ["Drones"] = {
         --- BLUE MQ-9 Repear
         { weight = 1006.05, desc = ctld.i18n_translate("MQ-9 Repear - $ 10,000,000"), unit = "MQ-9 Reaper", side = 2},

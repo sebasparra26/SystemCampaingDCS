@@ -551,7 +551,7 @@ MDB.MISSIONS = {
 
             --"PAGOS:\n" ..
             "Tecnico Rescatado: 5.000.000\n\n"..
-            "Mision Completada: 10.000.000\n\n"..
+            "Mision Completada: 700.000.000\n\n"..
          
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..

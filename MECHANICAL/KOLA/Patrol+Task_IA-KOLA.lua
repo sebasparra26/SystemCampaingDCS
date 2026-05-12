@@ -45,9 +45,9 @@ local PATROL_DEFINITIONS = {
     },
 
     { --AVIONES
-        name = "PATRULLA_ABKHAZIA_1",
-        templates = { "Patrol_IA_ABKHAZIA_1", "Patrol_IA_ABKHAZIA_2" },
-        clonePrefix = "ABKHAZIA air ",
+        name = "PATRULLA_RUSSIA_08",
+        templates = { "Patrol_IA_RUSSIA_14", "Patrol_IA_RUSSIA_15" },
+        clonePrefix = "RUSSIA air ",
         activationFlag = 121,
         activationValue = 1,
         ownCoalition = coalition.side.RED,
@@ -63,9 +63,9 @@ local PATROL_DEFINITIONS = {
         debug = DEFAULT_DEBUG
     },
      { --AVIONES
-        name = "PATRULLA_ABKHAZIA_2",
-        templates = { "Patrol_IA_ABKHAZIA_3", "Patrol_IA_ABKHAZIA_4" },
-        clonePrefix = "ABKHAZIA air ",
+        name = "PATRULLA_RUSSIA_09",
+        templates = { "Patrol_IA_RUSSIA_16", "Patrol_IA_RUSSIA_17" },
+        clonePrefix = "RUSSIA air ",
         activationFlag = 121,
         activationValue = 1,
         ownCoalition = coalition.side.RED,

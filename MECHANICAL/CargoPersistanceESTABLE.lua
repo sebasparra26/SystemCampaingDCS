@@ -3,19 +3,18 @@
 --
 -- Persistencia de estaticos de carga
 --
--- FUNCION:
--- - Solo monitorea los estaticos definidos en TRACKED_STATIC_NAMES.
--- - Si una caja muere, se guarda en JSON como destruida.
+-- OBJETIVO:
+-- - Monitorear estaticos de carga por nombre.
+-- - Si uno muere, guardarlo en JSON como destruido.
 -- - Al reiniciar la mision, durante 30 segundos el JSON manda.
--- - Si el JSON dice que una caja esta destruida, se destruye al iniciar.
--- - Dibuja un circulo alrededor de cada caja viva.
--- - Si la caja muere o desaparece, el circulo y el texto desaparecen.
+-- - Si el JSON dice que el item esta muerto, el script lo destruye.
+-- - Luego de la ventana de inyeccion, DCS toma control y el JSON
+--   pasa a ser espejo vivo del estado real.
 --
--- IMPORTANTE:
--- - DRAW_LINE_TYPE debe ser 1 para que se vea la linea.
--- - 0 en DCS normalmente significa "sin linea".
--- - DRAW_COMMIT se intenta usar si existe trigger.action.markupToAll.
--- - Si no existe, usa trigger.action.circleToAll.
+-- REQUIERE:
+-- - io/lfs habilitados en MissionScripting.lua
+-- - net.json2lua habilitado
+-- - MIST cargado antes si quieres autodeteccion desde el ME
 ----------------------------------------------------------------
 
 HDEV_StaticCargoPersistence = HDEV_StaticCargoPersistence or {}
@@ -25,78 +24,42 @@ local SCP = HDEV_StaticCargoPersistence
 -- CONFIGURACION
 ----------------------------------------------------------------
 SCP.CONFIG = SCP.CONFIG or {
-    DEBUG = false,
-    DEBUG_DRAW = false,
+    DEBUG = true,
 
     FILE_PATH = lfs.writedir() .. "Config\\HorizontDev\\KOLA\\SystemStaticCargoPersistenceKola.json",
 
     INJECT_DURATION = 30,
     INJECT_INTERVAL = 1,
-    EXPORT_INTERVAL = 60,
+    EXPORT_INTERVAL = 300,
     MIN_WRITE_INTERVAL = 3,
     MAIN_LOOP_INTERVAL = 1,
 
+    -- Si la vida es menor o igual a esto, se considera destruido.
     DEATH_LIFE_THRESHOLD = 1,
+
+    -- Si true, usa MIST para encontrar estaticos del ME.
+    AUTO_DISCOVER_FROM_MIST = false,
+
+    -- Si true, solo autodetecta estaticos que parezcan carga.
+    ONLY_CARGO_STATICS = false,
 
     -- Si true, si el JSON dice muerto, queda bloqueado como muerto.
     KEEP_DEAD_LOCKED = true,
 
+    -- Normalmente dejalo false.
+    -- Si true, intenta recrear estaticos si el JSON dice vivo y no existen.
+    -- Para eso el JSON debe tener type, countryId y posicion.
+    RESPAWN_MISSING_IF_JSON_ALIVE = false,
+
     -- Guardar de inmediato cuando se detecta una muerte.
     IMMEDIATE_SAVE_ON_DEATH = true,
 
-    ------------------------------------------------------------
-    -- DRAW / CIRCULO EN F10
-    ------------------------------------------------------------
-    DRAW_ENABLED = true,
+    -- Si true, intenta registrar estaticos runtime nacidos en mision
+    -- cuando coincidan con los prefijos configurados.
+    AUTO_TRACK_RUNTIME_BIRTHS = false,
 
-    -- Intento opcional de API tipo tabla con commit=true.
-    -- Si trigger.action.markupToAll no existe o falla, usa circleToAll.
-    DRAW_USE_COMMIT_TABLE_FIRST = true,
-    DRAW_COMMIT = true,
-
-    -- Radio del circulo alrededor de cada caja.
-    DRAW_RADIUS_NM = 5,
-
-    -- Cada cuantos segundos refresca/valida los dibujos.
-    DRAW_UPDATE_INTERVAL = 10,
-
-    -- -1 = todos
-    -- 1 = rojo
-    -- 2 = azul
-    DRAW_COALITION = -1,
-
-    DRAW_ID_START = 881000,
-
-    -- Line type DCS:
-    -- 0 = No Line
-    -- 1 = Solid
-    -- 2 = Dashed
-    -- 3 = Dotted
-    -- 4 = Dot Dash
-    -- 5 = Long Dash
-    -- 6 = Two Dash
-    DRAW_LINE_TYPE = 1,
-
-    DRAW_READ_ONLY = true,
-
-    -- Texto encima de la caja.
-    DRAW_LABEL_ENABLED = false,
-    DRAW_FONT_SIZE = 12,
-
-    -- Colores en formato DCS 0-1.
-    -- {R, G, B, A}
-    DRAW_LINE_COLOR = {0.8, 0.8, 0.8, 1},
-DRAW_FILL_COLOR = {0, 0, 0, 0},
-
-DRAW_TEXT_COLOR = {1, 1, 1, 1},
-DRAW_TEXT_FILL_COLOR = {0, 0, 0, 0.75},
-
-    DRAW_TITLE = "CARGA",
-
-    ------------------------------------------------------------
-    -- LISTA MANUAL
-    -- SOLO estas cajas se persisten y se dibujan.
-    ------------------------------------------------------------
+    -- Lista manual de nombres exactos de estaticos en el Mission Editor.
+    -- Si no quieres depender de autodeteccion, llena esta lista.
     TRACKED_STATIC_NAMES = {
         "Cargo01",
         "Cargo02",
@@ -158,8 +121,12 @@ DRAW_TEXT_FILL_COLOR = {0, 0, 0, 0.75},
         "Cargo58",
         "Cargo59",
         "Cargo60",
-        "Cargo61",
     },
+
+    -- Prefijos usados para autodeteccion por nombre.
+    DISCOVER_PREFIXES = {
+        
+    }
 }
 
 ----------------------------------------------------------------
@@ -169,21 +136,15 @@ SCP.STATE = SCP.STATE or {
     started = false,
     injecting = false,
     injectEndsAt = 0,
-
     lastInject = -9999,
     lastExport = -9999,
     lastWriteTime = -9999,
-    lastDrawUpdate = -9999,
 
     doc = nil,
     tracked = {},
     dirty = false,
-
     eventHandlerRegistered = false,
-    lastSavedPayload = "",
-
-    draws = {},
-    nextDrawId = nil
+    lastSavedPayload = ""
 }
 
 ----------------------------------------------------------------
@@ -191,17 +152,8 @@ SCP.STATE = SCP.STATE or {
 ----------------------------------------------------------------
 local function log(msg, seconds)
     env.info("[STATIC_CARGO_PERSIST] " .. tostring(msg))
-
     if SCP.CONFIG.DEBUG then
         trigger.action.outText("[STATIC_CARGO_PERSIST] " .. tostring(msg), seconds or 8)
-    end
-end
-
-local function drawLog(msg, seconds)
-    if SCP.CONFIG.DEBUG_DRAW then
-        log("[DRAW] " .. tostring(msg), seconds or 8)
-    else
-        env.info("[STATIC_CARGO_PERSIST][DRAW] " .. tostring(msg))
     end
 end
 
@@ -218,8 +170,21 @@ local function round(n, d)
     return math.floor((n * m) + 0.5) / m
 end
 
-local function trim(s)
-    return tostring(s or ""):gsub("^%s+", ""):gsub("%s+$", "")
+local function deepCopy(tbl)
+    if mist and mist.utils and mist.utils.deepCopy then
+        return mist.utils.deepCopy(tbl)
+    end
+
+    if type(tbl) ~= "table" then
+        return tbl
+    end
+
+    local out = {}
+    for k, v in pairs(tbl) do
+        out[k] = deepCopy(v)
+    end
+
+    return out
 end
 
 local function sortedKeys(tbl)
@@ -236,26 +201,22 @@ local function sortedKeys(tbl)
     return keys
 end
 
-local function deepCopy(tbl)
-    if mist and mist.utils and mist.utils.deepCopy then
-        return mist.utils.deepCopy(tbl)
-    end
-
-    if type(tbl) ~= "table" then
-        return tbl
-    end
-
-    local out = {}
-
-    for k, v in pairs(tbl) do
-        out[k] = deepCopy(v)
-    end
-
-    return out
+local function trim(s)
+    return tostring(s or ""):gsub("^%s+", ""):gsub("%s+$", "")
 end
 
-local function nmToMeters(nm)
-    return (tonumber(nm) or 0) * 1852
+local function startsWithAnyPrefix(name)
+    local n = string.lower(tostring(name or ""))
+
+    for _, prefix in ipairs(SCP.CONFIG.DISCOVER_PREFIXES or {}) do
+        local p = string.lower(tostring(prefix or ""))
+
+        if p ~= "" and n:sub(1, #p) == p then
+            return true
+        end
+    end
+
+    return false
 end
 
 ----------------------------------------------------------------
@@ -263,7 +224,6 @@ end
 ----------------------------------------------------------------
 local function safeReadFile(path)
     local f = io.open(path, "r")
-
     if not f then
         return nil
     end
@@ -319,7 +279,6 @@ local function safeWriteFile(path, txt)
     ensureDirectoryForFile(path)
 
     local f = io.open(path, "w")
-
     if not f then
         return false
     end
@@ -688,8 +647,66 @@ local function destroyStaticIfExists(name, reason)
 end
 
 ----------------------------------------------------------------
--- TRACKED STATICS
+-- DISCOVERY
 ----------------------------------------------------------------
+local function looksLikeCargoStatic(data)
+    if SCP.CONFIG.ONLY_CARGO_STATICS ~= true then
+        return true
+    end
+
+    if not data then
+        return false
+    end
+
+    if data.canCargo == true then
+        return true
+    end
+
+    local name = tostring(data.unitName or data.name or "")
+    local typeName = string.lower(tostring(data.type or ""))
+    local categoryStatic = string.lower(tostring(data.categoryStatic or data.category or ""))
+
+    if startsWithAnyPrefix(name) then
+        return true
+    end
+
+    if typeName:find("cargo", 1, true) then
+        return true
+    end
+
+    if categoryStatic:find("cargo", 1, true) then
+        return true
+    end
+
+    if categoryStatic:find("cargos", 1, true) then
+        return true
+    end
+
+    return false
+end
+
+local function discoverStaticCargoFromMist()
+    local found = {}
+
+    if SCP.CONFIG.AUTO_DISCOVER_FROM_MIST ~= true then
+        return found
+    end
+
+    if not mist or not mist.DBs or not mist.DBs.MEunitsByCat or not mist.DBs.MEunitsByCat.static then
+        return found
+    end
+
+    for _, data in pairs(mist.DBs.MEunitsByCat.static or {}) do
+        local name = data.unitName or data.name
+
+        if name and name ~= "" and looksLikeCargoStatic(data) then
+            found[name] = deepCopy(data)
+        end
+    end
+
+    return found
+end
+
 local function discoverConfiguredStatics()
     local found = {}
 
@@ -697,358 +714,30 @@ local function discoverConfiguredStatics()
         name = trim(name)
 
         if name ~= "" then
-            found[name] = {
+            found[name] = found[name] or {
                 unitName = name
             }
         end
+    end
+
+    local auto = discoverStaticCargoFromMist()
+
+    for name, data in pairs(auto) do
+        found[name] = data
     end
 
     return found
 end
 
 ----------------------------------------------------------------
--- DRAW HELPERS
-----------------------------------------------------------------
-local function getDrawIds(name)
-    SCP.STATE.nextDrawId = SCP.STATE.nextDrawId or SCP.CONFIG.DRAW_ID_START
-    SCP.STATE.draws[name] = SCP.STATE.draws[name] or {}
-
-    if not SCP.STATE.draws[name].circleId then
-        SCP.STATE.draws[name].circleId = SCP.STATE.nextDrawId
-        SCP.STATE.nextDrawId = SCP.STATE.nextDrawId + 1
-    end
-
-    if not SCP.STATE.draws[name].textId then
-        SCP.STATE.draws[name].textId = SCP.STATE.nextDrawId
-        SCP.STATE.nextDrawId = SCP.STATE.nextDrawId + 1
-    end
-
-    return SCP.STATE.draws[name].circleId, SCP.STATE.draws[name].textId
-end
-
-local function removeDraw(name)
-    if not name then
-        return
-    end
-
-    local rec = SCP.STATE.draws[name]
-
-    if rec then
-        if rec.circleId then
-            pcall(function()
-                trigger.action.removeMark(rec.circleId)
-            end)
-        end
-
-        if rec.textId then
-            pcall(function()
-                trigger.action.removeMark(rec.textId)
-            end)
-        end
-
-        if SCP.CONFIG.DEBUG_DRAW then
-            drawLog("DRAW REMOVED: " .. tostring(name), 5)
-        end
-    end
-
-    SCP.STATE.draws[name] = nil
-end
-
-local function removeAllDraws()
-    local names = {}
-
-    for name, _ in pairs(SCP.STATE.draws or {}) do
-        names[#names + 1] = name
-    end
-
-    for _, name in ipairs(names) do
-        removeDraw(name)
-    end
-end
-
-local function getPointFromEntry(entry)
-    if not entry then
-        return nil
-    end
-
-    if entry.point and entry.point.x and entry.point.z then
-        return {
-            x = tonumber(entry.point.x) or 0,
-            y = tonumber(entry.point.y) or 0,
-            z = tonumber(entry.point.z) or 0
-        }
-    end
-
-    if entry.mapPoint and entry.mapPoint.x and entry.mapPoint.y then
-        local x = tonumber(entry.mapPoint.x) or 0
-        local z = tonumber(entry.mapPoint.y) or 0
-
-        return {
-            x = x,
-            y = land.getHeight({ x = x, y = z }),
-            z = z
-        }
-    end
-
-    return nil
-end
-
-local function buildDrawText(name, entry)
-    local title = SCP.CONFIG.DRAW_TITLE or "CARGA"
-    local typeName = entry and entry.type or "N/D"
-
-    return
-        title .. "\n" ..
-        "Nombre: " .. tostring(name) .. "\n" ..
-        "Tipo: " .. tostring(typeName) .. "\n" ..
-        "Radio: " .. tostring(SCP.CONFIG.DRAW_RADIUS_NM or 5) .. " NM"
-end
-
-local function getVisibleLineType()
-    local lineType = tonumber(SCP.CONFIG.DRAW_LINE_TYPE) or 1
-
-    -- Seguridad:
-    -- 0 puede ser No Line, entonces lo forzamos a 1.
-    if lineType == 0 then
-        lineType = 1
-    end
-
-    return lineType
-end
-
-local function drawCircleUsingCommitTable(circleId, point, radiusMeters, name)
-    if SCP.CONFIG.DRAW_USE_COMMIT_TABLE_FIRST ~= true then
-        return false, "commit table disabled"
-    end
-
-    if not trigger.action.markupToAll then
-        return false, "trigger.action.markupToAll no disponible"
-    end
-
-    local lineType = getVisibleLineType()
-
-    local markup = {
-        id = circleId,
-        coalition = SCP.CONFIG.DRAW_COALITION or -1,
-        primitiveType = "Polygon",
-        polygonMode = "circle",
-        mapX = point.x,
-        mapY = point.z,
-        radius = radiusMeters,
-        r = radiusMeters,
-        lineType = lineType,
-        color = SCP.CONFIG.DRAW_LINE_COLOR or {1, 0, 0, 1},
-        fillColor = SCP.CONFIG.DRAW_FILL_COLOR or {1, 0, 0, 0.18},
-        readOnly = SCP.CONFIG.DRAW_READ_ONLY == true,
-        message = "Radio de carga: " .. tostring(name),
-        name = "HDEV_STATIC_CARGO_" .. tostring(name),
-        commit = SCP.CONFIG.DRAW_COMMIT == true
-    }
-
-    local ok, err = pcall(function()
-        trigger.action.markupToAll(markup)
-    end)
-
-    if ok then
-        return true, nil
-    end
-
-    return false, err
-end
-
-local function drawCircleUsingCircleToAll(circleId, point, radiusMeters, name)
-    local lineType = getVisibleLineType()
-
-    local ok, err = pcall(function()
-        trigger.action.circleToAll(
-            SCP.CONFIG.DRAW_COALITION or -1,
-            circleId,
-            point,
-            radiusMeters,
-            SCP.CONFIG.DRAW_LINE_COLOR or {1, 0, 0, 1},
-            SCP.CONFIG.DRAW_FILL_COLOR or {1, 0, 0, 0.18},
-            lineType,
-            SCP.CONFIG.DRAW_READ_ONLY == true,
-            "Radio de carga: " .. tostring(name)
-        )
-    end)
-
-    if ok then
-        return true, nil
-    end
-
-    return false, err
-end
-
-local function drawTextLabel(textId, point, name, entry)
-    if SCP.CONFIG.DRAW_LABEL_ENABLED ~= true then
-        return true
-    end
-
-    if not trigger.action.textToAll then
-        return false, "trigger.action.textToAll no disponible"
-    end
-
-    local ok, err = pcall(function()
-        trigger.action.textToAll(
-            SCP.CONFIG.DRAW_COALITION or -1,
-            textId,
-            point,
-            SCP.CONFIG.DRAW_TEXT_COLOR or {1, 1, 1, 1},
-            SCP.CONFIG.DRAW_TEXT_FILL_COLOR or {0, 0, 0, 0.75},
-            SCP.CONFIG.DRAW_FONT_SIZE or 12,
-            SCP.CONFIG.DRAW_READ_ONLY == true,
-            buildDrawText(name, entry)
-        )
-    end)
-
-    if ok then
-        return true, nil
-    end
-
-    return false, err
-end
-
-local function drawStatic(name, entry)
-    if SCP.CONFIG.DRAW_ENABLED ~= true then
-        removeDraw(name)
-        return
-    end
-
-    if not entry or entry.enabled == false then
-        drawLog("DRAW NO: entry invalida o disabled para " .. tostring(name), 6)
-        removeDraw(name)
-        return
-    end
-
-    if entry.alive == false or entry.status == 2 or entry.destroyed == true then
-        drawLog("DRAW NO: JSON dice muerto para " .. tostring(name), 6)
-        removeDraw(name)
-        return
-    end
-
-    local obj = getStaticByName(name)
-
-    if not obj then
-        drawLog("DRAW NO: StaticObject.getByName no encontro " .. tostring(name), 8)
-        removeDraw(name)
-        return
-    end
-
-    if not isStaticAlive(obj) then
-        drawLog("DRAW NO: objeto no esta vivo " .. tostring(name), 8)
-        removeDraw(name)
-        return
-    end
-
-    local boxPoint = safeGetPoint(obj) or getPointFromEntry(entry)
-
-    if not boxPoint then
-        drawLog("DRAW NO: sin punto para " .. tostring(name), 8)
-        removeDraw(name)
-        return
-    end
-
-    local radiusMeters = nmToMeters(SCP.CONFIG.DRAW_RADIUS_NM or 5)
-    local circleId, textId = getDrawIds(name)
-
-    -- Si ya esta dibujado, no lo redibujamos cada ciclo.
-    -- Solo se borra cuando la caja muere o desaparece.
-    if SCP.STATE.draws[name] and SCP.STATE.draws[name].drawn == true then
-        return
-    end
-
-    SCP.STATE.draws[name] = SCP.STATE.draws[name] or {}
-    SCP.STATE.draws[name].commit = SCP.CONFIG.DRAW_COMMIT == true
-
-    local okCircle = false
-    local errCircle = nil
-    local drawMethod = "circleToAll"
-
-    okCircle, errCircle = drawCircleUsingCommitTable(circleId, boxPoint, radiusMeters, name)
-
-    if okCircle then
-        drawMethod = "markupToAll_commit"
-    else
-        if SCP.CONFIG.DEBUG_DRAW then
-            env.info("[STATIC_CARGO_PERSIST][DRAW] commit table fallback para " .. tostring(name) .. ": " .. tostring(errCircle))
-        end
-
-        okCircle, errCircle = drawCircleUsingCircleToAll(circleId, boxPoint, radiusMeters, name)
-        drawMethod = "circleToAll"
-    end
-
-    if not okCircle then
-        log("ERROR dibujando circulo de " .. tostring(name) .. ": " .. tostring(errCircle), 10)
-        return
-    end
-
-    local okText, errText = drawTextLabel(textId, boxPoint, name, entry)
-
-    if not okText then
-        log("ERROR dibujando texto de " .. tostring(name) .. ": " .. tostring(errText), 10)
-    end
-
-    SCP.STATE.draws[name].circleId = circleId
-    SCP.STATE.draws[name].textId = textId
-    SCP.STATE.draws[name].drawn = true
-    SCP.STATE.draws[name].lastUpdate = now()
-    SCP.STATE.draws[name].method = drawMethod
-
-    drawLog(
-        "DRAW OK: " .. tostring(name) ..
-        " | method=" .. tostring(drawMethod) ..
-        " | lineType=" .. tostring(getVisibleLineType()) ..
-        " | commit=" .. tostring(SCP.STATE.draws[name].commit) ..
-        " | x=" .. tostring(math.floor(boxPoint.x or 0)) ..
-        " z=" .. tostring(math.floor(boxPoint.z or 0)) ..
-        " | radio_m=" .. tostring(math.floor(radiusMeters)),
-        10
-    )
-end
-
-local function syncDrawsFromDoc(doc)
-    if SCP.CONFIG.DRAW_ENABLED ~= true then
-        removeAllDraws()
-        return
-    end
-
-    doc = doc or SCP.STATE.doc
-
-    if type(doc) ~= "table" or type(doc.statics) ~= "table" then
-        return
-    end
-
-    local configured = discoverConfiguredStatics()
-
-    for name, _ in pairs(configured) do
-        local entry = doc.statics[name]
-
-        if entry and entry.enabled ~= false then
-            drawStatic(name, entry)
-        else
-            removeDraw(name)
-        end
-    end
-
-    -- Quita dibujos de cajas que ya no esten en TRACKED_STATIC_NAMES.
-    local drawNames = {}
-
-    for name, _ in pairs(SCP.STATE.draws or {}) do
-        drawNames[#drawNames + 1] = name
-    end
-
-    for _, name in ipairs(drawNames) do
-        if not configured[name] then
-            removeDraw(name)
-        end
-    end
-end
-
-----------------------------------------------------------------
 -- SNAPSHOTS
 ----------------------------------------------------------------
-local function buildEntryFromName(name)
+local function buildEntryFromMistData(name, data)
+    data = data or {}
+
+    local mapX = tonumber(data.x or (data.point and data.point.x)) or 0
+    local mapY = tonumber(data.y or (data.point and data.point.y)) or 0
+
     return {
         name = name,
         enabled = true,
@@ -1058,27 +747,29 @@ local function buildEntryFromName(name)
         present = getStaticByName(name) ~= nil,
         destroyed = false,
 
-        type = nil,
+        type = data.type,
         category = "static",
-        categoryStatic = nil,
-        canCargo = nil,
-        mass = nil,
-        shape_name = nil,
+        categoryStatic = data.categoryStatic,
+        canCargo = data.canCargo and true or false,
+        mass = data.mass,
+        shape_name = data.shape_name,
 
-        coalitionId = nil,
-        countryId = nil,
+        coalition = data.coalition,
+        coalitionId = data.coalitionId,
+        country = data.country,
+        countryId = data.countryId,
 
-        heading = 0,
+        heading = round(data.heading or 0, 6),
 
         mapPoint = {
-            x = 0,
-            y = 0
+            x = round(mapX, 3),
+            y = round(mapY, 3)
         },
 
         point = {
-            x = 0,
+            x = round(mapX, 3),
             y = 0,
-            z = 0
+            z = round(mapY, 3)
         },
 
         life = nil,
@@ -1105,8 +796,6 @@ local function markEntryDead(entry, name)
     end
 
     entry.lastChangeTime = now()
-
-    removeDraw(name)
 
     return entry
 end
@@ -1169,13 +858,11 @@ local function snapshotStatic(name, previous)
     entry.lastSeenMissionTime = now()
     entry.lastChangeTime = now()
 
-    drawStatic(name, entry)
-
     return entry
 end
 
 ----------------------------------------------------------------
--- DOCUMENTO JSON
+-- DOCUMENT
 ----------------------------------------------------------------
 local function buildDefaultDocument()
     local doc = {
@@ -1196,10 +883,10 @@ local function buildDefaultDocument()
         statics = {}
     }
 
-    local configured = discoverConfiguredStatics()
+    local discovered = discoverConfiguredStatics()
 
-    for name, _ in pairs(configured) do
-        local entry = buildEntryFromName(name)
+    for name, data in pairs(discovered) do
+        local entry = buildEntryFromMistData(name, data)
         entry = snapshotStatic(name, entry)
 
         doc.statics[name] = entry
@@ -1214,11 +901,11 @@ local function mergeConfiguredStaticsIntoDoc(doc)
     doc.meta = doc.meta or {}
     doc.statics = doc.statics or {}
 
-    local configured = discoverConfiguredStatics()
+    local discovered = discoverConfiguredStatics()
 
-    for name, _ in pairs(configured) do
+    for name, data in pairs(discovered) do
         if not doc.statics[name] then
-            local entry = buildEntryFromName(name)
+            local entry = buildEntryFromMistData(name, data)
             entry = snapshotStatic(name, entry)
 
             doc.statics[name] = entry
@@ -1228,18 +915,19 @@ local function mergeConfiguredStaticsIntoDoc(doc)
             if doc.statics[name].enabled == nil then
                 doc.statics[name].enabled = true
             end
-        end
 
-        SCP.STATE.tracked[name] = true
+            doc.statics[name].type = doc.statics[name].type or data.type
+            doc.statics[name].categoryStatic = doc.statics[name].categoryStatic or data.categoryStatic
+            doc.statics[name].canCargo = doc.statics[name].canCargo or data.canCargo
+            doc.statics[name].mass = doc.statics[name].mass or data.mass
+            doc.statics[name].shape_name = doc.statics[name].shape_name or data.shape_name
+            doc.statics[name].countryId = doc.statics[name].countryId or data.countryId
+            doc.statics[name].coalitionId = doc.statics[name].coalitionId or data.coalitionId
+        end
     end
 
-    -- Si algo existe en JSON pero ya no esta en TRACKED_STATIC_NAMES,
-    -- no lo seguimos ni lo dibujamos.
     for name, _ in pairs(doc.statics or {}) do
-        if not configured[name] then
-            removeDraw(name)
-            SCP.STATE.tracked[name] = nil
-        end
+        SCP.STATE.tracked[name] = true
     end
 end
 
@@ -1260,6 +948,81 @@ local function loadOrBuildDocument()
     saveSyncFile(doc, true)
 
     return doc, true
+end
+
+----------------------------------------------------------------
+-- SPAWN OPCIONAL
+----------------------------------------------------------------
+local function spawnStaticFromEntry(entry)
+    if SCP.CONFIG.RESPAWN_MISSING_IF_JSON_ALIVE ~= true then
+        return false
+    end
+
+    if not coalition or not coalition.addStaticObject then
+        return false
+    end
+
+    if not entry or not entry.name or not entry.type then
+        return false
+    end
+
+    local countryId = tonumber(entry.countryId)
+
+    if not countryId then
+        log("No se puede recrear estatico sin countryId: " .. tostring(entry.name), 8)
+        return false
+    end
+
+    local mapX = nil
+    local mapY = nil
+
+    if entry.mapPoint then
+        mapX = tonumber(entry.mapPoint.x)
+        mapY = tonumber(entry.mapPoint.y)
+    end
+
+    if (not mapX or not mapY) and entry.point then
+        mapX = tonumber(entry.point.x)
+        mapY = tonumber(entry.point.z)
+    end
+
+    if not mapX or not mapY then
+        log("No se puede recrear estatico sin posicion: " .. tostring(entry.name), 8)
+        return false
+    end
+
+    local data = {
+        name = entry.name,
+        type = entry.type,
+        category = entry.categoryStatic or "Cargos",
+        x = mapX,
+        y = mapY,
+        heading = tonumber(entry.heading) or 0,
+        canCargo = entry.canCargo,
+        mass = entry.mass,
+        shape_name = entry.shape_name
+    }
+
+    local clean = {}
+
+    for k, v in pairs(data) do
+        if v ~= nil then
+            clean[k] = v
+        end
+    end
+
+    local ok, result = pcall(function()
+        return coalition.addStaticObject(countryId, clean)
+    end)
+
+    if ok and result then
+        log("Estatico recreado desde JSON: " .. tostring(entry.name), 8)
+        return true
+    end
+
+    log("Fallo recreando estatico desde JSON: " .. tostring(entry.name), 8)
+
+    return false
 end
 
 ----------------------------------------------------------------
@@ -1296,19 +1059,18 @@ local function injectFromJson()
     readControlOverrides(doc)
     mergeConfiguredStaticsIntoDoc(doc)
 
-    local configured = discoverConfiguredStatics()
-
-    for name, _ in pairs(configured) do
-        local entry = doc.statics and doc.statics[name]
-
-        if entry and entry.enabled ~= false then
+    for name, entry in pairs(doc.statics or {}) do
+        if entry.enabled ~= false then
             SCP.STATE.tracked[name] = true
 
             if shouldBeDeadFromJson(entry) then
                 destroyStaticIfExists(name, "JSON dice muerto")
-                removeDraw(name)
             else
-                drawStatic(name, entry)
+                if SCP.CONFIG.RESPAWN_MISSING_IF_JSON_ALIVE == true then
+                    if not getStaticByName(name) then
+                        spawnStaticFromEntry(entry)
+                    end
+                end
             end
         end
     end
@@ -1340,12 +1102,8 @@ local function exportLiveToJson(force)
     doc.meta.missionTime = now()
     doc.meta.source = "DCS Static Cargo runtime"
 
-    local configured = discoverConfiguredStatics()
-
-    for name, _ in pairs(configured) do
-        local entry = doc.statics[name]
-
-        if entry and entry.enabled ~= false then
+    for name, entry in pairs(doc.statics or {}) do
+        if entry.enabled ~= false then
             doc.statics[name] = snapshotStatic(name, entry)
         end
     end
@@ -1370,9 +1128,7 @@ local function markStaticDeadByName(name, reason)
         return
     end
 
-    if not SCP.STATE.tracked[name] then
-        return
-    end
+    SCP.STATE.tracked[name] = true
 
     local doc = loadSyncFile()
 
@@ -1402,10 +1158,67 @@ end
 ----------------------------------------------------------------
 -- EVENT HANDLER
 ----------------------------------------------------------------
+local function objectIsStatic(obj)
+    local cat = safeGetCategory(obj)
+
+    if Object and Object.Category and Object.Category.STATIC ~= nil then
+        return cat == Object.Category.STATIC
+    end
+
+    return true
+end
+
+local function canAutoTrackRuntimeName(name)
+    if SCP.CONFIG.AUTO_TRACK_RUNTIME_BIRTHS ~= true then
+        return false
+    end
+
+    return startsWithAnyPrefix(name)
+end
+
 local handler = {}
 
 function handler:onEvent(event)
     if not event or not event.id then
+        return
+    end
+
+    if event.id == world.event.S_EVENT_BIRTH then
+        if SCP.CONFIG.AUTO_TRACK_RUNTIME_BIRTHS ~= true then
+            return
+        end
+
+        local obj = event.initiator
+
+        if not obj or not objectIsStatic(obj) then
+            return
+        end
+
+        local name = safeGetName(obj)
+
+        if not name or name == "" then
+            return
+        end
+
+        if canAutoTrackRuntimeName(name) then
+            SCP.STATE.tracked[name] = true
+
+            local doc = SCP.STATE.doc or loadSyncFile() or buildDefaultDocument()
+            doc.statics = doc.statics or {}
+
+            if not doc.statics[name] then
+                doc.statics[name] = snapshotStatic(name, {
+                    name = name,
+                    enabled = true
+                })
+
+                SCP.STATE.doc = doc
+                SCP.STATE.dirty = true
+
+                log("Estatico runtime registrado: " .. tostring(name), 6)
+            end
+        end
+
         return
     end
 
@@ -1427,6 +1240,11 @@ function handler:onEvent(event)
 
     if SCP.STATE.tracked[name] then
         markStaticDeadByName(name, "S_EVENT_DEAD")
+        return
+    end
+
+    if canAutoTrackRuntimeName(name) and objectIsStatic(obj) then
+        markStaticDeadByName(name, "S_EVENT_DEAD_RUNTIME")
     end
 end
 
@@ -1455,22 +1273,6 @@ local function validateEnvironment()
         return false, "StaticObject.getByName no disponible"
     end
 
-    if not trigger or not trigger.action then
-        return false, "trigger.action no disponible"
-    end
-
-    if not trigger.action.circleToAll then
-        return false, "trigger.action.circleToAll no disponible"
-    end
-
-    if SCP.CONFIG.DRAW_LABEL_ENABLED == true and not trigger.action.textToAll then
-        return false, "trigger.action.textToAll no disponible"
-    end
-
-    if not trigger.action.removeMark then
-        return false, "trigger.action.removeMark no disponible"
-    end
-
     return true
 end
 
@@ -1496,10 +1298,7 @@ local function mainLoop(_, currentTime)
             log("Fin de ventana de inyeccion. DCS toma control.", 10)
 
             exportLiveToJson(true)
-            syncDrawsFromDoc(SCP.STATE.doc)
-
             SCP.STATE.lastExport = currentTime
-            SCP.STATE.lastDrawUpdate = currentTime
         end
     else
         if (currentTime - SCP.STATE.lastExport) >= SCP.CONFIG.EXPORT_INTERVAL then
@@ -1509,11 +1308,6 @@ local function mainLoop(_, currentTime)
             if (currentTime - (SCP.STATE.lastWriteTime or -9999)) >= SCP.CONFIG.MIN_WRITE_INTERVAL then
                 exportLiveToJson(true)
             end
-        end
-
-        if (currentTime - SCP.STATE.lastDrawUpdate) >= SCP.CONFIG.DRAW_UPDATE_INTERVAL then
-            SCP.STATE.lastDrawUpdate = currentTime
-            syncDrawsFromDoc(SCP.STATE.doc)
         end
     end
 
@@ -1531,24 +1325,7 @@ local function startStaticCargoPersistence()
         return
     end
 
-    SCP.STATE.nextDrawId = SCP.CONFIG.DRAW_ID_START
-    SCP.STATE.draws = SCP.STATE.draws or {}
-
     registerEventHandler()
-
-    local configured = discoverConfiguredStatics()
-
-    for name, _ in pairs(configured) do
-        SCP.STATE.tracked[name] = true
-    end
-
-    if SCP.CONFIG.DEBUG_DRAW then
-        local count = 0
-        for _, _ in pairs(configured) do
-            count = count + 1
-        end
-        drawLog("TRACKED_STATIC_NAMES detectados: " .. tostring(count), 10)
-    end
 
     local doc, hadJson = loadOrBuildDocument()
 
@@ -1556,10 +1333,8 @@ local function startStaticCargoPersistence()
     SCP.STATE.started = true
     SCP.STATE.injecting = hadJson
     SCP.STATE.injectEndsAt = now() + SCP.CONFIG.INJECT_DURATION
-
     SCP.STATE.lastInject = -9999
     SCP.STATE.lastExport = -9999
-    SCP.STATE.lastDrawUpdate = -9999
     SCP.STATE.dirty = false
 
     if hadJson then
@@ -1567,11 +1342,8 @@ local function startStaticCargoPersistence()
         injectFromJson()
     else
         log("No habia JSON previo. DCS queda como fuente desde el inicio.", 10)
-
         SCP.STATE.injecting = false
-
         exportLiveToJson(true)
-        syncDrawsFromDoc(SCP.STATE.doc)
     end
 
     timer.scheduleFunction(mainLoop, nil, now() + SCP.CONFIG.MAIN_LOOP_INTERVAL)
