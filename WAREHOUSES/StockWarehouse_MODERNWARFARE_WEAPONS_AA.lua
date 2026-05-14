@@ -138,8 +138,8 @@ tipoAviones["FOX03PACK_02"] = {
     costo = 20300000,
 
     misiles = {
-        ["AIM-54A-Mk47"]  = {ws = {4, 4, 7, 24}, cantidad = 5},
-        ["AIM-54C-Mk60"]  = {ws = {4, 4, 7, 106}, cantidad = 15}
+        ["AIM-54A-Mk47"]  = {ws = {4, 4, 7, 320}, cantidad = 15},
+        ["AIM-54C-Mk60"]  = {ws = {4, 4, 7, 405}, cantidad = 15}
        }
 }
 tipoAviones["FOX03PACK_03"] = {

@@ -52,9 +52,15 @@ MZD.CONFIG = {
     missileTypes = {
         ["9M723"] = true,
         ["9M723 HE"] = true,
-        ["Kh-31P"] = true,
-        ["Kh-31"] = true,
-        ["Kh-101"] = true,
+        ["KH-31P"] = true,
+        ["KH-31"] = true,
+        ["KH-101"] = true,
+        ["Kh 31P"] = true,
+        ["Kh 31"] = true,
+        ["Kh 101"] = true,
+         ["KH 31P"] = true,
+        ["KH 31"] = true,
+        ["KH 101"] = true,
 
     },
 
