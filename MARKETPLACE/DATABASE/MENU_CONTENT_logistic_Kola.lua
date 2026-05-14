@@ -402,7 +402,7 @@ subvariantesAvion = {
     },
     ["FOX-3_PAYLOAD"] = {
         ["AIM-120B/AIM-120C"] = "FOX03PACK_01",
-        ["AIM-54A-Mk47P/AIM-54C-Mk60"] = "FOX03PACK_02",
+        ["AIM-54A-Mk47/AIM-54C-Mk47"] = "FOX03PACK_02",
         ["SD-10A"] = "FOX03PACK_03",
         ["R-77"] = "FOX04PACK_04"
     },
@@ -862,7 +862,7 @@ nombresSubvariantes = {
     ["FOX02PACK_10"] = "AIM-9X",
     --FOX 3
     ["FOX03PACK_01"] = "AIM-120B/AIM-120",
-    ["FOX03PACK_02"] = "AIM-54A-Mk47P/AIM-54C-Mk60",
+    ["FOX03PACK_02"] = "AIM-54A-Mk47/AIM-54C-Mk47",
     ["FOX03PACK_03"] = "SD-10A",
     ["FOX03PACK_04"] = "R-77",
 
