@@ -898,7 +898,7 @@ MDB.MISSIONS = {
 
             --Tercer Objetivo 
             {
-                id = "OBJ_DESTRUIR_GRUPO_ROAD",
+                id = "OBJ_DESTRUIR_GRUPO_WAGNER",
                 name = "Destruir la brigada de WAGNER en la zona.",
                 drawName = "Destruir la brigada de WAGNER en la zona.",
                 enabled = true,
