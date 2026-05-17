@@ -16,7 +16,7 @@ end
 HDEV_MissionSystem = HDEV_MissionSystem or {}
 local MS = HDEV_MissionSystem
 
-MS.VERSION = "1.4.15"
+MS.VERSION = "1.4.14"
 
 MS.STATUS = {
     NOT_STARTED = 0,
@@ -64,9 +64,7 @@ MS.CONFIG = MS.CONFIG or {
 
     MISSION_SMOKE_ENABLED = true,
     MISSION_SMOKE_DEFAULT_REFRESH_SECONDS = 240,
-    MISSION_SMOKE_DEFAULT_STOP_ON_PASS = true,
-
-    ALLOW_ADVANCE_AFTER_FAIL = true
+    MISSION_SMOKE_DEFAULT_STOP_ON_PASS = true
 }
 
 ----------------------------------------------------------------
@@ -3414,17 +3412,7 @@ local function getCurrentOrNextMission()
 
             if prevDef then
                 local prevState = ensureMissionState(prevDef)
-                local allowAdvanceAfterFail = MS.CONFIG.ALLOW_ADVANCE_AFTER_FAIL == true
-
-                if def.advanceOnPreviousFail ~= nil then
-                    allowAdvanceAfterFail = def.advanceOnPreviousFail == true
-                end
-
-                prevOk = (prevState.status == MS.STATUS.COMPLETED)
-
-                if not prevOk and allowAdvanceAfterFail then
-                    prevOk = (prevState.status == MS.STATUS.FAILED)
-                end
+                prevOk = prevState.status == MS.STATUS.COMPLETED
             end
 
             if prevOk and allFlagConditionsTrue(def.activationConditions or {}) then
