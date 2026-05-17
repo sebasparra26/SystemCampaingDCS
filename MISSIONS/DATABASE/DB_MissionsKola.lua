@@ -748,14 +748,15 @@ MDB.MISSIONS = {
             "2. Localiza la patrulla blindada y destruyela.\n" ..
             "3. Inteligencia informa que tambien se desplego un grupo de WAGNER en la zona, encuentralo y destruyelo.\n" ..
             "4. Destruye el cuartel general de WAGNER\n" ..
-            "5. (OPCIONAL)Encuentra los recursos del grupo WAGNER y traelos a la base\n",
+            "5. (OPCIONAL)Encuentra los recursos del grupo WAGNER y traelos a la base\n\n\n\n"..
+
             "PAGOS:\n" ..
             --"Captura: 0 --\n" ..
-            "Objetivo Botes de Asalto: 5.000.000\n" ..
+            "Objetivo Botes de Asalto: 40.000.000\n" ..
             "Objetivo Blindados: 50.000.000\n" ..
-            "Division Wagner: 20.000.000\n" ..
+            "Division Wagner: 30.000.000\n" ..
             "Cuartel General Wagner: 300.000.000\n" ..
-            "Mision Completada: 10.000.000\n\n"..
+            "Mision Completada: 1000.000.000\n\n"..
          
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
@@ -829,7 +830,7 @@ MDB.MISSIONS = {
             --Primer Obejtivo 
             {
                 id = "OBJ_DESTRUIR_GRUPO_BOAT",
-                name = "BOAT",
+                name = "Destruir la patrulla maritima enemiga",
                 drawName = "Destruir la patrulla maritima enemiga",
                 enabled = true,
                 requiredForMission = true,
@@ -857,13 +858,13 @@ MDB.MISSIONS = {
                 reward = {
                     enabled = true,
                     coalition = 2,
-                    amount = 5000000
+                    amount = 40000000
                 }
             },
             --Segundo Obejtivo 
             {
                 id = "OBJ_DESTRUIR_GRUPO_ROAD",
-                name = "BOAT",
+                name = "Destruir la columna Blindada enemiga",
                 drawName = "Destruir la columna Blindada enemiga",
                 enabled = true,
                 requiredForMission = true,
@@ -891,14 +892,14 @@ MDB.MISSIONS = {
                 reward = {
                     enabled = true,
                     coalition = 2,
-                    amount = 20000000
+                    amount = 50000000
                 }
             },
 
             --Tercer Objetivo 
             {
                 id = "OBJ_DESTRUIR_GRUPO_ROAD",
-                name = "BOAT",
+                name = "Destruir la brigada de WAGNER en la zona.",
                 drawName = "Destruir la brigada de WAGNER en la zona.",
                 enabled = true,
                 requiredForMission = true,
@@ -926,7 +927,7 @@ MDB.MISSIONS = {
                 reward = {
                     enabled = true,
                     coalition = 2,
-                    amount = 20000000
+                    amount = 30000000
                 }
             },
             
@@ -966,7 +967,7 @@ MDB.MISSIONS = {
          rewards = {
              enabled = true,
              coalition = 2,
-             missionSuccessAmount = 10000000
+             missionSuccessAmount = 1000000000
          },
     
          successConditions = {
@@ -1008,8 +1009,8 @@ MDB.MISSIONS = {
             "PAGOS:\n" ..
             --"Captura: 0 --\n" ..
             "Objetivo bunker de municiones: 500.000.000\n" ..
-            "Equipos Seal x 3 : 1.500.000\n" ..
-            "Mision Completada: 10.000.000\n\n"..
+            "Equipos Seal x 3 : 50.000.000\n" ..
+            "Mision Completada: 500.000.000\n\n"..
 
             "IMPORTANTE:\n" ..
             "Coordenadas:\n" ..
@@ -1147,7 +1148,7 @@ MDB.MISSIONS = {
                  reward = {
                      enabled = true,
                     coalition = 2,
-                     amount = 5000000
+                     amount = 50000000
                  }
              },
               --02-------------------------------------------------------------------
@@ -1218,7 +1219,7 @@ MDB.MISSIONS = {
                  reward = {
                      enabled = true,
                     coalition = 2,
-                     amount = 5000000
+                     amount = 50000000
                  }
              },
                --03-------------------------------------------------------------------
@@ -1291,7 +1292,7 @@ MDB.MISSIONS = {
                  reward = {
                      enabled = true,
                     coalition = 2,
-                     amount = 5000000
+                     amount = 50000000
                  }
              },
              --03-------------------------------------------------------------------
@@ -1326,7 +1327,7 @@ MDB.MISSIONS = {
          rewards = {
              enabled = true,
              coalition = 2,
-             missionSuccessAmount = 10000000
+             missionSuccessAmount = 500000000
          },
     
          successConditions = {
