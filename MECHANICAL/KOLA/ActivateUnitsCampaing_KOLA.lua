@@ -187,10 +187,12 @@ local activacionesPorFlag = {
         valor = 1,
         grupos = {
             "MT_03_SHIP",
-            "MT_03_HELI_01",
-            "MT_03_HELI_02",
+            "MT_03_HELI_03",
+            "MT_03_HELI_04",
             "MT_03_ROAD",
             "MT_03_WAGNER",
+            "MT_03_SAM_01",
+            "MT_03_SAM_02",
             "WagnerCommand01",
             
         }
