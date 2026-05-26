@@ -1489,6 +1489,8 @@ MDB.MISSIONS = {
                     value = 0
                 },
 
+                
+
                 setFlagOnPass = {
                     flag = 2024,
                     value = 1,
@@ -1530,6 +1532,354 @@ MDB.MISSIONS = {
     ----------------------------------------------------------------
     ----------------------------------------------------------------
     ----------------------------------------------------------------
+    {
+         id = "M06",
+         order = 6,
+         enabled = true,
+    
+        name = "Operación - Barba Roja.",
+        shortName = "M06",
+        generalObjective = "Captura la base de Kallax\n\n"..
+                           "Busca y destruye a los 3 Comandantes en la región.\n\n\n" ..
+                           "Recupera Aviones, Helicopteros y armamento de la base. (Llevarlos a la Base principal)\n\n\n" ..
+                            "Lat Long Decimal Minutes: N 65°33.748'   E 22°09.945'\n"..
+                            "MGRS GRID: 34 W ET 53812 71641\n"..
+                            "Altitude: 0 m / 0 feet\n\n"..
+                            "NOTA: Los 3 Comandantes estaran Marcados con Humo Rojo.\n\n",
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Captura la base de Kallax, Busca y destruye a los 3 Comandantes en la región y recupera los elementos de la base.\n\n\n" ..
+            
+
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Captura la base de Kallax.\n" ..
+            "2. Busca y destruye a los 3 Comandantes en la región.\n\n\n" ..
+            "3. Recupera Aviones, Helicopteros y armamento de la base. (Llevarlos a la Base principal)\n\n\n" ..
+
+            "PAGOS:\n" ..
+            "Capturar Base: 100.000.000\n" ..
+            "Destruir a los comandantes x 3 : 150.000.000\n"..
+            "Recuperar elementos de la base : 50.000.000\n"..
+            "Mision Completada: 1500.000.000\n\n",
+            --"Captura: 0 --\n" ..
+         
+           
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = -273218,
+                z = -9621
+            },
+
+            zoneName = nil,
+
+            title = "M06 - Operación Barba Roja",
+            text =
+                "MISION 06\n" ..
+                "Captura la base de Kallax.\n" ..
+                "Busca y destruye a los 3 Comandantes en la región.\n\n\n" ..
+                "Recupera Aviones, Helicopteros y armamento de la base. (Llevarlos a la Base principal)\n\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M06 - Barba Roja",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2600, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2601, value = 1 },
+            },
+            onFail = {
+                { flag = 2602, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+                
+             }
+         },
+    
+         secondaryObjectives = {
+--01------------------------------------------------------------------
+          {
+                 id = "OBJ_CAPTURAR_BASE",
+                 name = "Capturar Kallax",
+                 drawName = "Capturar base Kallax",
+                enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "base_capture",
+                     baseName = "Kallax",
+                    op = "==",
+                     coalition = 2,
+            
+                     smoke = {
+                         enabled = false,
+                         refreshSeconds = 240,
+                         stopOnPass = true,
+                         autoTarget = true,
+                         captureColor = "orange"
+            
+                         -- items = {
+                         --     { targetKind = "airbase", airbaseName = "Khalkhalah Air Base", color = "orange" },
+                        --     { targetKind = "zone", zoneName = "Z_CAPTURA_154", color = "orange" },
+                         -- }
+                     }
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 2026,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 2027,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 100000000
+                 }
+             },
+--02------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_01",
+                 name = "Destruir Comandante 1",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "Command_TGT_01",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2028,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 50000000
+                 }
+             },
+--03------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_02",
+                 name = "Destruir Comandante 2",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "Command_TGT_02",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2029,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 50000000
+                 }
+             }, 
+--04------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_03",
+                 name = "Destruir Comandante 3",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "Command_TGT_03",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2030,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 50000000
+                 }
+             }, 
+--05------------------------------------------------------------------
+{
+                id = "OBJ_MULTI_WAREHOUSE",
+                name = "Sacar aviones y armamento",
+                drawName = "Sacar aviones y armamento",
+                enabled = true,
+                requiredForMission = true,
+
+                monitor = {
+                    kind = "warehouse",
+                    baseName = "kallax",
+                    mode = "all", -- all | any | sum
+
+                    items = {
+                        --AVIONES:
+                        --{ category = "aircraft", itemName = "UH-1H", label = "UH-1H - HUEY", removedAtLeast = 1 },
+                        { category = "aircraft", itemName = "AH-64D_BLK_II", label = "AH-64D - APACHE", removedAtLeast = 6 },
+                        { category = "aircraft", itemName = "FA-18C_hornet", label = "FA-18C - HORNET", removedAtLeast = 10 },
+                        { category = "aircraft", itemName = "F-16C_50", label = "F-16C - VIPER", removedAtLeast = 10 },
+                        { category = "aircraft", itemName = "F-14B", label = "F-14B - TOMCAT", removedAtLeast = 10 }, 
+                        { category = "aircraft", itemName = "AJS37", label = "AJS37 - VIGGEN", removedAtLeast = 10 },
+                        
+                        --WEAPONS:
+                        { category = "weapon",   itemName = "weapons.bombs.GBU_12", label = "GBU 12", removedAtLeast = 120 },
+                        { category = "weapon",   itemName = "weapons.missiles.AGM_84H", label = "AGM_84H - SLAM-ER", removedAtLeast = 100 },
+                        { category = "weapon",   itemName = "weapons.missiles.AGM_84A", label = "AGM_84A - HARPOONR", removedAtLeast = 100 },
+                        { category = "weapon",   itemName = "weapons.missiles.AIM_54C_Mk47", label = "AIM_54C Mk47 - PHOENIX ", removedAtLeast = 100 },
+                        { category = "weapon",   itemName = "weapons.containers.AN_AAQ_33", label = "AN_AAQ/33 - SNIPER POD", removedAtLeast = 60 },
+                        { category = "weapon",   itemName = "weapons.containers.AN_ASQ_228", label = "AN_ASQ_228 - ATFLIR", removedAtLeast = 60 },
+                        { category = "weapon",   itemName = "weapons.missiles.AIM_120C", label = "AIM 120 C", removedAtLeast = 200 },
+                        { category = "weapon",   itemName = "weapons.missiles.AIM_9X", label = "AIM 9 X", removedAtLeast = 200 },
+
+           
+                    }
+
+                    -- si usaras mode = "sum":
+                    -- removedAtLeastTotal = 34
+                },
+
+                setFlagOnPass = {
+                    flag = 2031,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                setFlagOnActive = {
+                    flag = 2032,
+                    value = 1,
+                    elseValue = 0
+                },
+
+                reward = {
+                    enabled = true,
+                    coalition = 2,
+                    amount = 50000000
+                }
+            },                                                                                           
+         },
+    
+        rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 1500000000
+         },
+
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+         }
+     },
 }
 
 

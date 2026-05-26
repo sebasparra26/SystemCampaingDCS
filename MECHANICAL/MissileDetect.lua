@@ -29,8 +29,8 @@ local MZD = HDEV_MissileZoneDetector
 -- CONFIGURACION
 ----------------------------------------------------------------
 MZD.CONFIG = {
-    debugText = false,
-    debugLog = false,
+    debugText = true,
+    debugLog = true,
 
     -- Cada cuanto revisar la posicion de los misiles activos
     checkInterval = 0.2,
@@ -51,16 +51,9 @@ MZD.CONFIG = {
     -- El nombre debe coincidir con weapon:getTypeName().
     missileTypes = {
         ["9M723"] = true,
-        ["9M723 HE"] = true,
-        ["KH-31P"] = true,
-        ["KH-31"] = true,
-        ["KH-101"] = true,
-        ["Kh 31P"] = true,
-        ["Kh 31"] = true,
-        ["Kh 101"] = true,
-         ["KH 31P"] = true,
-        ["KH 31"] = true,
-        ["KH 101"] = true,
+        ["X_31P"] = true,
+        ["X_101"] = true,
+       
 
     },
 

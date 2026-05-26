@@ -492,7 +492,7 @@ ctld.vehiclesWeight = {
 
 ctld.spawnRPGWithCoalition = true --spawns a friendly RPG unit with Coalition forces
 ctld.spawnStinger = true -- spawns a stinger / igla soldier with a group of 6 or more soldiers!
-ctld.enabledFOBBuilding = true  -- if true, you can load a crate INTO a C-130 than when unpacked creates a Forward Operating Base (FOB) which is a new place to spawn (crates) and carry crates from
+ctld.enabledFOBBuilding = false  -- if true, you can load a crate INTO a C-130 than when unpacked creates a Forward Operating Base (FOB) which is a new place to spawn (crates) and carry crates from
                                 -- In future i'd like it to be a FARP but so far that seems impossible...
                                 -- You can also enable troop Pickup at FOBS
 ctld.cratesRequiredForFOB = 2 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
@@ -519,7 +519,7 @@ ctld.hoverTime = 10 -- Time to hold hover above a crate for loading in seconds
 -- end of Simulated Sling load configuration
 
 -- ***************** AA SYSTEM CONFIG *****************
-ctld.aaLaunchers = 2 -- controls how many launchers to add to the AA systems when its spawned if no amount is specified in the template.
+ctld.aaLaunchers = 4 -- controls how many launchers to add to the AA systems when its spawned if no amount is specified in the template.
 -- Sets a limit on the number of active AA systems that can be built for RED.
 -- A system is counted as Active if its fully functional and has all parts
 -- If a system is partially destroyed, it no longer counts towards the total

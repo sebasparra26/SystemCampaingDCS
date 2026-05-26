@@ -222,7 +222,26 @@ local activacionesPorFlag = {
         valor = 1,
         grupos = {
             "MT_05_SHIP",
-            "MT_05_SHIP-2"
+            "MT_05_SHIP-2",
+            "MT_05_AIR-3",
+            "MT_05_AIR-4",
+
+        }
+    },
+
+     --MISION 06------------------------------------------------------------------------
+    [2600] = {
+        valor = 1,
+        grupos = {
+            "Command_TGT_01",
+            "Command_TGT_02",
+            "Command_TGT_03",
+            "TGT21",
+            "Scort_01",
+            "Scort_02",
+            "Scort_03",
+            "MT_06_SAM",
+            
         }
     },
 
