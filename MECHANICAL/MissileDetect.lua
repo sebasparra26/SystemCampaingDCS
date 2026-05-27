@@ -29,11 +29,11 @@ local MZD = HDEV_MissileZoneDetector
 -- CONFIGURACION
 ----------------------------------------------------------------
 MZD.CONFIG = {
-    debugText = true,
-    debugLog = true,
+    debugText = false,
+    debugLog = false,
 
     -- Cada cuanto revisar la posicion de los misiles activos
-    checkInterval = 0.2,
+    checkInterval = 0.8,
 
     -- Tiempo que la bandera queda encendida
     flagPulseSeconds = 1,
