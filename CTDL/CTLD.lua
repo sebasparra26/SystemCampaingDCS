@@ -5255,6 +5255,48 @@ function ctld.spawnCrateGroup(_heli, _positions, _types, _hdgs)
     
     _group.country = _heli:getCountry()
 	local _spawnedGroup = Group.getByName(mist.dynAdd(_group).name)
+    -- Proteccion especial para drones JTAC
+if _spawnedGroup ~= nil and (_types[1] == "MQ-9 Reaper" or _types[1] == "RQ-1A Predator") then
+
+    timer.scheduleFunction(function(_groupName)
+
+        local _grp = Group.getByName(_groupName)
+        if _grp ~= nil and _grp:isExist() then
+
+            local _ctrl = _grp:getController()
+            if _ctrl ~= nil then
+
+                -- Invisible para IA enemiga
+                _ctrl:setCommand({
+                    id = "SetInvisible",
+                    params = {
+                        value = true
+                    }
+                })
+
+                -- Inmortal
+                _ctrl:setCommand({
+                    id = "SetImmortal",
+                    params = {
+                        value = true
+                    }
+                })
+
+                -- Combustible ilimitado
+                _ctrl:setCommand({
+                    id = "SetUnlimitedFuel",
+                    params = {
+                        value = true
+                    }
+                })
+
+                env.info("[CTLD JTAC DRONE] Drone protegido: " .. tostring(_groupName))
+            end
+        end
+
+        return nil
+    end, _spawnedGroup:getName(), timer.getTime() + 1)
+end
     return _spawnedGroup
 end
 
