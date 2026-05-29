@@ -206,8 +206,8 @@ tipoAviones["AGM-84"] = {
     costo = 10500000,
 
     misiles = {
-        ["AGM-84D Harpoon AShM"]  = {ws = {4, 4, 8, 278}, cantidad = 4},
-        ["AGM-84H SLAM-ER (Expanded Response)"]  = {ws = {4, 4, 8, 279}, cantidad = 1}
+        ["AGM-84D Harpoon AShM"]  = {ws = {4, 4, 8, 278}, cantidad = 20},
+        ["AGM-84H SLAM-ER (Expanded Response)"]  = {ws = {4, 4, 8, 279}, cantidad = 4}
        
     }
 }
