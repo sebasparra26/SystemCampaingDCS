@@ -223,8 +223,8 @@ local activacionesPorFlag = {
         grupos = {
             "MT_05_SHIP",
             "MT_05_SHIP-2",
-            "MT_05_AIR-3",
-            "MT_05_AIR-4",
+            "MT_05_CARRIER",
+            
 
         }
     },

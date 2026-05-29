@@ -68,6 +68,7 @@ local COSTOS_TANKER = {
 }
 
 local HIDE_ON_MAP, HIDE_ON_PLANNER, HIDE_ON_MFD = false, false, false
+local GAME_MASTER_ONLY = true
 
 local tankerTypes = {
   ["KC-135"] = { type = "KC-135", cs = {1, 1, 0}, tac = "BSL" },
@@ -221,7 +222,7 @@ local function spawnTankerAzul(tp, p1, p2, hdg)
     hidden = HIDE_ON_MAP,
     hiddenOnPlanner = HIDE_ON_PLANNER,
     hiddenOnMFD = HIDE_ON_MFD,
-    groupControl = "gameMaster",
+    groupControl = GAME_MASTER_ONLY and "gameMaster" or nil,
     task = { id = "ComboTask", params = { tasks = { { id = "Tanker", enabled = true } } } },
     units = { {
       type = info.type,
