@@ -1350,7 +1350,7 @@ MDB.MISSIONS = {
      {
          id = "M05",
          order = 5,
-         enabled = true,
+         enabled = false,
     
         name = "Operación - A la caza del Octubre rojo.",
         shortName = "M05",
