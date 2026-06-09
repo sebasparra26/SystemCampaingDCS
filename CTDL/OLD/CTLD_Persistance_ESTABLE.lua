@@ -3,12 +3,16 @@
 --
 -- Persistencia de despliegues CTLD
 --
--- Version corregida:
--- - Guarda grupos creados por CTLD al desempaquetar crates
--- - Reinyecta grupos vivos desde JSON al reiniciar la mision
--- - No cobra dinero al reinyectar
--- - No guarda injectedThisSession en JSON
--- - injectedThisSession vive solo en memoria de la sesion actual
+-- Version 2.2.0
+--
+-- Corrige:
+-- - Guarda grupos creados por CTLD al desempaquetar crates.
+-- - Reinyecta grupos vivos desde JSON al reiniciar la mision.
+-- - No cobra dinero al reinyectar.
+-- - No guarda injectedThisSession en JSON.
+-- - Restaura logica CTLD runtime despues de reinyectar:
+--     * JTAC: vuelve a llamar ctld.JTACStart().
+--     * AA System: vuelve a registrar ctld.completeAASystems si aplica.
 --
 -- Cargar despues de:
 -- 1. MIST
@@ -44,9 +48,12 @@ CTDP.CONFIG = {
 
     RUNTIME_PREFIX = "HDEV_CTLD_",
 
-    -- Si un grupo desaparece y no recibimos evento de muerte,
-    -- despues de este tiempo se marca como destruido.
     MISSING_DEAD_GRACE = 10,
+
+    -- Tiempo despues de reinyectar para restaurar logica CTLD.
+    -- JTACStart ya espera internamente, pero le damos unos segundos extra
+    -- para que DCS termine de poblar el grupo.
+    RESTORE_CTLD_DELAY = 4,
 
     -- "all"        = guarda todo lo que CTLD spawnee
     -- "categories" = guarda solo categorias activadas
@@ -54,21 +61,32 @@ CTDP.CONFIG = {
     SAVE_MODE = "all",
 
     -- Nombres exactos de categorias dentro de ctld.spawnableCrates.
-    -- Activa aqui lo que quieras persistir.
     SAVE_CATEGORIES = {
         ["SAM Corto Alcance"] = false,
         ["SAM Medio Alcance"] = true,
         ["SAM Largo Alcance"] = false,
 
         ["Vehiculos de Combate"] = false,
-        ["Soporte Logistico"] = false,
+
+        -- IMPORTANTE:
+        -- Dejalo en true si quieres persistir Hummer JTAC, SKP-11 JTAC,
+        -- EWR, Ammo Trucks, Tankers, drones, etc. que esten en Soporte Logistico.
+        ["Soporte Logistico"] = true,
+
         ["Artilleria"] = false,
         ["Drones"] = false
     },
 
     -- Si SAVE_MODE = "units", usa nombres tecnicos de DCS.
-    -- Tambien sirven como permiso extra aunque SAVE_MODE sea categories.
+    -- Tambien funcionan como permiso extra aunque SAVE_MODE sea categories.
     SAVE_UNITS = {
+        -- JTAC / soporte
+        ["Hummer"] = true,
+        ["SKP-11"] = true,
+        ["MQ-9 Reaper"] = true,
+        ["RQ-1A Predator"] = true,
+
+        -- Ejemplos AA medio
         -- ["Hawk ln"] = true,
         -- ["Hawk sr"] = true,
         -- ["Hawk tr"] = true,
@@ -116,9 +134,6 @@ CTDP.STATE = CTDP.STATE or {
     byGroupName = {},
     byUnitName = {},
 
-    -- IMPORTANTE:
-    -- Esto es solo memoria de la sesion.
-    -- Nunca se guarda en JSON.
     injectedThisSession = {},
 
     wrapperInstalled = false,
@@ -535,6 +550,10 @@ local function getUnitLife(unit)
     return life, life0
 end
 
+local function lowerText(v)
+    return string.lower(tostring(v or ""))
+end
+
 ----------------------------------------------------------------
 -- JSON STATE
 ----------------------------------------------------------------
@@ -542,7 +561,7 @@ local function createEmptyDoc()
     return {
         meta = {
             source = "HDEV CTLD Deployment Persistence",
-            version = "2.1.0",
+            version = "2.2.0",
             missionTime = now(),
             updatedBy = "DCS"
         },
@@ -561,8 +580,6 @@ local function cleanRuntimeFields(doc)
     end
 
     for _, dep in pairs(doc.deployments or {}) do
-        -- Campo solo de memoria.
-        -- Si queda en JSON, bloquea la reinyeccion en reinicios futuros.
         dep.injectedThisSession = nil
     end
 end
@@ -621,7 +638,7 @@ local function writeState(force)
 
     CTDP.STATE.doc.meta = CTDP.STATE.doc.meta or {}
     CTDP.STATE.doc.meta.source = "HDEV CTLD Deployment Persistence"
-    CTDP.STATE.doc.meta.version = "2.1.0"
+    CTDP.STATE.doc.meta.version = "2.2.0"
     CTDP.STATE.doc.meta.missionTime = now()
     CTDP.STATE.doc.meta.updatedBy = "DCS"
     CTDP.STATE.doc.meta.injectDuration = CTDP.CONFIG.INJECT_DURATION
@@ -735,6 +752,184 @@ local function shouldPersistTypes(types)
     end
 
     return false, "no category match"
+end
+
+----------------------------------------------------------------
+-- DETECCION DE ROLES CTLD
+----------------------------------------------------------------
+local function isCtldJtacType(typeName)
+    if not typeName then
+        return false
+    end
+
+    local t = lowerText(typeName)
+
+    for _, jtacPattern in ipairs(ctld.jtacUnitTypes or {}) do
+        local p = lowerText(jtacPattern)
+
+        if p ~= "" and string.find(t, p, 1, true) then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function deploymentContainsJtac(dep)
+    if not dep then
+        return false
+    end
+
+    if dep.ctldRole == "JTAC" then
+        return true
+    end
+
+    if dep.crateUnit and isCtldJtacType(dep.crateUnit) then
+        return true
+    end
+
+    for _, typeName in ipairs(dep.types or {}) do
+        if isCtldJtacType(typeName) then
+            return true
+        end
+    end
+
+    if dep.groupData and dep.groupData.units then
+        for _, unitData in ipairs(dep.groupData.units) do
+            if isCtldJtacType(unitData.type) then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+local function getFreshLaserCode()
+    ctld.jtacGeneratedLaserCodes = ctld.jtacGeneratedLaserCodes or {}
+
+    local code = table.remove(ctld.jtacGeneratedLaserCodes, 1)
+
+    if code then
+        table.insert(ctld.jtacGeneratedLaserCodes, code)
+        return tonumber(code)
+    end
+
+    return 1688
+end
+
+local function restoreJTACIfNeeded(dep, groupName)
+    if not dep or not groupName or not ctld or not ctld.JTACStart then
+        return false
+    end
+
+    if not deploymentContainsJtac(dep) then
+        return false
+    end
+
+    local code = tonumber(dep.jtacLaserCode) or getFreshLaserCode() or 1688
+    dep.jtacLaserCode = code
+    dep.ctldRole = "JTAC"
+
+    timer.scheduleFunction(function()
+        local grp = Group.getByName(groupName)
+
+        if grp and grp:isExist() then
+            ctld.JTACStart(groupName, code)
+
+            env.info("[CTLD_PERSIST] JTAC restaurado: " .. tostring(groupName) .. " | code=" .. tostring(code))
+
+            if CTDP.CONFIG.DEBUG then
+                trigger.action.outText(
+                    "[CTLD_PERSIST] JTAC restaurado: " ..
+                    tostring(groupName) ..
+                    " | code=" ..
+                    tostring(code),
+                    8
+                )
+            end
+        end
+
+        return nil
+    end, nil, timer.getTime() + 2)
+
+    CTDP.STATE.dirty = true
+    return true
+end
+
+local function restoreAASystemIfNeeded(dep, groupName)
+    if not dep or not groupName or not ctld then
+        return false
+    end
+
+    if not ctld.getAATemplate or not ctld.getAASystemDetails then
+        return false
+    end
+
+    local grp = Group.getByName(groupName)
+
+    if not grp or not grp:isExist() then
+        return false
+    end
+
+    local units = grp:getUnits() or {}
+    local selectedTemplate = nil
+
+    for _, unit in ipairs(units) do
+        if unit and unit:isExist() and unit:getLife() > 0 then
+            local typeName = unit:getTypeName()
+            local aaTemplate = ctld.getAATemplate(typeName)
+
+            if aaTemplate then
+                selectedTemplate = aaTemplate
+                break
+            end
+        end
+    end
+
+    if not selectedTemplate then
+        return false
+    end
+
+    ctld.completeAASystems = ctld.completeAASystems or {}
+    ctld.completeAASystems[groupName] = ctld.getAASystemDetails(grp, selectedTemplate)
+
+    dep.ctldRole = "AA_SYSTEM"
+    dep.ctldAASystemName = selectedTemplate.name or "AA_SYSTEM"
+
+    CTDP.STATE.dirty = true
+
+    env.info(
+        "[CTLD_PERSIST] Sistema AA restaurado en CTLD: " ..
+        tostring(groupName) ..
+        " | sistema=" ..
+        tostring(dep.ctldAASystemName)
+    )
+
+    if CTDP.CONFIG.DEBUG then
+        trigger.action.outText(
+            "[CTLD_PERSIST] Sistema AA restaurado en CTLD: " ..
+            tostring(groupName) ..
+            " | sistema=" ..
+            tostring(dep.ctldAASystemName),
+            8
+        )
+    end
+
+    return true
+end
+
+local function restoreCtldRuntimeForDeployment(dep, groupName)
+    if not dep or not groupName then
+        return
+    end
+
+    local restoredJtac = restoreJTACIfNeeded(dep, groupName)
+    local restoredAA = restoreAASystemIfNeeded(dep, groupName)
+
+    if restoredJtac or restoredAA then
+        writeState(true)
+    end
 end
 
 ----------------------------------------------------------------
@@ -981,6 +1176,11 @@ local function recordCtldSpawnedGroup(groupName, typesFromCtld, heliName)
             existing.lastReason = reason
             existing.injectedThisSession = nil
 
+            if deploymentContainsJtac(existing) then
+                existing.ctldRole = "JTAC"
+                existing.jtacLaserCode = existing.jtacLaserCode or getFreshLaserCode()
+            end
+
             indexDeployment(existing)
 
             CTDP.STATE.dirty = true
@@ -1046,6 +1246,11 @@ local function recordCtldSpawnedGroup(groupName, typesFromCtld, heliName)
         types = typesToEvaluate,
         groupData = groupData
     }
+
+    if deploymentContainsJtac(dep) then
+        dep.ctldRole = "JTAC"
+        dep.jtacLaserCode = getFreshLaserCode()
+    end
 
     CTDP.STATE.doc.deployments[id] = dep
 
@@ -1298,6 +1503,17 @@ local function destroyGroupIfExists(groupName)
     end
 end
 
+local function scheduleCtldRestore(dep, groupName)
+    if not dep or not groupName then
+        return
+    end
+
+    timer.scheduleFunction(function()
+        restoreCtldRuntimeForDeployment(dep, groupName)
+        return nil
+    end, nil, timer.getTime() + (tonumber(CTDP.CONFIG.RESTORE_CTLD_DELAY) or 4))
+end
+
 local function injectDeployment(dep)
     if not dep or dep.enabled == false or dep.alive == false then
         return false
@@ -1320,6 +1536,7 @@ local function injectDeployment(dep)
         dep.activeGroupName = dep.runtimeGroupName
         CTDP.STATE.injectedThisSession[dep.id] = true
         indexDeployment(dep)
+        scheduleCtldRestore(dep, dep.runtimeGroupName)
         return false
     end
 
@@ -1363,6 +1580,8 @@ local function injectDeployment(dep)
     CTDP.STATE.dirty = true
 
     log("Despliegue inyectado: " .. tostring(dep.id) .. " | " .. tostring(spawnedName), 8)
+
+    scheduleCtldRestore(dep, spawnedName)
 
     return true
 end
@@ -1414,6 +1633,11 @@ local function updateDeploymentFromWorld(dep)
             dep.updatedAt = now()
             dep.injectedThisSession = nil
 
+            if deploymentContainsJtac(dep) then
+                dep.ctldRole = "JTAC"
+                dep.jtacLaserCode = dep.jtacLaserCode or getFreshLaserCode()
+            end
+
             indexDeployment(dep)
 
             CTDP.STATE.dirty = true
@@ -1462,6 +1686,8 @@ function CTDP.showStatus()
     local total = 0
     local alive = 0
     local dead = 0
+    local jtac = 0
+    local aa = 0
 
     if CTDP.STATE.doc and CTDP.STATE.doc.deployments then
         for _, dep in pairs(CTDP.STATE.doc.deployments) do
@@ -1472,6 +1698,12 @@ function CTDP.showStatus()
             else
                 alive = alive + 1
             end
+
+            if dep.ctldRole == "JTAC" then
+                jtac = jtac + 1
+            elseif dep.ctldRole == "AA_SYSTEM" then
+                aa = aa + 1
+            end
         end
     end
 
@@ -1480,6 +1712,8 @@ function CTDP.showStatus()
         "Total: " .. tostring(total) .. "\n" ..
         "Vivos: " .. tostring(alive) .. "\n" ..
         "Destruidos: " .. tostring(dead) .. "\n" ..
+        "JTAC: " .. tostring(jtac) .. "\n" ..
+        "AA Systems: " .. tostring(aa) .. "\n" ..
         "JSON: " .. tostring(CTDP.CONFIG.FILE_PATH),
         12
     )
@@ -1534,7 +1768,6 @@ local function start()
     CTDP.STATE.lastInject = -9999
     CTDP.STATE.lastExport = -9999
 
-    -- Memoria limpia por cada inicio de mision.
     CTDP.STATE.injectedThisSession = {}
 
     loadState()
