@@ -272,6 +272,7 @@ local activacionesPorFlag = {
             "RU_114_Kallax_Ship",
             "MT_07_CARRIER",
             "MT_06_SHIP-1",
+            "US_AWACS_02",
             
 
         }
