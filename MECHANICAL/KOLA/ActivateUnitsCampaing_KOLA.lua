@@ -270,6 +270,8 @@ local activacionesPorFlag = {
             "TGT20",
             "RU_100_Banak_Ship_1",
             "RU_114_Kallax_Ship",
+            "MT_07_CARRIER",
+            "MT_06_SHIP-1",
             
 
         }

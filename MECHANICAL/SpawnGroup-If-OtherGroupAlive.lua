@@ -3,17 +3,17 @@ if not mist then
     return
 end
 
-local grupoCarrier = "MT_05_CARRIER" -- Grupo del carrier ruso
+local grupoCarrier = "MT_07_CARRIER" -- Grupo del carrier ruso
 
 local tiempoRevision = 5
 
 local gruposAviones = {
     {
-        base = "MT_05_SU33_01",
+        base = "MT_07_SU33_01",
         actual = nil
     },
     {
-        base = "MT_05_SU33_02",
+        base = "MT_07_SU33_02",
         actual = nil
     }
 }
