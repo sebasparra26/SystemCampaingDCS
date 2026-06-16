@@ -492,16 +492,16 @@ ctld.vehiclesWeight = {
 
 ctld.spawnRPGWithCoalition = true --spawns a friendly RPG unit with Coalition forces
 ctld.spawnStinger = true -- spawns a stinger / igla soldier with a group of 6 or more soldiers!
-ctld.enabledFOBBuilding = false  -- if true, you can load a crate INTO a C-130 than when unpacked creates a Forward Operating Base (FOB) which is a new place to spawn (crates) and carry crates from
+ctld.enabledFOBBuilding = true  -- if true, you can load a crate INTO a C-130 than when unpacked creates a Forward Operating Base (FOB) which is a new place to spawn (crates) and carry crates from
                                 -- In future i'd like it to be a FARP but so far that seems impossible...
                                 -- You can also enable troop Pickup at FOBS
-ctld.cratesRequiredForFOB = 2 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
+ctld.cratesRequiredForFOB = 5 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
 -- The large crates can only be loaded and dropped by large aircraft, like the C-130 and listed in ctld.vehicleTransportEnabled
 -- Small FOB crates can be moved by helicopter. The FOB will require ctld.cratesRequiredForFOB larges crates and small crates are 1/3 of a large fob crate
 -- To build the FOB entirely out of small crates you will need ctld.cratesRequiredForFOB * 3
 
 ctld.troopPickupAtFOB = true -- if true, troops can also be picked up at a created FOB
-ctld.buildTimeFOB = 120 --time in seconds for the FOB to be built
+ctld.buildTimeFOB = 300 --time in seconds for the FOB to be built
 ctld.crateWaitTime = 0 -- time in seconds to wait before you can spawn another crate
 ctld.forceCrateToBeMoved = true -- a crate must be picked up at least once and moved before it can be unpacked. Helps to reduce crate spam
 ctld.radioSound = "beacon.ogg" -- the name of the sound file to use for the FOB radio beacons. If this isnt added to the mission BEACONS WONT WORK!
@@ -1039,8 +1039,8 @@ ctld.internalCargoLimits = {
 
     -- Remove the -- below to turn on options
     ["Ka-50_3"]= 1,
-    ["Mi-8MT"] = 4,
-    ["CH-47Fbl1"] = 8,
+    ["Mi-8MT"] = 6,
+    ["CH-47Fbl1"] = 10,
     ["UH-1H"]= 1,
     ["Mi-24P"]= 2,
     ["C-130J-30"] = 10,
@@ -1240,14 +1240,14 @@ ctld.spawnableCrates = {
         --- Both
         --{ weight = 1001.21, desc = ctld.i18n_translate("EWR Radar"), unit="FPS-117", cratesRequired = 3 },
         --{ multiple = {1001.21, 1001.21, 1001.21}, desc = ctld.i18n_translate("EWR Radar - $ 4,000,000") },
-        --{ weight = 1001.22, desc = ctld.i18n_translate("FOB Crate - Small"), unit = "FOB-SMALL", side = 0 ,cratesRequired = 3 }, -- Builds a FOB! - requires 3 * ctld.cratesRequiredForFOB
-        --{ multiple = {1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22}, desc = ctld.i18n_translate("FOB - $ 2,000,000") },
+        { weight = 1001.22, desc = ctld.i18n_translate("FOB Crate - Small"), unit = "FOB-SMALL", side = 0 ,cratesRequired = 10 }, -- Builds a FOB! - requires 3 * ctld.cratesRequiredForFOB
+        { multiple = {1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22, 1001.22}, desc = ctld.i18n_translate("FOB - $ 2,000,000") },
 
     },
     ["Artilleria"] = {
         --- BLUE
         { weight = 1002.01, desc = ctld.i18n_translate("MLRS Himars"), unit = "MLRS", side=0, cratesRequired = 4 },
-        { multiple = {1002.01, 1002.01, 1002.01}, desc = ctld.i18n_translate("MLRS Himars - $ 5,000,000"), side=2 },
+        { multiple = {1002.01, 1002.01, 1002.01, 1002.01}, desc = ctld.i18n_translate("MLRS Himars - $ 5,000,000"), side=2 },
         { weight = 1002.02, desc = ctld.i18n_translate("SpGH DANA"), unit = "SpGH_Dana", side=0, cratesRequired = 4 },
         { multiple = {1002.02, 1002.02, 1002.02, 1002.02}, desc = ctld.i18n_translate("SpGH DANA - $ 1,500,000"), side=2 },
         { weight = 1002.03, desc = ctld.i18n_translate("T155 Firtina"), unit = "T155_Firtina", side=0, cratesRequired = 4 },

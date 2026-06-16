@@ -404,7 +404,7 @@ subvariantesAvion = {
         ["AIM-120B/AIM-120C"] = "FOX03PACK_01",
         ["AIM-54A-Mk47/AIM-54C-Mk47"] = "FOX03PACK_02",
         ["SD-10A"] = "FOX03PACK_03",
-        ["R-77"] = "FOX04PACK_04"
+        ["R-77"] = "FOX03PACK_04"
     },
     ["ACCESORIOS_"] = {
         ["FUEL-TANKS"] = "FUEL-TANK-PACK",
@@ -412,7 +412,6 @@ subvariantesAvion = {
         ["COUNTER-MEASURES"] = "COUNTERMEASURES",
         ["TARGET PODS"] = "TARGETING",
         ["AN/AAQ-33-ADVANCE-TARGETING-POD"] = "SNIPER_POD",
-        ["JET-FUEL"] = "JETFUEL",
         ["GAU 12 Gunpod"] = "GUN_POD_AV_8B"
     },
     ["BOMBASGP/GUIADAS"] = {
