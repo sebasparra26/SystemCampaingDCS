@@ -1,0 +1,37 @@
+local gruposPorBandera = {
+    [100] = {
+        rojo = {"RU_100_Herat"}, azul = {"US_100_Herat"}
+            }
+   
+}
+
+estadoBanderasAeropuertos = {
+       ["Herat"] = { bandera = 100, valor = nil },
+       ["Farah"] = { bandera = 101, valor = nil },
+       ["Shindand"] = { bandera = 102, valor = nil },
+       ["Maymana Zahiraddin Faryabi"] = { bandera =103, valor = nil },
+       ["Chaghcharan"] = { bandera = 104, valor = nil },
+       ["Qala i Naw"] = { bandera = 105, valor = nil },
+       ["Kandahar"] = { bandera = 106, valor = nil },
+       ["Bost"] = { bandera = 107, valor = nil },
+       ["Tarinkot"] = { bandera = 108, valor = nil },
+       ["Camp Bastion"] = { bandera = 109, valor = nil },
+       ["Dwyer"] = { bandera = 110, valor = nil },
+       ["Nimroz"] = { bandera = 111, valor = nil },
+       ["Camp Bastion Heliport"] = { bandera = 112, valor = nil },
+       ["Shindand Heliport"] = { bandera = 113, valor = nil },
+       ["Kandahar Heliport"] = { bandera = 114, valor = nil },
+       ["Bagram"] = { bandera = 115, valor = nil },
+       ["Kabul"] = { bandera = 116, valor = nil },
+       ["Bamyan"] = { bandera = 117, valor = nil },
+       ["Jalalabad"] = { bandera = 118, valor = nil },
+       ["Gardez"] = { bandera = 119, valor = nil },
+       ["Ghazni Heliport"] = { bandera = 120, valor = nil },
+       ["Sharana"] = { bandera = 121, valor = nil },
+       ["FOB Salerno"] = { bandera = 122, valor = nil },
+       ["Urgoon Heliport"] = { bandera = 123, valor = nil },
+       ["Khost"] = { bandera = 124, valor = nil }
+       
+
+ 
+}

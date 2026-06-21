@@ -314,7 +314,7 @@ local activacionesPorFlag = {
     },
 
 
-RU_112_Kalixfors_Troops
+
 }
 
 ----------------------------------------------------------------
