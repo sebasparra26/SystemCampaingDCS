@@ -8,7 +8,7 @@ HDEV_Economy = HDEV_Economy or {}
 
 local Economy = HDEV_Economy
 
-Economy.version = "1.0.2"
+Economy.version = "1.0.1"
 Economy.initialized = Economy.initialized or false
 Economy.points = Economy.points or { PuntosAZUL = 0, PuntosROJO = 0 }
 Economy.generators = Economy.generators or {}
@@ -26,13 +26,7 @@ Economy.config = Economy.config or {
     importWindowSeconds = 30,
     autosaveInterval = 10,
     minWriteInterval = 5,
-    debug = true,
-
-    -- DEBUG F10 MARKERS
-    -- Comandos: red cash 500000 | blue cash 500000 | all cash 500000
-    debugMarkerCashEnabled = true,
-    debugMarkerCashRemoveMark = true,
-    debugMarkerCashForceSave = true
+    debug = true
 }
 
 _G.puntosCoalicion = Economy.points
@@ -447,231 +441,10 @@ function Economy.registerFactoryGenerator(cfg)
     return true
 end
 
-
--- ============================================================================
--- DEBUG: INYECTAR DINERO POR ETIQUETAS / MARCADORES F10
--- Comandos soportados:
---   red cash 500000
---   blue cash 500000
---   rojo cash 500000
---   azul cash 500000
---   all cash 500000
---   cash red 500000
---   cash blue 500000
--- ============================================================================
-Economy.debugMarkerCash = Economy.debugMarkerCash or {
-    handlerRegistered = false,
-    processedMarks = {}
-}
-
-local function trimText(value)
-    value = tostring(value or "")
-    value = value:gsub("^%s+", "")
-    value = value:gsub("%s+$", "")
-    return value
-end
-
-local function normalizeCoalitionWord(word)
-    word = tostring(word or ""):lower()
-
-    if word == "red" or word == "rojo" or word == "r" then
-        return 1, "ROJO"
-    end
-
-    if word == "blue" or word == "azul" or word == "b" then
-        return 2, "AZUL"
-    end
-
-    if word == "all" or word == "both" or word == "ambos" or word == "todos" then
-        return 0, "AMBOS"
-    end
-
-    return nil, nil
-end
-
-local function parseCashAmount(raw)
-    local s = tostring(raw or "")
-    s = s:gsub("%$", "")
-    s = s:gsub("%s+", "")
-    s = s:gsub("[,.]", "")
-    return ensureNumber(s)
-end
-
-local function parseMarkerCashCommand(text)
-    local original = trimText(text)
-    if original == "" then
-        return nil
-    end
-
-    local lower = original:lower()
-    local sideWord, amountRaw = lower:match("^(%S+)%s+cash%s+(.+)$")
-
-    if not sideWord then
-        sideWord, amountRaw = lower:match("^cash%s+(%S+)%s+(.+)$")
-    end
-
-    if not sideWord then
-        return nil
-    end
-
-    local side, sideName = normalizeCoalitionWord(sideWord)
-    if not side then
-        return nil
-    end
-
-    local amount = parseCashAmount(amountRaw)
-    if amount <= 0 then
-        return nil
-    end
-
-    return {
-        coalition = side,
-        coalitionName = sideName,
-        amount = amount,
-        originalText = original
-    }
-end
-
-local function removeMarkerSafe(idx)
-    if not idx or not trigger or not trigger.action or not trigger.action.removeMark then
-        return
-    end
-
-    timer.scheduleFunction(function()
-        pcall(function()
-            trigger.action.removeMark(idx)
-        end)
-        return nil
-    end, nil, timer.getTime() + 0.1)
-end
-
-local function outEconomyDebug(msg, seconds)
-    trigger.action.outText("[ECON DEBUG] " .. tostring(msg), seconds or 10)
-    econWarn("[ECON DEBUG] " .. tostring(msg))
-end
-
-local function forceSaveAfterMarkerCash()
-    if not Economy.config.debugMarkerCashForceSave then
-        return
-    end
-
-    -- Si la ventana de importacion aun no termino, no forzamos escritura.
-    -- Se deja Economy.dirty=true y el sync normal guardara al terminar la ventana.
-    if Economy.writeEnabled then
-        Economy.writeJsonToDisk(true)
-    end
-end
-
-local function applyMarkerCashCommand(cmd)
-    if not cmd or not cmd.coalition or not cmd.amount then
-        return false
-    end
-
-    local amount = ensureNumber(cmd.amount)
-    if amount <= 0 then
-        return false
-    end
-
-    if cmd.coalition == 0 then
-        local beforeRed = Economy.get(1)
-        local beforeBlue = Economy.get(2)
-        local afterRed = Economy.add(1, amount, "DEBUG MARKER CASH: " .. tostring(cmd.originalText))
-        local afterBlue = Economy.add(2, amount, "DEBUG MARKER CASH: " .. tostring(cmd.originalText))
-
-        forceSaveAfterMarkerCash()
-
-        outEconomyDebug(
-            "Cash agregado a AMBOS: " .. Economy.formatMoney(amount) .. "\n" ..
-            "ROJO: " .. Economy.formatMoney(beforeRed) .. " -> " .. Economy.formatMoney(afterRed) .. "\n" ..
-            "AZUL: " .. Economy.formatMoney(beforeBlue) .. " -> " .. Economy.formatMoney(afterBlue),
-            12
-        )
-        return true
-    end
-
-    local before = Economy.get(cmd.coalition)
-    local after = Economy.add(cmd.coalition, amount, "DEBUG MARKER CASH: " .. tostring(cmd.originalText))
-
-    forceSaveAfterMarkerCash()
-
-    outEconomyDebug(
-        "Cash agregado a " .. tostring(cmd.coalitionName) .. ": " .. Economy.formatMoney(amount) .. "\n" ..
-        "Saldo: " .. Economy.formatMoney(before) .. " -> " .. Economy.formatMoney(after),
-        12
-    )
-
-    return true
-end
-
-function Economy.registerMarkerCashHandler()
-    if Economy.debugMarkerCash.handlerRegistered then
-        return true
-    end
-
-    if Economy.config.debugMarkerCashEnabled == false then
-        econWarn("Debug marker cash desactivado por configuracion")
-        return false
-    end
-
-    if not world or not world.addEventHandler or not world.event then
-        econWarn("No se pudo registrar debug marker cash: world.addEventHandler no disponible")
-        return false
-    end
-
-    world.addEventHandler({
-        onEvent = function(_, event)
-            if not event or not event.id then
-                return
-            end
-
-            local isMarkEvent = false
-            if world.event.S_EVENT_MARK_ADDED and event.id == world.event.S_EVENT_MARK_ADDED then
-                isMarkEvent = true
-            elseif world.event.S_EVENT_MARK_CHANGE and event.id == world.event.S_EVENT_MARK_CHANGE then
-                isMarkEvent = true
-            end
-
-            if not isMarkEvent then
-                return
-            end
-
-            local text = event.text or ""
-            local cmd = parseMarkerCashCommand(text)
-            if not cmd then
-                return
-            end
-
-            local idx = tostring(event.idx or "NO_IDX")
-            if Economy.debugMarkerCash.processedMarks[idx] then
-                return
-            end
-            Economy.debugMarkerCash.processedMarks[idx] = true
-
-            local ok, err = pcall(function()
-                applyMarkerCashCommand(cmd)
-            end)
-
-            if not ok then
-                econWarn("Error procesando marker cash: " .. tostring(err))
-                trigger.action.outText("[ECON DEBUG] Error procesando cash marker: " .. tostring(err), 10)
-            end
-
-            if Economy.config.debugMarkerCashRemoveMark ~= false then
-                removeMarkerSafe(event.idx)
-            end
-        end
-    })
-
-    Economy.debugMarkerCash.handlerRegistered = true
-    econWarn("Debug marker cash registrado. Usa: red cash 500000 | blue cash 500000 | all cash 500000")
-    return true
-end
-
 function Economy.init(config)
     if Economy.initialized then
         mergeConfig(Economy.config, config)
         Economy.debug = Economy.config.debug and true or false
-        Economy.registerMarkerCashHandler()
         return Economy
     end
 
@@ -680,7 +453,6 @@ function Economy.init(config)
     Economy.initialized = true
 
     Economy.startJsonSync()
-    Economy.registerMarkerCashHandler()
     econWarn("Nucleo economico inicializado")
     return Economy
 end
