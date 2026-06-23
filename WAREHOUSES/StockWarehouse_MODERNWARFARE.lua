@@ -65,17 +65,17 @@ tipoAviones["F-16CM-3"] = {
 tipoAviones["F-15E-S4-1"] = {
     costo = 65000000,
     nombreAvion = "F-15E S4 - Eagle Strike -  Pack ",
-    avion = { ws = {1, 1, 1, 275}, cantidad = 1 },
+    avion = { ws = {1, 1, 1, 59}, cantidad = 1 },
 }
 tipoAviones["F-15E-S4-2"] = {
     costo = 130000000,
     nombreAvion = "F-15E S4 - Eagle Strike -  Pack ",
-    avion = { ws = {1, 1, 1, 275}, cantidad = 2 },
+    avion = { ws = {1, 1, 1, 59}, cantidad = 2 },
 }
 tipoAviones["F-15E-S4-3"] = {
     costo = 260000000,
     nombreAvion = "F-15E S4 - Eagle Strike -  Pack ",
-    avion = { ws = {1, 1, 1, 275}, cantidad = 4 },
+    avion = { ws = {1, 1, 1, 59}, cantidad = 4 },
 }
 tipoAviones["F-15C-1"] = {
     costo = 39500000,

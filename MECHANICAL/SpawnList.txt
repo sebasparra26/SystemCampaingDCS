@@ -1,0 +1,726 @@
+HDEV SPAWN COMMANDS - MODERNOS + WWII
+VERSION: 1
+Formato para usar en marca F10:
+spawn red <NOMBRE>
+spawn blue <NOMBRE>
+spawn nation <NACION> <NOMBRE>
+
+============================================================
+MODERNOS ROJO - NOMBRES TECNICOS
+============================================================
+
+spawn red T-90
+spawn red T-80UD
+spawn red T-72B3
+spawn red T-72B
+spawn red SKP-11
+spawn red Ural-375
+spawn red KAMAZ Truck
+spawn red SAU Msta
+spawn red Smerch
+spawn red Smerch_HE
+spawn red Uragan_BM-27
+spawn red Grad-URAL
+spawn red SAU Akatsia
+spawn red SAU 2-C9
+spawn red Strela-1 9P31
+spawn red Strela-10M3
+spawn red Osa 9A33 ln
+spawn red Tor 9A331
+spawn red 2S6 Tunguska
+spawn red Kub 2P25 ln
+spawn red Kub 1S91 str
+spawn red SA-11 Buk LN 9A310M1
+spawn red SA-11 Buk SR 9S18M1
+spawn red SA-11 Buk CC 9S470M1
+spawn red S-300PS 5P85C ln
+spawn red S-300PS 40B6M tr
+spawn red S-300PS 40B6MD sr
+spawn red S-300PS 64H6E sr
+spawn red S-300PS 54K6 cp
+
+============================================================
+MODERNOS ROJO - ALIAS DEL SCRIPT
+============================================================
+
+spawn red t90
+spawn red t-90
+spawn red tankred
+spawn red tanqueruso
+
+spawn red t80
+spawn red t80ud
+spawn red t-80ud
+
+spawn red t72
+spawn red t72b3
+spawn red t-72b3
+
+spawn red t72b
+spawn red t-72b
+
+spawn red skp
+spawn red skp11
+spawn red jtacred
+spawn red jtacrojo
+
+spawn red ural
+spawn red ural375
+spawn red ammo_red
+spawn red municionred
+spawn red camionred
+
+spawn red kamaz
+spawn red kamaztruck
+spawn red truckred
+spawn red camionrojo
+
+spawn red msta
+spawn red saumsta
+spawn red 2s19
+spawn red artred1
+
+spawn red smerch
+spawn red smerchcm
+spawn red mlrsred
+
+spawn red smerchhe
+spawn red smerch_he
+
+spawn red uragan
+spawn red bm27
+spawn red bm-27
+
+spawn red grad
+spawn red gradural
+spawn red grad-ural
+
+spawn red akatsia
+spawn red sauakatsia
+
+spawn red 2c9
+spawn red sau2c9
+spawn red sau2-c9
+
+spawn red strela1
+spawn red strela-1
+spawn red 9p31
+
+spawn red strela10
+spawn red strela-10
+spawn red strela10m3
+spawn red 9k35
+spawn red 9k35m
+
+spawn red osa
+spawn red 9k33
+spawn red 9a33
+spawn red osa9a33
+
+spawn red tor
+spawn red 9k331
+spawn red 9a331
+
+spawn red tunguska
+spawn red 2s6
+spawn red 2k22
+
+spawn red kubln
+spawn red kublauncher
+spawn red kub
+
+spawn red kubradar
+spawn red kubstr
+spawn red 1s91
+
+spawn red bukln
+spawn red buklauncher
+spawn red buk
+
+spawn red buksr
+spawn red buksearch
+spawn red bukradar
+
+spawn red bukcc
+spawn red bukcommand
+
+spawn red s300ln
+spawn red s300launcher
+spawn red s300
+
+spawn red s300tr
+spawn red s300track
+
+spawn red s300sr
+spawn red s300search
+
+spawn red s300bigbird
+spawn red bigbird
+
+spawn red s300cp
+spawn red s300command
+
+============================================================
+MODERNOS AZUL - NOMBRES TECNICOS
+============================================================
+
+spawn blue M1A2C_SEP_V3
+spawn blue Leopard-2
+spawn blue Challenger2
+spawn blue Leclerc
+spawn blue Merkava_Mk4
+spawn blue Hummer
+spawn blue M 818
+spawn blue M978 HEMTT Tanker
+spawn blue MLRS
+spawn blue SpGH_Dana
+spawn blue T155_Firtina
+spawn blue M-109
+spawn blue M1097 Avenger
+spawn blue M48 Chaparral
+spawn blue Roland ADS
+spawn blue Roland Radar
+spawn blue Gepard
+spawn blue HEMTT_C-RAM_Phalanx
+spawn blue Hawk ln
+spawn blue Hawk sr
+spawn blue Hawk tr
+spawn blue Hawk pcp
+spawn blue Hawk cwar
+spawn blue NASAMS_LN_C
+spawn blue NASAMS_Radar_MPQ64F1
+spawn blue NASAMS_Command_Post
+spawn blue Patriot ln
+spawn blue Patriot str
+spawn blue Patriot ECS
+spawn blue Patriot cp
+spawn blue Patriot EPP
+spawn blue Patriot AMG
+
+============================================================
+MODERNOS AZUL - ALIAS DEL SCRIPT
+============================================================
+
+spawn blue abrams
+spawn blue m1
+spawn blue m1a2
+spawn blue m1a2c
+spawn blue tankblue
+spawn blue tanqueazul
+
+spawn blue leopard
+spawn blue leopard2
+spawn blue leo2
+
+spawn blue challenger
+spawn blue challenger2
+spawn blue chieftain
+
+spawn blue leclerc
+
+spawn blue merkava
+spawn blue merkava4
+spawn blue merkavamk4
+
+spawn blue hummer
+spawn blue humvee
+spawn blue jtacblue
+spawn blue jtacazul
+
+spawn blue m818
+spawn blue m-818
+spawn blue ammo
+spawn blue ammoblue
+spawn blue municionblue
+spawn blue municionazul
+
+spawn blue tanker
+spawn blue fueltruck
+spawn blue fuel
+spawn blue m978
+spawn blue hemtttanker
+spawn blue combustible
+
+spawn blue mlrs
+spawn blue himars
+spawn blue mlrsblue
+
+spawn blue dana
+spawn blue spghdana
+
+spawn blue firtina
+spawn blue t155
+
+spawn blue paladin
+spawn blue m109
+spawn blue m-109
+
+spawn blue avenger
+spawn blue m1097
+
+spawn blue chaparral
+spawn blue m48
+
+spawn blue roland
+spawn blue rolandads
+
+spawn blue rolandradar
+
+spawn blue gepard
+spawn blue gepardaaa
+
+spawn blue cram
+spawn blue c-ram
+spawn blue lpws
+spawn blue phalanx
+spawn blue hemttcram
+
+spawn blue hawkln
+spawn blue hawklauncher
+spawn blue hawk
+
+spawn blue hawksr
+spawn blue hawksearch
+
+spawn blue hawktr
+spawn blue hawktrack
+
+spawn blue hawkpcp
+spawn blue hawkcwar
+
+spawn blue nasamsln
+spawn blue nasamslauncher
+spawn blue nasams
+
+spawn blue nasamsradar
+spawn blue mpq64
+
+spawn blue nasamscp
+spawn blue nasamscommand
+
+spawn blue patriotln
+spawn blue patriotlauncher
+spawn blue patriot
+
+spawn blue patriotradar
+spawn blue patriotstr
+
+spawn blue patriotecs
+
+spawn blue patriotcp
+spawn blue patriotcommand
+
+spawn blue patriotepp
+spawn blue patriotamg
+
+============================================================
+WWII THIRDREICH / ROJO - NOMBRES TECNICOS
+============================================================
+
+spawn red Blitz_36-6700A
+spawn red Elefant_SdKfz_184
+spawn red Flakscheinwerfer_37
+spawn red FuMG-401
+spawn red FuSe-65
+spawn red Horch_901_typ_40_kfz_21
+spawn red JagdPz_IV
+spawn red Jagdpanther_G1
+spawn red KDO_Mod40
+spawn red Kubelwagen_82
+spawn red LeFH_18-40-105
+spawn red Maschinensatz_33
+spawn red Pak40
+spawn red Pz_IV_H
+spawn red Pz_V_Panther_G
+spawn red SK_C_28_naval_gun
+spawn red Sd_Kfz_2
+spawn red Sd_Kfz_234_2_Puma
+spawn red Sd_Kfz_251
+spawn red Sd_Kfz_7
+spawn red Stug_III
+spawn red Stug_IV
+spawn red SturmPzIV
+spawn red Tiger_I
+spawn red Tiger_II_H
+spawn red Watchtower
+spawn red Wespe124
+spawn red fire_control
+spawn red flak18
+spawn red flak30
+spawn red flak36
+spawn red flak37
+spawn red flak38
+spawn red flak41
+spawn red soldier_mauser98
+
+============================================================
+WWII THIRDREICH / ROJO - ALIAS DEL SCRIPT
+============================================================
+
+spawn red blitz
+spawn red opelblitz
+spawn red blitztruck
+
+spawn red elefant
+spawn red ferdinand
+spawn red sd184
+
+spawn red searchlight
+spawn red flakscheinwerfer
+spawn red reflector
+
+spawn red fumg401
+spawn red freya
+spawn red freya_lz
+spawn red radarww2
+
+spawn red fuse65
+spawn red wurzburg
+
+spawn red horch
+spawn red horch901
+spawn red kfz21
+
+spawn red jagdpz
+spawn red jagdpz4
+spawn red jagdpanzer4
+
+spawn red jagdpanther
+spawn red jagdpantherg1
+
+spawn red kdo
+spawn red kdomod40
+spawn red commandcar
+
+spawn red kubel
+spawn red kubelwagen
+spawn red kubelwagen82
+
+spawn red lefh
+spawn red lefh18
+spawn red lefh105
+spawn red artww2red
+
+spawn red generator
+spawn red maschinensatz
+
+spawn red pak
+spawn red pak40
+spawn red atgun
+spawn red antitanquealemana
+
+spawn red panzer4
+spawn red panziv
+spawn red pz4
+spawn red pziv
+spawn red panzeriv
+
+spawn red panther
+spawn red pantherg
+spawn red pz5
+spawn red pzv
+
+spawn red skc28
+spawn red navalgun
+spawn red kanone
+
+spawn red sdkfz2
+spawn red kettenkrad
+
+spawn red puma
+spawn red sdkfz234
+spawn red sdkfz2342
+
+spawn red sdkfz251
+spawn red halftrackgerman
+spawn red hanomag
+
+spawn red sdkfz7
+
+spawn red stug
+spawn red stug3
+spawn red stugiii
+
+spawn red stug4
+spawn red stugiv
+
+spawn red sturmpz
+spawn red sturmpz4
+spawn red brummbar
+
+spawn red tiger
+spawn red tiger1
+spawn red tigeri
+
+spawn red tiger2
+spawn red tigerii
+spawn red kingtiger
+spawn red konigstiger
+
+spawn red watchtowerred
+spawn red towerred
+spawn red torreww2red
+
+spawn red wespe
+spawn red wespe124
+
+spawn red firecontrol
+spawn red fire_control
+
+spawn red flak18
+
+spawn red flak30
+
+spawn red flak36
+spawn red 88
+spawn red flak88
+
+spawn red flak37
+
+spawn red flak38
+
+spawn red flak41
+
+spawn red mauser
+spawn red soldierger
+spawn red soldiergerman
+spawn red infredww2
+
+============================================================
+WWII USA / AZUL - NOMBRES TECNICOS
+============================================================
+
+spawn blue CCKW_353
+spawn blue FPS-117
+spawn blue M10_GMC
+spawn blue M12_GMC
+spawn blue M1_37mm
+spawn blue M2A1-105
+spawn blue M2A1_halftrack
+spawn blue M30_CC
+spawn blue M45_Quadmount
+spawn blue M4A4_Sherman_FF
+spawn blue M4_Sherman
+spawn blue M4_Tractor
+spawn blue M8_Greyhound
+spawn blue Watchtower
+spawn blue Willys_MB
+spawn blue bofors40
+spawn blue soldier_wwii_us
+
+============================================================
+WWII USA / AZUL - ALIAS DEL SCRIPT
+============================================================
+
+spawn blue cckw
+spawn blue cckw353
+spawn blue truckusa
+spawn blue camionusa
+
+spawn blue fps117
+spawn blue ewr
+spawn blue radar
+
+spawn blue m10
+spawn blue m10gmc
+spawn blue wolverine
+
+spawn blue m12
+spawn blue m12gmc
+
+spawn blue m137
+spawn blue m1_37
+spawn blue m1_37mm
+spawn blue aa37
+
+spawn blue m2a1105
+spawn blue m2a1
+spawn blue howitzer105
+
+spawn blue m2halftrack
+spawn blue m2a1halftrack
+spawn blue halftrackus
+
+spawn blue m30
+spawn blue m30cc
+
+spawn blue m45
+spawn blue m45quad
+spawn blue quadmount
+
+spawn blue firefly
+spawn blue shermanfirefly
+spawn blue m4a4
+spawn blue m4a4firefly
+
+spawn blue sherman
+spawn blue m4
+spawn blue m4sherman
+
+spawn blue m4tractor
+spawn blue tractor
+
+spawn blue greyhound
+spawn blue m8
+spawn blue m8greyhound
+
+spawn blue watchtowerblue
+spawn blue towerblue
+spawn blue torreww2blue
+
+spawn blue willys
+spawn blue jeep
+spawn blue willysmb
+
+spawn blue bofors
+spawn blue bofors40
+spawn blue aa40
+
+spawn blue soldierus
+spawn blue infus
+spawn blue infblueww2
+
+============================================================
+WWII UK / AZUL - NOMBRES TECNICOS
+============================================================
+
+spawn blue Centaur_IV
+spawn blue Churchill_VII
+spawn blue Cromwell_IV
+spawn blue Daimler_AC
+spawn blue Tetrarch
+spawn blue soldier_wwii_br_01
+
+============================================================
+WWII UK / AZUL - ALIAS DEL SCRIPT
+============================================================
+
+spawn blue centaur
+spawn blue centaur4
+spawn blue centauriv
+
+spawn blue churchill
+spawn blue churchill7
+spawn blue churchillvii
+
+spawn blue cromwell
+spawn blue cromwell4
+spawn blue cromwelliv
+
+spawn blue daimler
+spawn blue daimlerac
+spawn blue armoredcaruk
+
+spawn blue tetrarch
+
+spawn blue soldieruk
+spawn blue infuk
+spawn blue infbr
+spawn blue britishsoldier
+
+============================================================
+SPAWN POR NACION - THIRDREICH
+============================================================
+
+spawn nation thirdreich Blitz_36-6700A
+spawn nation thirdreich Elefant_SdKfz_184
+spawn nation thirdreich Flakscheinwerfer_37
+spawn nation thirdreich FuMG-401
+spawn nation thirdreich FuSe-65
+spawn nation thirdreich Horch_901_typ_40_kfz_21
+spawn nation thirdreich JagdPz_IV
+spawn nation thirdreich Jagdpanther_G1
+spawn nation thirdreich KDO_Mod40
+spawn nation thirdreich Kubelwagen_82
+spawn nation thirdreich LeFH_18-40-105
+spawn nation thirdreich Maschinensatz_33
+spawn nation thirdreich Pak40
+spawn nation thirdreich Pz_IV_H
+spawn nation thirdreich Pz_V_Panther_G
+spawn nation thirdreich SK_C_28_naval_gun
+spawn nation thirdreich Sd_Kfz_2
+spawn nation thirdreich Sd_Kfz_234_2_Puma
+spawn nation thirdreich Sd_Kfz_251
+spawn nation thirdreich Sd_Kfz_7
+spawn nation thirdreich Stug_III
+spawn nation thirdreich Stug_IV
+spawn nation thirdreich SturmPzIV
+spawn nation thirdreich Tiger_I
+spawn nation thirdreich Tiger_II_H
+spawn nation thirdreich Watchtower
+spawn nation thirdreich Wespe124
+spawn nation thirdreich fire_control
+spawn nation thirdreich flak18
+spawn nation thirdreich flak30
+spawn nation thirdreich flak36
+spawn nation thirdreich flak37
+spawn nation thirdreich flak38
+spawn nation thirdreich flak41
+spawn nation thirdreich soldier_mauser98
+
+============================================================
+SPAWN POR NACION - USA
+============================================================
+
+spawn nation usa CCKW_353
+spawn nation usa FPS-117
+spawn nation usa M10_GMC
+spawn nation usa M12_GMC
+spawn nation usa M1_37mm
+spawn nation usa M2A1-105
+spawn nation usa M2A1_halftrack
+spawn nation usa M30_CC
+spawn nation usa M45_Quadmount
+spawn nation usa M4A4_Sherman_FF
+spawn nation usa M4_Sherman
+spawn nation usa M4_Tractor
+spawn nation usa M8_Greyhound
+spawn nation usa Watchtower
+spawn nation usa Willys_MB
+spawn nation usa bofors40
+spawn nation usa soldier_wwii_us
+
+============================================================
+SPAWN POR NACION - UK
+============================================================
+
+spawn nation uk Centaur_IV
+spawn nation uk Churchill_VII
+spawn nation uk Cromwell_IV
+spawn nation uk Daimler_AC
+spawn nation uk Tetrarch
+spawn nation uk soldier_wwii_br_01
+
+============================================================
+SPAWN POR NACION - RUSSIA / MODERNO ROJO
+============================================================
+
+spawn nation russia T-90
+spawn nation russia T-80UD
+spawn nation russia T-72B3
+spawn nation russia T-72B
+spawn nation russia SKP-11
+spawn nation russia Ural-375
+spawn nation russia KAMAZ Truck
+spawn nation russia SAU Msta
+spawn nation russia Smerch
+spawn nation russia Smerch_HE
+spawn nation russia Uragan_BM-27
+spawn nation russia Grad-URAL
+spawn nation russia SAU Akatsia
+spawn nation russia SAU 2-C9
+spawn nation russia Strela-1 9P31
+spawn nation russia Strela-10M3
+spawn nation russia Osa 9A33 ln
+spawn nation russia Tor 9A331
+spawn nation russia 2S6 Tunguska
+spawn nation russia Kub 2P25 ln
+spawn nation russia Kub 1S91 str
+spawn nation russia SA-11 Buk LN 9A310M1
+spawn nation russia SA-11 Buk SR 9S18M1
+spawn nation russia SA-11 Buk CC 9S470M1
+spawn nation russia S-300PS 5P85C ln
+spawn nation russia S-300PS 40B6M tr
+spawn nation russia S-300PS 40B6MD sr
+spawn nation russia S-300PS 64H6E sr
+spawn nation russia S-300PS 54K6 cp

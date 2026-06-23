@@ -1,4 +1,4 @@
-local loaderPath = lfs.writedir() .. "Scripts\\HorizontDev\\SystemCampaingDCS\\CTDL\\CTDL_Load.lua"
+local loaderPath = lfs.writedir() .. "Scripts\\HorizontDev\\SystemCampaingDCS\\CTDL\\NORMANDIA\\CTDL_Load.lua"
 
 local chunk, err = loadfile(loaderPath)
 if not chunk then

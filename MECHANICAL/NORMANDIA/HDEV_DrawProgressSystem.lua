@@ -93,7 +93,7 @@ DPS.VERSION = 4
 -- ============================================================================
 
 DPS.CONFIG = {
-    DEBUG = true,
+    DEBUG = false,
 
     ENABLE_SCREEN_MESSAGES = false,
     SCREEN_MESSAGE_TIME = 8,
@@ -102,7 +102,7 @@ DPS.CONFIG = {
     START_DELAY = 2,
     FORCE_REDRAW_ON_START = true,
 
-    ENABLE_MENU = true,
+    ENABLE_MENU = false,
     MENU_NAME = "HDEV Draw Progress",
 
     -- -1 = global / todos

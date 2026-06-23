@@ -87,7 +87,7 @@ local WATCHTOWER_CONFIG = {
 -- heading = grados
 -- enabled = false desactiva torre automatica de esa base.
 local offsetsPorBase = {
-    -- ["Herat"] = { x = 300, y = -120, heading = 90 },
+    ["Friston"] = { x = -150, y = -120, heading = 90 },
     -- ["Kandahar"] = { x = -250, y = 400, heading = 180 },
     -- ["FOB Salerno"] = { enabled = false },
 }
