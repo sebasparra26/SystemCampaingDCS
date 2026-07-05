@@ -47,7 +47,7 @@ local MD = HDEV_MarkDebugSpawn
 -- CONFIGURACION EDITABLE
 ----------------------------------------------------------------
 MD.CONFIG = {
-    DEBUG = true,
+    DEBUG = false,
     AUTO_REMOVE_MARK = true,
     MESSAGE_TIME = 8,
 

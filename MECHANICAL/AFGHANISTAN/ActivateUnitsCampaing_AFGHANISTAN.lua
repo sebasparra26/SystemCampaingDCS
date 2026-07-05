@@ -5,57 +5,27 @@ end
 
 ----------------------------------------------------------------
 -- ActivateUnitsCampaing_AFGHANISTAN.lua
--- VERSION: 5
---
--- BASE:
---   Version estable de activaciones por flag
---
--- CAMBIO VERSION 2:
---   El MODULO 1 ya no usa grupos Late Activation manuales.
---   Ahora crea una unidad terrestre dinamica tipo Watchtower en el centro de cada base,
---   usando la bandera de estadoBanderasAeropuertos.
---   IMPORTANTE: no se crea como static; se crea como grupo terrestre para que pueda disparar.
---
--- CAMBIO VERSION 3:
---   Si una Watchtower muere, NO reaparece mientras la bandera conserve el mismo valor.
---   La base queda bloqueada por muerte para ese valor de bandera.
---   Solo vuelve a permitir spawn cuando la bandera cambia a otro valor, por ejemplo:
---   100=1 -> torre roja muere -> no respawn; 100=0 o 100=2 limpia bloqueo.
---
--- CAMBIO VERSION 4:
---   El modulo Watchtower trabaja por rango de banderas configurable.
---   Para Afghanistan queda limitado a las banderas 100 a 124.
---   La regla de bloqueo por muerte aplica independiente para CADA bandera/base del rango.
---
--- CAMBIO VERSION 5:
---   Script completo escrito para Afghanistan.
---   Logs internos corregidos de KOLA a AFGHANISTAN.
+-- VERSION: 6
 --
 -- MODULO 1:
---   Watchtowers terrestres dinamicas por bandera/control de aeropuerto
+--   Watchtowers terrestres dinamicas por bandera/control de aeropuerto.
+--   No son static. Se crean como grupo terrestre "Watchtower".
+--   Si mueren, no reaparecen mientras la bandera siga igual.
+--   Solo reaparecen si la bandera de esa base cambia de valor.
 --
 -- MODULO 2:
---   Activacion simple por flag usando trigger.action.activateGroup
---   SOLO estos grupos llevan persistencia JSON
+--   Activacion simple por flag usando trigger.action.activateGroup.
+--   Estos grupos SI llevan persistencia JSON.
 --
--- PERSISTENCIA MODULO 2:
---   GRUPO:
---     status = 1 habilitado para activarse
---     status = 2 muerto definitivamente, NO volver activar
+-- MODULO 3:
+--   Clonado manual por bandera como el sistema viejo:
+--   [101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" }
 --
---   UNIDADES:
---     status = 1 unidad habilitada/viva
---     status = 2 unidad muerta, se destruye despues del spawn del grupo
+--   0 = neutral: destruye runtime rojo y azul
+--   1 = rojo:    clona plantilla roja
+--   2 = azul:    clona plantilla azul
 --
--- REGLA DURA:
---   Si un grupo esta en 2, JAMAS vuelve a 1 por script.
---   Si una unidad esta en 2, JAMAS vuelve a 1 por script.
---   Si aparece viva por cualquier motivo, se destruye.
---
--- NOTA:
---   DCS no expone una funcion estable para aplicar vida parcial exacta
---   tipo Unit:setLife(). Este script guarda life/life0/lifePercent,
---   pero solo restaura de forma segura las unidades muertas.
+--   Estos grupos NO entran en la persistencia JSON del MODULO 2.
 ----------------------------------------------------------------
 
 local debugActivo = false
@@ -71,72 +41,52 @@ end
 ----------------------------------------------------------------
 -- MODULO 1
 -- WATCHTOWERS TERRESTRES DINAMICAS POR BANDERA DE AEROPUERTO
---
--- 0 = NEUTRAL: se destruyen torres runtime de esa base
--- 1 = ROJO:    se crea unidad terrestre Watchtower roja
--- 2 = AZUL:    se crea unidad terrestre Watchtower azul
---
--- REQUISITO:
---   Cargar antes el sistema que crea estadoBanderasAeropuertos:
---   estadoBanderasAeropuertos["Nombre Base"] = { bandera = 100, valor = 1/2/0 }
---
--- YA NO NECESITAS:
---   RU_100_Herat, US_100_Herat, etc. en Late Activation.
---   Tampoco se crea como StaticObject; nace como grupo terrestre dinamico.
 ----------------------------------------------------------------
+
 local WATCHTOWER_CONFIG = {
     ENABLED = true,
     DEBUG = false,
 
-    -- Rango de banderas que controla este modulo.
-    -- Afghanistan: 100 a 124.
-    -- Cada bandera/base maneja su propio bloqueo por muerte.
+    -- Afghanistan: banderas 100 a 124.
     USE_FLAG_RANGE = true,
     FLAG_START = 100,
-    FLAG_END = 124,
+    FLAG_END = 189,
 
-    -- Unidad terrestre exacta que se va a crear.
-    -- En DCS aparece como edificio armado dentro de unidades de tierra.
-    -- El typeName interno que usa el spawn dinamico es normalmente "Watchtower".
+    -- Unidad terrestre exacta.
+    -- Esta NO es static.
     UNIT_TYPE = "Watchtower",
     UNIT_SKILL = "Excellent",
     UNIT_PLAYER_CAN_DRIVE = false,
     CATEGORY = "vehicle",
 
-    -- Paises usados para que la torre nazca en la coalicion correcta.
     RED_COUNTRY_ID = country.id.RUSSIA,
     BLUE_COUNTRY_ID = country.id.USA,
 
-    -- Offset global desde el centro de cada base.
-    -- DCS usa x/z en runtime; en el Mission Editor normalmente lo ves como x/y.
     DEFAULT_OFFSET_X = 150,
     DEFAULT_OFFSET_Y = 150,
     DEFAULT_HEADING_DEG = 0,
 
-    -- Cada cuantos segundos revisa bandera, cambios de coalicion y torres muertas.
     CHECK_INTERVAL = 5,
 
-    -- Si la torre muere y la bandera sigue igual, NO se vuelve a crear.
-    -- La muerte queda bloqueada hasta que la bandera cambie a otro valor.
+    -- REGLA IMPORTANTE:
+    -- Si muere, NO respawnea hasta que la bandera cambie.
     RESPAWN_ONLY_AFTER_FLAG_CHANGE = true,
 
-    -- Si la base queda neutral, elimina las torres dinamicas de ambos lados.
     DESTROY_WHEN_NEUTRAL = true,
 
-    -- Respaldo opcional desde controlAeropuertos[nombre] si la bandera aun no refleja control.
-    -- Por defecto queda false para que la condicion de respawn dependa estrictamente de la bandera.
+    -- Dejamos false para que la regla dependa estrictamente de la bandera.
     USE_CONTROL_AEROPUERTOS_FALLBACK = false,
 
-    -- Prefijo fijo para nombres runtime.
     RUNTIME_PREFIX = "HDEV_WATCHTOWER",
 }
 
 -- Tabla manual SOLO para corregir posiciones que estorben.
 -- Usa el nombre exacto de la base.
--- x = este/oeste, y = norte/sur en coordenadas de mapa.
--- enabled = false desactiva la torre automatica de esa base.
+-- x = este/oeste
+-- y = norte/sur
+-- heading = grados
+-- enabled = false desactiva torre automatica de esa base.
 local offsetsPorBase = {
-    -- EJEMPLOS:
      ["Kabul"] = { x = 70, y = 0, heading = 90 },
      ["FOB Salerno"] = { x = 70, y = -120, heading = 180 },
      ["Khost"] = { x = -30, y = 0, heading = 180 },
@@ -153,14 +103,13 @@ local WATCHTOWER_STATE = {
     lastCheck = -9999,
     warnedNoFlagTable = false,
     warnedNoBases = false,
+
     spawnedCoalitionByBase = {},
 
-    -- Bloqueo de respawn por muerte.
-    -- [baseName] = coalitionSide que murio mientras la bandera de esa base seguia igual.
+    -- [baseName] = coalitionSide que murio con esa bandera.
     deathLockByBase = {},
 
-    -- Valor bruto real de la bandera en la ultima revision.
-    -- Se usa para limpiar bloqueos solo cuando la bandera cambia de verdad.
+    -- [baseName] = valor bruto anterior de la bandera.
     lastRawFlagValueByBase = {},
 }
 
@@ -168,22 +117,108 @@ local WATCHTOWER_STATE = {
 -- MODULO 2
 -- ACTIVACION SIMPLE POR FLAG
 -- ESTOS GRUPOS NO SE CLONAN
+-- ESTOS SI VAN A JSON
 ----------------------------------------------------------------
+
 local activacionesPorFlag = {
 
-    [0000] = {
+    [118] = {
+        valor = 2,
+        grupos = {
+            
+            "Pers_Group_01",
+            "Pers_Group_02",
+        }
+    },
+-------------------------MISSIONS
+    [1000] = {
         valor = 1,
         grupos = {
-            --"MT_01_EWR",
-            --"MT_01_SHIP",
+            "MT_01_01",
+            "MT_01_02",
+            "MT_01_03",
+            "MT_01_04",
+            "MT_01_05",
+            "MT_01_06_EWR",
+            "MT_01_07",
+            "MT_01_08"
+        }
+    },
+
+    [2000] = {
+        valor = 1,
+        grupos = {
+            "MT_02_01_TALIBAN",
+            "MT_02_02_TALIBAN",
+            "MT_02_03_TALIBAN",
+            "MT_02_04",
+            "MT_02_05",
+            "MT_02_06",
+            "MT_02_07",
+            "MT_02_08",
+            "MT_02_09",
+            "MT_02_10",
+            "MT_02_11",
+            
         }
     },
 
 }
 
 ----------------------------------------------------------------
+-- MODULO 3
+-- CLONADO MANUAL POR BANDERA COMO EL SISTEMA VIEJO
+--
+-- EJEMPLO:
+-- [101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" }
+--
+-- IMPORTANTE:
+-- Estos grupos deben existir en el Mission Editor como plantillas.
+-- Pueden estar Late Activation.
+-- NO entran en la persistencia JSON del MODULO 2.
+----------------------------------------------------------------
+
+local MODULO3_MANUAL_CONFIG = {
+    ENABLED = true,
+    DEBUG = false,
+
+    CHECK_INTERVAL = 5,
+
+    -- Como el sistema viejo: clona cuando cambia la bandera.
+    -- Si lo pones true, si el runtime muere y la bandera sigue igual, lo vuelve a clonar.
+    RESPAWN_IF_DESTROYED = false,
+
+    DESTROY_OPPOSITE_SIDE = true,
+    DESTROY_WHEN_NEUTRAL = true,
+
+    RUNTIME_SUFFIX = "_RUNTIME",
+}
+
+local gruposManualPorBandera = {
+
+    -- EJEMPLO KOLA:
+    --[101] = { rojo = "RU_101_Rovaniemi", azul = "US_101_Rovaniemi" },
+
+    -- Puedes agregar mas asi:
+    -- [102] = { rojo = "RU_102_Kemi", azul = "US_102_Kemi" },
+
+    -- Tambien acepta varios grupos por lado:
+    -- [103] = {
+    --     rojo = { "RU_103_AAA", "RU_103_TANKS" },
+    --     azul = { "US_103_AAA", "US_103_TANKS" }
+    -- },
+}
+
+local MODULO3_MANUAL_STATE = {
+    lastCheck = -9999,
+    previousFlagValue = {},
+    activeSideByFlag = {},
+}
+
+----------------------------------------------------------------
 -- SYNC JSON MODULO 2
 ----------------------------------------------------------------
+
 local ACTSYNC = {
     DEBUG = false,
 
@@ -195,13 +230,9 @@ local ACTSYNC = {
 
     TRACK_UNIT_STATUS = true,
 
-    -- Aplica unidades muertas despues de activar el grupo.
-    -- Esto elimina unidades con status = 2 o life <= 0 en el JSON.
     APPLY_DEAD_UNITS_ON_SPAWN = true,
     APPLY_DEAD_UNITS_DELAY = 1,
 
-    -- DCS no tiene Unit:setLife() estable/documentado.
-    -- Se deja en false para no usar explosiones ni trucos peligrosos.
     APPLY_PARTIAL_LIFE = false
 }
 
@@ -227,6 +258,7 @@ local estadoPrevioActivaciones = {}
 ----------------------------------------------------------------
 -- LOG
 ----------------------------------------------------------------
+
 local function debug(msg, tiempo)
     if debugActivo then
         trigger.action.outText("[ActivateUnits] " .. tostring(msg), tiempo or 10)
@@ -250,6 +282,7 @@ end
 ----------------------------------------------------------------
 -- UTILS GENERALES
 ----------------------------------------------------------------
+
 local function round(n, d)
     n = tonumber(n) or 0
     local m = 10 ^ (d or 0)
@@ -419,10 +452,651 @@ local function safeCall(obj, methodName)
     return nil
 end
 
+local function safeName(s)
+    s = tostring(s or "")
+    s = s:gsub("[^%w_]+", "_")
+    s = s:gsub("_+", "_")
+    s = s:gsub("^_", "")
+    s = s:gsub("_$", "")
+    if s == "" then
+        s = "BASE"
+    end
+    return s
+end
+
+----------------------------------------------------------------
+-- MODULO 1
+-- WATCHTOWERS TERRESTRES DINAMICAS
+----------------------------------------------------------------
+
+local function getWatchTowerGroupIfExists(groupName)
+    return groupExistsByName(groupName)
+end
+
+local function destroyWatchTowerGroupIfExists(groupName)
+    return destroyGroupIfExists(groupName)
+end
+
+local function getAirbaseByExactName(baseName)
+    if not baseName or baseName == "" or not Airbase then
+        return nil
+    end
+
+    local okDirect, abDirect = pcall(function()
+        return Airbase.getByName(baseName)
+    end)
+
+    if okDirect and abDirect then
+        return abDirect
+    end
+
+    if world and world.getAirbases then
+        local okList, list = pcall(function()
+            return world.getAirbases()
+        end)
+
+        if okList and type(list) == "table" then
+            for _, ab in ipairs(list) do
+                local okName, name = pcall(function()
+                    return ab:getName()
+                end)
+                if okName and name == baseName then
+                    return ab
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+local function getAirbasePointByName(baseName)
+    local ab = getAirbaseByExactName(baseName)
+    if not ab then
+        return nil
+    end
+
+    local ok, point = pcall(function()
+        return ab:getPoint()
+    end)
+
+    if ok and point then
+        return {
+            x = tonumber(point.x) or 0,
+            y = tonumber(point.y) or 0,
+            z = tonumber(point.z or point.y) or 0
+        }
+    end
+
+    return nil
+end
+
+local function getFlagNumberFromAirportInfo(info)
+    if type(info) == "table" then
+        return tonumber(info.bandera or info.flag or info.flagNumber or info[1])
+    end
+
+    return tonumber(info)
+end
+
+local function isFlagInWatchTowerRange(flagNumber)
+    flagNumber = tonumber(flagNumber)
+    if not flagNumber then
+        return false
+    end
+
+    if not WATCHTOWER_CONFIG.USE_FLAG_RANGE then
+        return true
+    end
+
+    local firstFlag = tonumber(WATCHTOWER_CONFIG.FLAG_START) or 100
+    local lastFlag = tonumber(WATCHTOWER_CONFIG.FLAG_END) or firstFlag
+
+    return flagNumber >= firstFlag and flagNumber <= lastFlag
+end
+
+local function buildWatchTowerCatalog(force)
+    if WATCHTOWER_STATE.catalogBuilt and not force then
+        return true
+    end
+
+    if type(estadoBanderasAeropuertos) ~= "table" then
+        if not WATCHTOWER_STATE.warnedNoFlagTable then
+            WATCHTOWER_STATE.warnedNoFlagTable = true
+            log("Modulo WatchTower esperando estadoBanderasAeropuertos. Carga primero el sistema de control de aeropuertos.")
+        end
+        return false
+    end
+
+    local bases = {}
+    local byName = {}
+
+    for baseName, info in pairs(estadoBanderasAeropuertos or {}) do
+        local flagNumber = getFlagNumberFromAirportInfo(info)
+        local point = getAirbasePointByName(baseName)
+
+        if flagNumber and point and isFlagInWatchTowerRange(flagNumber) then
+            local entry = {
+                name = baseName,
+                flag = flagNumber,
+                point = point
+            }
+            bases[#bases + 1] = entry
+            byName[baseName] = entry
+        elseif WATCHTOWER_CONFIG.DEBUG then
+            local reason = ""
+            if not flagNumber then
+                reason = "sin_flag"
+            elseif not isFlagInWatchTowerRange(flagNumber) then
+                reason = "fuera_de_rango"
+            elseif not point then
+                reason = "sin_punto"
+            end
+            log("WatchTower omitida: base=" .. tostring(baseName) .. " flag=" .. tostring(flagNumber) .. " point=" .. tostring(point ~= nil) .. " reason=" .. tostring(reason))
+        end
+    end
+
+    table.sort(bases, function(a, b)
+        return tostring(a.name) < tostring(b.name)
+    end)
+
+    WATCHTOWER_STATE.bases = bases
+    WATCHTOWER_STATE.byName = byName
+    WATCHTOWER_STATE.catalogBuilt = (#bases > 0)
+
+    if #bases > 0 then
+        log("Modulo WatchTower catalogo listo: " .. tostring(#bases) .. " bases con bandera en rango " .. tostring(WATCHTOWER_CONFIG.FLAG_START) .. "-" .. tostring(WATCHTOWER_CONFIG.FLAG_END) .. ".")
+        return true
+    end
+
+    if not WATCHTOWER_STATE.warnedNoBases then
+        WATCHTOWER_STATE.warnedNoBases = true
+        log("Modulo WatchTower no encontro bases con bandera y punto valido.")
+    end
+
+    return false
+end
+
+local function getRuntimeWatchTowerName(baseName, coalitionSide)
+    local sideText = "NEUTRAL"
+    if coalitionSide == 1 then
+        sideText = "RED"
+    elseif coalitionSide == 2 then
+        sideText = "BLUE"
+    end
+
+    return WATCHTOWER_CONFIG.RUNTIME_PREFIX .. "_" .. safeName(baseName) .. "_" .. sideText
+end
+
+local function getManualOffset(baseName)
+    local o = offsetsPorBase[baseName] or {}
+
+    if o.enabled == false then
+        return nil, false
+    end
+
+    return {
+        x = tonumber(o.x or o.offsetX or WATCHTOWER_CONFIG.DEFAULT_OFFSET_X) or 0,
+        y = tonumber(o.y or o.z or o.offsetY or o.offsetZ or WATCHTOWER_CONFIG.DEFAULT_OFFSET_Y) or 0,
+        heading = tonumber(o.heading or o.headingDeg or WATCHTOWER_CONFIG.DEFAULT_HEADING_DEG) or 0
+    }, true
+end
+
+local function getRawFlagValueForBase(entry)
+    if not entry or not entry.flag then
+        return 0
+    end
+    return tonumber(trigger.misc.getUserFlag(entry.flag)) or 0
+end
+
+local function getDesiredCoalitionForBase(entry)
+    local value = getRawFlagValueForBase(entry)
+
+    if (value ~= 1 and value ~= 2) and WATCHTOWER_CONFIG.USE_CONTROL_AEROPUERTOS_FALLBACK then
+        if type(controlAeropuertos) == "table" then
+            local fallback = tonumber(controlAeropuertos[entry.name]) or 0
+            if fallback == 1 or fallback == 2 then
+                value = fallback
+            end
+        elseif type(coalicionPorBase) == "table" then
+            local fallback = tonumber(coalicionPorBase[entry.name]) or 0
+            if fallback == 1 or fallback == 2 then
+                value = fallback
+            end
+        end
+    end
+
+    if value == 1 or value == 2 then
+        return value
+    end
+
+    return 0
+end
+
+local function clearDeathLockForBase(baseName, reason)
+    if WATCHTOWER_STATE.deathLockByBase[baseName] ~= nil then
+        WATCHTOWER_STATE.deathLockByBase[baseName] = nil
+        if WATCHTOWER_CONFIG.DEBUG then
+            log("WatchTower desbloqueada base=" .. tostring(baseName) .. " reason=" .. tostring(reason or "flag_change"))
+        end
+    end
+end
+
+local function markDeathLockForBase(baseName, coalitionSide)
+    if WATCHTOWER_STATE.deathLockByBase[baseName] ~= coalitionSide then
+        WATCHTOWER_STATE.deathLockByBase[baseName] = coalitionSide
+        log("WatchTower muerta: respawn bloqueado hasta cambio de bandera. base=" .. tostring(baseName) .. " side=" .. tostring(coalitionSide))
+    end
+end
+
+local function getCountryForCoalitionSide(coalitionSide)
+    if coalitionSide == 1 then
+        return WATCHTOWER_CONFIG.RED_COUNTRY_ID
+    elseif coalitionSide == 2 then
+        return WATCHTOWER_CONFIG.BLUE_COUNTRY_ID
+    end
+    return nil
+end
+
+local function spawnWatchTowerForBase(entry, coalitionSide)
+    local offset, enabled = getManualOffset(entry.name)
+    if not enabled then
+        destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 1))
+        destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 2))
+        WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = nil
+        clearDeathLockForBase(entry.name, "disabled_by_offset")
+        return false
+    end
+
+    local countryId = getCountryForCoalitionSide(coalitionSide)
+    if not countryId then
+        return false
+    end
+
+    local runtimeName = getRuntimeWatchTowerName(entry.name, coalitionSide)
+    local enemySide = (coalitionSide == 1) and 2 or 1
+    local enemyRuntimeName = getRuntimeWatchTowerName(entry.name, enemySide)
+
+    destroyWatchTowerGroupIfExists(enemyRuntimeName)
+
+    if getWatchTowerGroupIfExists(runtimeName) and countAliveUnitsInGroup(runtimeName) > 0 then
+        WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = coalitionSide
+        clearDeathLockForBase(entry.name, "existing_runtime")
+        return true
+    end
+
+    destroyWatchTowerGroupIfExists(runtimeName)
+
+    local basePoint = getAirbasePointByName(entry.name) or entry.point
+    if not basePoint then
+        return false
+    end
+
+    entry.point = basePoint
+
+    local spawnX = (tonumber(basePoint.x) or 0) + (offset.x or 0)
+    local spawnY = (tonumber(basePoint.z or basePoint.y) or 0) + (offset.y or 0)
+    local headingRad = math.rad(offset.heading or 0)
+    local unitName = runtimeName .. "_UNIT_1"
+
+    local groupData = {
+        country = countryId,
+        countryId = countryId,
+        category = WATCHTOWER_CONFIG.CATEGORY,
+        name = runtimeName,
+        groupName = runtimeName,
+        task = "Ground Nothing",
+        visible = false,
+        hidden = false,
+        start_time = 0,
+        units = {
+            [1] = {
+                type = WATCHTOWER_CONFIG.UNIT_TYPE,
+                name = unitName,
+                unitName = unitName,
+                x = spawnX,
+                y = spawnY,
+                heading = headingRad,
+                skill = WATCHTOWER_CONFIG.UNIT_SKILL or "Excellent",
+                playerCanDrive = WATCHTOWER_CONFIG.UNIT_PLAYER_CAN_DRIVE and true or false,
+            }
+        },
+        route = {
+            points = {
+                [1] = {
+                    x = spawnX,
+                    y = spawnY,
+                    type = "Turning Point",
+                    action = "Off Road",
+                    speed = 0,
+                    speed_locked = true,
+                    ETA = 0,
+                    ETA_locked = true,
+                    task = {
+                        id = "ComboTask",
+                        params = { tasks = {} }
+                    }
+                }
+            }
+        }
+    }
+
+    local ok, result = pcall(function()
+        if mist and mist.dynAdd then
+            return mist.dynAdd(groupData)
+        end
+
+        groupData.groupName = nil
+        groupData.country = nil
+        groupData.countryId = nil
+        groupData.category = nil
+
+        for _, unitData in pairs(groupData.units or {}) do
+            unitData.unitName = nil
+        end
+
+        return coalition.addGroup(countryId, Group.Category.GROUND, groupData)
+    end)
+
+    if ok and result then
+        local spawnedGroup = getWatchTowerGroupIfExists(runtimeName)
+        if spawnedGroup then
+            WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = coalitionSide
+            clearDeathLockForBase(entry.name, "spawn_success")
+            debug("Watchtower terrestre creada en " .. tostring(entry.name) .. " coalicion=" .. tostring(coalitionSide) .. " grupo=" .. runtimeName, 8)
+            env.info("[ActivateUnitsCampaing_AFGHANISTAN] Watchtower terrestre creada base=" .. tostring(entry.name) .. " side=" .. tostring(coalitionSide) .. " group=" .. runtimeName .. " type=" .. tostring(WATCHTOWER_CONFIG.UNIT_TYPE))
+            return true
+        end
+
+        log("ERROR creando Watchtower: mist/coalition devolvio resultado pero el grupo no existe. base=" .. tostring(entry.name) .. " group=" .. tostring(runtimeName) .. " type=" .. tostring(WATCHTOWER_CONFIG.UNIT_TYPE))
+        return false
+    end
+
+    log("ERROR creando Watchtower terrestre base=" .. tostring(entry.name) .. " side=" .. tostring(coalitionSide) .. " err=" .. tostring(result))
+    return false
+end
+
+local function clearWatchTowersForBase(entry)
+    local destroyedRed = destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 1))
+    local destroyedBlue = destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 2))
+
+    if destroyedRed or destroyedBlue then
+        debug("Watchtower terrestre removida por neutral/cambio: " .. tostring(entry.name), 6)
+    end
+
+    WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = nil
+    clearDeathLockForBase(entry.name, "neutral_or_clear")
+end
+
+local function revisarModuloTorresDinamicas(now)
+    if not WATCHTOWER_CONFIG.ENABLED then
+        return
+    end
+
+    now = now or timer.getTime()
+
+    if (now - WATCHTOWER_STATE.lastCheck) < (WATCHTOWER_CONFIG.CHECK_INTERVAL or 5) then
+        return
+    end
+
+    WATCHTOWER_STATE.lastCheck = now
+
+    if not buildWatchTowerCatalog(false) then
+        return
+    end
+
+    for _, entry in ipairs(WATCHTOWER_STATE.bases or {}) do
+        local rawFlagValue = getRawFlagValueForBase(entry)
+        local previousRawFlagValue = WATCHTOWER_STATE.lastRawFlagValueByBase[entry.name]
+        local flagChanged = (previousRawFlagValue ~= nil and previousRawFlagValue ~= rawFlagValue)
+
+        if previousRawFlagValue == nil or previousRawFlagValue ~= rawFlagValue then
+            WATCHTOWER_STATE.lastRawFlagValueByBase[entry.name] = rawFlagValue
+        end
+
+        if flagChanged then
+            clearDeathLockForBase(entry.name, "flag_changed_" .. tostring(previousRawFlagValue) .. "_to_" .. tostring(rawFlagValue))
+        end
+
+        local desiredCoalition = getDesiredCoalitionForBase(entry)
+        local previousValue = estadoPrevioBanderas[entry.flag]
+
+        if previousValue ~= desiredCoalition then
+            estadoPrevioBanderas[entry.flag] = desiredCoalition
+            if WATCHTOWER_CONFIG.DEBUG then
+                log("WatchTower bandera cambio base=" .. tostring(entry.name) .. " flag=" .. tostring(entry.flag) .. " raw=" .. tostring(rawFlagValue) .. " desired=" .. tostring(desiredCoalition))
+            end
+        end
+
+        if desiredCoalition == 1 or desiredCoalition == 2 then
+            local runtimeName = getRuntimeWatchTowerName(entry.name, desiredCoalition)
+            local existing = getWatchTowerGroupIfExists(runtimeName)
+            local alive = countAliveUnitsInGroup(runtimeName)
+            local knownSide = WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name]
+            local deathLockSide = WATCHTOWER_STATE.deathLockByBase[entry.name]
+
+            if existing and alive > 0 then
+                WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = desiredCoalition
+
+            elseif existing and alive <= 0 then
+                destroyWatchTowerGroupIfExists(runtimeName)
+                markDeathLockForBase(entry.name, desiredCoalition)
+                WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = desiredCoalition
+
+            elseif knownSide == nil or knownSide ~= desiredCoalition then
+                spawnWatchTowerForBase(entry, desiredCoalition)
+
+            elseif deathLockSide == desiredCoalition then
+                -- Torre muerta con la misma bandera. No respawn.
+
+            else
+                markDeathLockForBase(entry.name, desiredCoalition)
+            end
+        else
+            if WATCHTOWER_CONFIG.DESTROY_WHEN_NEUTRAL then
+                clearWatchTowersForBase(entry)
+            end
+        end
+    end
+end
+
+----------------------------------------------------------------
+-- MODULO 3
+-- FUNCIONES DE CLONADO MANUAL POR BANDERA
+----------------------------------------------------------------
+
+local function modulo3RuntimeName(templateName)
+    return tostring(templateName) .. tostring(MODULO3_MANUAL_CONFIG.RUNTIME_SUFFIX or "_RUNTIME")
+end
+
+local function modulo3GetSideList(def, lado)
+    if type(def) ~= "table" then
+        return {}
+    end
+
+    if lado == 1 then
+        return convertirALista(def.rojo)
+    elseif lado == 2 then
+        return convertirALista(def.azul)
+    end
+
+    return {}
+end
+
+local function modulo3DestroyTemplatesRuntime(lista)
+    for _, templateName in ipairs(lista or {}) do
+        destroyGroupIfExists(modulo3RuntimeName(templateName))
+    end
+end
+
+local function modulo3DestroyAllForFlag(def)
+    modulo3DestroyTemplatesRuntime(modulo3GetSideList(def, 1))
+    modulo3DestroyTemplatesRuntime(modulo3GetSideList(def, 2))
+end
+
+local function modulo3RuntimeAlive(templateName)
+    local runtimeName = modulo3RuntimeName(templateName)
+    local grp = groupExistsByName(runtimeName)
+
+    if not grp then
+        return false
+    end
+
+    return countAliveUnitsInGroup(runtimeName) > 0
+end
+
+local function modulo3CloneTemplate(templateName, bandera, lado)
+    if not templateName or templateName == "" then
+        return false
+    end
+
+    if not mist or not mist.teleportToPoint then
+        log("MODULO 3 ERROR: MIST/mist.teleportToPoint no esta disponible.")
+        return false
+    end
+
+    local runtimeName = modulo3RuntimeName(templateName)
+
+    destroyGroupIfExists(runtimeName)
+
+    local route = nil
+    local okRoute, routeData = pcall(function()
+        return mist.getGroupRoute(templateName, "task")
+    end)
+
+    if okRoute and routeData then
+        route = routeData
+    end
+
+    local vars = {
+        gpName = templateName,
+        action = "clone",
+        newGroupName = runtimeName,
+        route = route
+    }
+
+    local ok, result = pcall(function()
+        return mist.teleportToPoint(vars)
+    end)
+
+    if ok and result then
+        local sideName = lado == 1 and "ROJO" or "AZUL"
+
+        debug(
+            "MODULO 3: Grupo " .. sideName ..
+            " clonado por bandera " .. tostring(bandera) ..
+            ": " .. tostring(runtimeName),
+            8
+        )
+
+        env.info(
+            "[ActivateUnitsCampaing_AFGHANISTAN][MODULO3] Grupo " ..
+            tostring(runtimeName) ..
+            " clonado desde " .. tostring(templateName) ..
+            " bandera=" .. tostring(bandera) ..
+            " lado=" .. tostring(lado)
+        )
+
+        return true
+    end
+
+    log(
+        "MODULO 3 ERROR clonando template=" .. tostring(templateName) ..
+        " runtime=" .. tostring(runtimeName) ..
+        " bandera=" .. tostring(bandera) ..
+        " err=" .. tostring(result)
+    )
+
+    return false
+end
+
+local function modulo3ActivateSide(bandera, def, lado)
+    local listaActiva = modulo3GetSideList(def, lado)
+
+    if MODULO3_MANUAL_CONFIG.DESTROY_OPPOSITE_SIDE then
+        local ladoContrario = lado == 1 and 2 or 1
+        modulo3DestroyTemplatesRuntime(modulo3GetSideList(def, ladoContrario))
+    end
+
+    for _, templateName in ipairs(listaActiva) do
+        modulo3CloneTemplate(templateName, bandera, lado)
+    end
+
+    MODULO3_MANUAL_STATE.activeSideByFlag[bandera] = lado
+end
+
+local function modulo3CheckRespawn(bandera, def, lado)
+    if not MODULO3_MANUAL_CONFIG.RESPAWN_IF_DESTROYED then
+        return
+    end
+
+    local lista = modulo3GetSideList(def, lado)
+
+    for _, templateName in ipairs(lista) do
+        if not modulo3RuntimeAlive(templateName) then
+            modulo3CloneTemplate(templateName, bandera, lado)
+        end
+    end
+end
+
+local function revisarModuloManualPorBandera(now)
+    if not MODULO3_MANUAL_CONFIG.ENABLED then
+        return
+    end
+
+    now = now or timer.getTime()
+
+    if (now - MODULO3_MANUAL_STATE.lastCheck) < (MODULO3_MANUAL_CONFIG.CHECK_INTERVAL or 5) then
+        return
+    end
+
+    MODULO3_MANUAL_STATE.lastCheck = now
+
+    for bandera, def in pairs(gruposManualPorBandera or {}) do
+        local valorActual = tonumber(trigger.misc.getUserFlag(bandera)) or 0
+        local valorPrevio = MODULO3_MANUAL_STATE.previousFlagValue[bandera]
+
+        local cambioBandera = (valorPrevio == nil or valorPrevio ~= valorActual)
+
+        if cambioBandera then
+            MODULO3_MANUAL_STATE.previousFlagValue[bandera] = valorActual
+
+            if MODULO3_MANUAL_CONFIG.DEBUG then
+                log(
+                    "MODULO 3 bandera cambio: " ..
+                    tostring(bandera) ..
+                    " " .. tostring(valorPrevio) ..
+                    " -> " .. tostring(valorActual)
+                )
+            end
+
+            if valorActual == 1 then
+                modulo3ActivateSide(bandera, def, 1)
+
+            elseif valorActual == 2 then
+                modulo3ActivateSide(bandera, def, 2)
+
+            else
+                if MODULO3_MANUAL_CONFIG.DESTROY_WHEN_NEUTRAL then
+                    modulo3DestroyAllForFlag(def)
+                end
+
+                MODULO3_MANUAL_STATE.activeSideByFlag[bandera] = nil
+            end
+
+        else
+            if valorActual == 1 or valorActual == 2 then
+                modulo3CheckRespawn(bandera, def, valorActual)
+            end
+        end
+    end
+end
+
 ----------------------------------------------------------------
 -- MODULO 2
 -- SNAPSHOT DE UNIDADES DEL GRUPO
 ----------------------------------------------------------------
+
 local function getTemplateGroupData(groupName)
     if not groupName then
         return nil
@@ -762,6 +1436,7 @@ end
 ----------------------------------------------------------------
 -- JSON HELPERS
 ----------------------------------------------------------------
+
 local function validatePersistenceEnvironment()
     if not io or not lfs then
         syncLog("io/lfs no disponibles. Persistencia deshabilitada.")
@@ -973,445 +1648,10 @@ local function saveSyncFile(tbl)
 end
 
 ----------------------------------------------------------------
--- MODULO 1
--- WATCHTOWERS TERRESTRES DINAMICAS
-----------------------------------------------------------------
-local function safeName(s)
-    s = tostring(s or "")
-    s = s:gsub("[^%w_]+", "_")
-    s = s:gsub("_+", "_")
-    s = s:gsub("^_", "")
-    s = s:gsub("_$", "")
-    if s == "" then
-        s = "BASE"
-    end
-    return s
-end
-
-local function getWatchTowerGroupIfExists(groupName)
-    return groupExistsByName(groupName)
-end
-
-local function destroyWatchTowerGroupIfExists(groupName)
-    return destroyGroupIfExists(groupName)
-end
-
-local function getAirbaseByExactName(baseName)
-    if not baseName or baseName == "" or not Airbase then
-        return nil
-    end
-
-    local okDirect, abDirect = pcall(function()
-        return Airbase.getByName(baseName)
-    end)
-
-    if okDirect and abDirect then
-        return abDirect
-    end
-
-    if world and world.getAirbases then
-        local okList, list = pcall(function()
-            return world.getAirbases()
-        end)
-
-        if okList and type(list) == "table" then
-            for _, ab in ipairs(list) do
-                local okName, name = pcall(function()
-                    return ab:getName()
-                end)
-                if okName and name == baseName then
-                    return ab
-                end
-            end
-        end
-    end
-
-    return nil
-end
-
-local function getAirbasePointByName(baseName)
-    local ab = getAirbaseByExactName(baseName)
-    if not ab then
-        return nil
-    end
-
-    local ok, point = pcall(function()
-        return ab:getPoint()
-    end)
-
-    if ok and point then
-        return {
-            x = tonumber(point.x) or 0,
-            y = tonumber(point.y) or 0,
-            z = tonumber(point.z or point.y) or 0
-        }
-    end
-
-    return nil
-end
-
-local function getFlagNumberFromAirportInfo(info)
-    if type(info) == "table" then
-        return tonumber(info.bandera or info.flag or info.flagNumber or info[1])
-    end
-
-    return tonumber(info)
-end
-
-local function isFlagInWatchTowerRange(flagNumber)
-    flagNumber = tonumber(flagNumber)
-    if not flagNumber then
-        return false
-    end
-
-    if not WATCHTOWER_CONFIG.USE_FLAG_RANGE then
-        return true
-    end
-
-    local firstFlag = tonumber(WATCHTOWER_CONFIG.FLAG_START) or 100
-    local lastFlag = tonumber(WATCHTOWER_CONFIG.FLAG_END) or firstFlag
-
-    return flagNumber >= firstFlag and flagNumber <= lastFlag
-end
-
-local function buildWatchTowerCatalog(force)
-    if WATCHTOWER_STATE.catalogBuilt and not force then
-        return true
-    end
-
-    if type(estadoBanderasAeropuertos) ~= "table" then
-        if not WATCHTOWER_STATE.warnedNoFlagTable then
-            WATCHTOWER_STATE.warnedNoFlagTable = true
-            log("Modulo WatchTower esperando estadoBanderasAeropuertos. Carga primero el sistema de control de aeropuertos.")
-        end
-        return false
-    end
-
-    local bases = {}
-    local byName = {}
-
-    for baseName, info in pairs(estadoBanderasAeropuertos or {}) do
-        local flagNumber = getFlagNumberFromAirportInfo(info)
-        local point = getAirbasePointByName(baseName)
-
-        if flagNumber and point and isFlagInWatchTowerRange(flagNumber) then
-            local entry = {
-                name = baseName,
-                flag = flagNumber,
-                point = point
-            }
-            bases[#bases + 1] = entry
-            byName[baseName] = entry
-        elseif WATCHTOWER_CONFIG.DEBUG then
-            local reason = ""
-            if not flagNumber then
-                reason = "sin_flag"
-            elseif not isFlagInWatchTowerRange(flagNumber) then
-                reason = "fuera_de_rango"
-            elseif not point then
-                reason = "sin_punto"
-            end
-            log("WatchTower omitida: base=" .. tostring(baseName) .. " flag=" .. tostring(flagNumber) .. " point=" .. tostring(point ~= nil) .. " reason=" .. tostring(reason))
-        end
-    end
-
-    table.sort(bases, function(a, b)
-        return tostring(a.name) < tostring(b.name)
-    end)
-
-    WATCHTOWER_STATE.bases = bases
-    WATCHTOWER_STATE.byName = byName
-    WATCHTOWER_STATE.catalogBuilt = (#bases > 0)
-
-    if #bases > 0 then
-        log("Modulo WatchTower catalogo listo: " .. tostring(#bases) .. " bases con bandera en rango " .. tostring(WATCHTOWER_CONFIG.FLAG_START) .. "-" .. tostring(WATCHTOWER_CONFIG.FLAG_END) .. ".")
-        return true
-    end
-
-    if not WATCHTOWER_STATE.warnedNoBases then
-        WATCHTOWER_STATE.warnedNoBases = true
-        log("Modulo WatchTower no encontro bases con bandera y punto valido.")
-    end
-
-    return false
-end
-
-local function getRuntimeWatchTowerName(baseName, coalitionSide)
-    local sideText = "NEUTRAL"
-    if coalitionSide == 1 then
-        sideText = "RED"
-    elseif coalitionSide == 2 then
-        sideText = "BLUE"
-    end
-
-    return WATCHTOWER_CONFIG.RUNTIME_PREFIX .. "_" .. safeName(baseName) .. "_" .. sideText
-end
-
-local function getManualOffset(baseName)
-    local o = offsetsPorBase[baseName] or {}
-
-    if o.enabled == false then
-        return nil, false
-    end
-
-    return {
-        x = tonumber(o.x or o.offsetX or WATCHTOWER_CONFIG.DEFAULT_OFFSET_X) or 0,
-        y = tonumber(o.y or o.z or o.offsetY or o.offsetZ or WATCHTOWER_CONFIG.DEFAULT_OFFSET_Y) or 0,
-        heading = tonumber(o.heading or o.headingDeg or WATCHTOWER_CONFIG.DEFAULT_HEADING_DEG) or 0
-    }, true
-end
-
-local function getDesiredCoalitionForBase(entry)
-    local value = tonumber(trigger.misc.getUserFlag(entry.flag)) or 0
-
-    if (value ~= 1 and value ~= 2) and WATCHTOWER_CONFIG.USE_CONTROL_AEROPUERTOS_FALLBACK then
-        if type(controlAeropuertos) == "table" then
-            local fallback = tonumber(controlAeropuertos[entry.name]) or 0
-            if fallback == 1 or fallback == 2 then
-                value = fallback
-            end
-        elseif type(coalicionPorBase) == "table" then
-            local fallback = tonumber(coalicionPorBase[entry.name]) or 0
-            if fallback == 1 or fallback == 2 then
-                value = fallback
-            end
-        end
-    end
-
-    if value == 1 or value == 2 then
-        return value
-    end
-
-    return 0
-end
-
-local function getRawFlagValueForBase(entry)
-    if not entry or not entry.flag then
-        return 0
-    end
-    return tonumber(trigger.misc.getUserFlag(entry.flag)) or 0
-end
-
-local function clearDeathLockForBase(baseName, reason)
-    if WATCHTOWER_STATE.deathLockByBase[baseName] ~= nil then
-        WATCHTOWER_STATE.deathLockByBase[baseName] = nil
-        if WATCHTOWER_CONFIG.DEBUG then
-            log("WatchTower desbloqueada base=" .. tostring(baseName) .. " reason=" .. tostring(reason or "flag_change"))
-        end
-    end
-end
-
-local function markDeathLockForBase(baseName, coalitionSide)
-    if WATCHTOWER_STATE.deathLockByBase[baseName] ~= coalitionSide then
-        WATCHTOWER_STATE.deathLockByBase[baseName] = coalitionSide
-        log("WatchTower muerta: respawn bloqueado hasta cambio de bandera. base=" .. tostring(baseName) .. " side=" .. tostring(coalitionSide))
-    end
-end
-
-local function getCountryForCoalitionSide(coalitionSide)
-    if coalitionSide == 1 then
-        return WATCHTOWER_CONFIG.RED_COUNTRY_ID
-    elseif coalitionSide == 2 then
-        return WATCHTOWER_CONFIG.BLUE_COUNTRY_ID
-    end
-    return nil
-end
-
-local function spawnWatchTowerForBase(entry, coalitionSide)
-    local offset, enabled = getManualOffset(entry.name)
-    if not enabled then
-        destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 1))
-        destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 2))
-        WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = nil
-        clearDeathLockForBase(entry.name, "disabled_by_offset")
-        return false
-    end
-
-    local countryId = getCountryForCoalitionSide(coalitionSide)
-    if not countryId then
-        return false
-    end
-
-    local runtimeName = getRuntimeWatchTowerName(entry.name, coalitionSide)
-    local enemySide = (coalitionSide == 1) and 2 or 1
-    local enemyRuntimeName = getRuntimeWatchTowerName(entry.name, enemySide)
-
-    destroyWatchTowerGroupIfExists(enemyRuntimeName)
-
-    if getWatchTowerGroupIfExists(runtimeName) then
-        WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = coalitionSide
-        clearDeathLockForBase(entry.name, "existing_runtime")
-        return true
-    end
-
-    local basePoint = getAirbasePointByName(entry.name) or entry.point
-    if not basePoint then
-        return false
-    end
-
-    entry.point = basePoint
-
-    local spawnX = (tonumber(basePoint.x) or 0) + (offset.x or 0)
-    local spawnY = (tonumber(basePoint.z or basePoint.y) or 0) + (offset.y or 0)
-    local headingRad = math.rad(offset.heading or 0)
-    local unitName = runtimeName .. "_UNIT_1"
-
-    local groupData = {
-        country = countryId,
-        countryId = countryId,
-        category = WATCHTOWER_CONFIG.CATEGORY,
-        name = runtimeName,
-        groupName = runtimeName,
-        task = "Ground Nothing",
-        visible = false,
-        hidden = false,
-        start_time = 0,
-        units = {
-            [1] = {
-                type = WATCHTOWER_CONFIG.UNIT_TYPE,
-                name = unitName,
-                unitName = unitName,
-                x = spawnX,
-                y = spawnY,
-                heading = headingRad,
-                skill = WATCHTOWER_CONFIG.UNIT_SKILL or "Excellent",
-                playerCanDrive = WATCHTOWER_CONFIG.UNIT_PLAYER_CAN_DRIVE and true or false,
-            }
-        },
-        route = {
-            points = {
-                [1] = {
-                    x = spawnX,
-                    y = spawnY,
-                    type = "Turning Point",
-                    action = "Off Road",
-                    speed = 0,
-                    speed_locked = true,
-                    ETA = 0,
-                    ETA_locked = true,
-                    task = {
-                        id = "ComboTask",
-                        params = { tasks = {} }
-                    }
-                }
-            }
-        }
-    }
-
-    local ok, result = pcall(function()
-        if mist and mist.dynAdd then
-            return mist.dynAdd(groupData)
-        end
-        groupData.groupName = nil
-        groupData.country = nil
-        groupData.countryId = nil
-        groupData.category = nil
-        for _, unitData in pairs(groupData.units or {}) do
-            unitData.unitName = nil
-        end
-        return coalition.addGroup(countryId, Group.Category.GROUND, groupData)
-    end)
-
-    if ok and result then
-        local spawnedGroup = getWatchTowerGroupIfExists(runtimeName)
-        if spawnedGroup then
-            WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = coalitionSide
-            clearDeathLockForBase(entry.name, "spawn_success")
-            debug("Watchtower terrestre creada en " .. tostring(entry.name) .. " coalicion=" .. tostring(coalitionSide) .. " grupo=" .. runtimeName, 8)
-            env.info("[ActivateUnitsCampaing_AFGHANISTAN] Watchtower terrestre creada base=" .. tostring(entry.name) .. " side=" .. tostring(coalitionSide) .. " group=" .. runtimeName .. " type=" .. tostring(WATCHTOWER_CONFIG.UNIT_TYPE))
-            return true
-        end
-
-        log("ERROR creando Watchtower: mist/coalition devolvio resultado pero el grupo no existe. base=" .. tostring(entry.name) .. " group=" .. tostring(runtimeName) .. " type=" .. tostring(WATCHTOWER_CONFIG.UNIT_TYPE))
-        return false
-    end
-
-    log("ERROR creando Watchtower terrestre base=" .. tostring(entry.name) .. " side=" .. tostring(coalitionSide) .. " err=" .. tostring(result))
-    return false
-end
-
-local function clearWatchTowersForBase(entry)
-    local destroyedRed = destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 1))
-    local destroyedBlue = destroyWatchTowerGroupIfExists(getRuntimeWatchTowerName(entry.name, 2))
-
-    if destroyedRed or destroyedBlue then
-        debug("Watchtower terrestre removida por neutral/cambio: " .. tostring(entry.name), 6)
-    end
-
-    WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = nil
-    clearDeathLockForBase(entry.name, "neutral_or_clear")
-end
-
-local function revisarModuloTorresDinamicas(now)
-    if not WATCHTOWER_CONFIG.ENABLED then
-        return
-    end
-
-    now = now or timer.getTime()
-
-    if (now - WATCHTOWER_STATE.lastCheck) < (WATCHTOWER_CONFIG.CHECK_INTERVAL or 5) then
-        return
-    end
-
-    WATCHTOWER_STATE.lastCheck = now
-
-    if not buildWatchTowerCatalog(false) then
-        return
-    end
-
-    for _, entry in ipairs(WATCHTOWER_STATE.bases or {}) do
-        local rawFlagValue = getRawFlagValueForBase(entry)
-        local previousRawFlagValue = WATCHTOWER_STATE.lastRawFlagValueByBase[entry.name]
-        local flagChanged = (previousRawFlagValue ~= nil and previousRawFlagValue ~= rawFlagValue)
-
-        if previousRawFlagValue == nil or previousRawFlagValue ~= rawFlagValue then
-            WATCHTOWER_STATE.lastRawFlagValueByBase[entry.name] = rawFlagValue
-        end
-
-        if flagChanged then
-            clearDeathLockForBase(entry.name, "flag_changed_" .. tostring(previousRawFlagValue) .. "_to_" .. tostring(rawFlagValue))
-        end
-
-        local desiredCoalition = getDesiredCoalitionForBase(entry)
-        local previousValue = estadoPrevioBanderas[entry.flag]
-
-        if previousValue ~= desiredCoalition then
-            estadoPrevioBanderas[entry.flag] = desiredCoalition
-            if WATCHTOWER_CONFIG.DEBUG then
-                log("WatchTower bandera cambio base=" .. tostring(entry.name) .. " flag=" .. tostring(entry.flag) .. " raw=" .. tostring(rawFlagValue) .. " desired=" .. tostring(desiredCoalition))
-            end
-        end
-
-        if desiredCoalition == 1 or desiredCoalition == 2 then
-            local runtimeName = getRuntimeWatchTowerName(entry.name, desiredCoalition)
-            local existing = getWatchTowerGroupIfExists(runtimeName)
-            local knownSide = WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name]
-            local deathLockSide = WATCHTOWER_STATE.deathLockByBase[entry.name]
-
-            if existing then
-                WATCHTOWER_STATE.spawnedCoalitionByBase[entry.name] = desiredCoalition
-                if deathLockSide ~= nil then
-                    clearDeathLockForBase(entry.name, "group_exists")
-                end
-            elseif knownSide == nil or knownSide ~= desiredCoalition then
-                spawnWatchTowerForBase(entry, desiredCoalition)
-            elseif deathLockSide == desiredCoalition then
-                -- Torre ya murio con esta misma bandera: no hacer nada.
-            else
-                markDeathLockForBase(entry.name, desiredCoalition)
-            end
-        else
-            if WATCHTOWER_CONFIG.DESTROY_WHEN_NEUTRAL then
-                clearWatchTowersForBase(entry)
-            end
-        end
-    end
-end
-
-----------------------------------------------------------------
 -- MODULO 2
 -- CATALOGO DE GRUPOS PERSISTENTES
 ----------------------------------------------------------------
+
 local function ensureTrackedGroup(groupName, sourceFlag)
     if not ACTSTATE.trackedGroups[groupName] then
         ACTSTATE.trackedGroups[groupName] = {
@@ -1610,8 +1850,8 @@ end
 ----------------------------------------------------------------
 -- MODULO 2
 -- ACTIVACION SIMPLE PERSISTENTE
--- MISMA BASE ESTABLE + FILTRO status==2
 ----------------------------------------------------------------
+
 local function activarGrupoOriginalPersistente(nombreGrupo, bandera)
     if not nombreGrupo or nombreGrupo == "" then
         return false
@@ -1671,10 +1911,6 @@ local function activarModuloSimple(flag, definicion)
     end
 end
 
-----------------------------------------------------------------
--- MODULO 2
--- ESTO QUEDA IGUAL A LA VERSION ESTABLE
-----------------------------------------------------------------
 local function revisarModuloActivaciones()
     for flag, definicion in pairs(activacionesPorFlag) do
         local valorActual = tonumber(trigger.misc.getUserFlag(flag)) or 0
@@ -1695,6 +1931,7 @@ end
 -- MODULO 2
 -- MONITOREO DE VIDA / BLOQUEO DURO DE 2
 ----------------------------------------------------------------
+
 local function monitorTrackedGroups()
     for groupName, rec in pairs(ACTSTATE.trackedGroups or {}) do
         local rt = ACTSTATE.runtime[groupName]
@@ -1739,8 +1976,8 @@ end
 ----------------------------------------------------------------
 -- MODULO 2
 -- EVENT HANDLER
--- SI EL GRUPO ESTA EN 2, SE DESTRUYE Y NO SE REHABILITA
 ----------------------------------------------------------------
+
 local function registerSyncEventHandler()
     if ACTSTATE.eventHandlerRegistered then
         return
@@ -1801,6 +2038,7 @@ end
 -- MODULO 2
 -- INYECCION JSON -> ESTADO
 ----------------------------------------------------------------
+
 local function injectFromJson()
     if not ACTSTATE.persistenceAvailable then
         return
@@ -1831,6 +2069,7 @@ end
 -- MODULO 2
 -- EXPORTACION DCS -> JSON
 ----------------------------------------------------------------
+
 local function exportLiveToJson()
     if not ACTSTATE.persistenceAvailable then
         return
@@ -1844,6 +2083,7 @@ end
 ----------------------------------------------------------------
 -- START SYNC
 ----------------------------------------------------------------
+
 local function startActivateSync()
     buildTrackedCatalog()
     registerSyncEventHandler()
@@ -1889,10 +2129,12 @@ end
 ----------------------------------------------------------------
 -- MAIN LOOP
 ----------------------------------------------------------------
+
 local function verificarSistema(_, now)
     now = now or timer.getTime()
 
     revisarModuloTorresDinamicas(now)
+    revisarModuloManualPorBandera(now)
     revisarModuloActivaciones()
 
     if ACTSTATE.started then
@@ -1930,5 +2172,6 @@ end
 ----------------------------------------------------------------
 -- ARRANQUE
 ----------------------------------------------------------------
+
 startActivateSync()
 timer.scheduleFunction(verificarSistema, nil, timer.getTime() + intervaloRevision)

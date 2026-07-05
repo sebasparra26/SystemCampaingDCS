@@ -10,7 +10,7 @@ local NM_TO_METERS = 1852
 local HEARTBEAT_SECONDS = 10
 local CLONE_CONFIRM_DELAY_SECONDS = 1
 local ENGAGE_REFRESH_SECONDS = 30
-local DEFAULT_ALTITUDE_ARM = 1500
+local DEFAULT_ALTITUDE_ARM = 3000
 local DEFAULT_STOP_SPEED = 2
 local DEFAULT_DEBUG = false
 
@@ -118,6 +118,98 @@ local PATROL_DEFINITIONS = {
         allowedCategories = CATEGORY_SETS.AIR_ONLY,
         debug = DEFAULT_DEBUG
     },
+    {
+        name = "PATRULLA_RUSSIAN_06",
+        templates = { "Patrol_IA_RUSSIA_11"},
+        clonePrefix = "AFGHANISTAN hel ",
+        activationFlag = 115,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+    {
+        name = "PATRULLA_RUSSIAN_07",
+        templates = { "Patrol_IA_RUSSIA_12", "Patrol_IA_RUSSIA_13" },
+        clonePrefix = "AFGHANISTAN hel ",
+        activationFlag = 116,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+
+      {
+        name = "PATRULLA_RUSSIAN_08",
+        templates = { "Patrol_IA_RUSSIA_14"},
+        clonePrefix = "RUSSIA air ",
+        activationFlag = 116,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+         {
+        name = "PATRULLA_RUSSIAN_09",
+        templates = { "Patrol_IA_RUSSIA_15"},
+        clonePrefix = "RUSSIA air ",
+        activationFlag = 120,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+             {
+        name = "PATRULLA_RUSSIAN_10",
+        templates = { "Patrol_IA_RUSSIA_16"},
+        clonePrefix = "RUSSIA air ",
+        activationFlag = 124,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+
 
 
 
