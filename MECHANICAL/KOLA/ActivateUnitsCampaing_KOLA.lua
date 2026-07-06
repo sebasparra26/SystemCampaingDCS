@@ -248,6 +248,9 @@ local activacionesPorFlag = {
     [106] = {
         valor = 2,
         grupos = {
+            "BEAR_AWACS",
+            "RU_SCORT_02",
+            "RU_SCORT_03",
             "TGT01",
             "TGT02",
             "TGT03",
@@ -268,6 +271,10 @@ local activacionesPorFlag = {
             "TGT18",
             "TGT19",
             "TGT20",
+            "TGT22",
+            "TGT23",
+            "TGT24",
+            "TGT25",
             "RU_100_Banak_Ship_1",
             "RU_114_Kallax_Ship",
             "MT_07_CARRIER",
