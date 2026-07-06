@@ -275,6 +275,7 @@ local activacionesPorFlag = {
             "TGT23",
             "TGT24",
             "TGT25",
+            "TGT26",
             "RU_100_Banak_Ship_1",
             "RU_114_Kallax_Ship",
             "MT_07_CARRIER",
