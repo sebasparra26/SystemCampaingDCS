@@ -19,7 +19,7 @@ MDB.MISSIONS = {
         order = 1,
         enabled = false,
 
-        name = "Operación - Asamblea Bajo Fuego",
+        name = "Operación - Shadow Gate",
         shortName = "M01",
         generalObjective = "Retoma el control sobre la zona entre Bagram, Kabul y Bayman Captura las bases.\n",
                            
@@ -71,7 +71,7 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M01 - Operación - Asamblea Bajo Fuego",
+            title = "M01 - Operación - Shadow Gate",
             text =
                 "MISION 01\n" ..
                 "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
@@ -86,7 +86,7 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         draw = {
             enabled = true,
-            title = "M01 - Operación - Asamblea Bajo Fuego",
+            title = "M01 - Operación - Shadow Gate",
             generalObjective = nil,
             offsetX = 5000,
             offsetZ = 2500,
@@ -540,7 +540,7 @@ MDB.MISSIONS = {
         order = 2,
         enabled = false,
 
-                name = "Operación - El Invierno No Tendrá Santuario",
+                name = "Operación - Black Ridge",
         shortName = "M02",
         generalObjective = "En la region de Gardez tendra lugar una reunion de lideres Talibanes de algo nivel. destruyelos! \n",
                             "Humo Rojo sobre objetivos prioritarios\n",
@@ -588,7 +588,7 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            title = "M02 - Operación - Black Ridge",
             text =
                 "MISION 02\n" ..
                 "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
@@ -603,7 +603,7 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         draw = {
             enabled = true,
-            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            title = "M02 - Operación - Black Ridge",
             generalObjective = nil,
             offsetX = 5000,
             offsetZ = 2500,
@@ -890,27 +890,28 @@ MDB.MISSIONS = {
     {
         id = "M03",
         order = 3,
-        enabled = true,
+        enabled = false,
 
-                name = "Operación - El Invierno No Tendrá Santuario",
-        shortName = "M02",
-        generalObjective = "En la region de Gardez tendra lugar una reunion de lideres Talibanes de algo nivel. destruyelos! \n",
-                            "Humo Rojo sobre objetivos prioritarios\n",
+                name = "Operación - Ghost Route",
+        shortName = "M03",
+        generalObjective = "Rescatar al piloto derribado en el sector.\n",
+                            "Humo Naranja sobre el objetivo a rescatar\n",
                         
 
         briefing =
             "OBJETIVO:\n" ..
-            "Ubica a los lideres Talibanes en la region de Gardez\n\n\n" ..
+            "Rescatar al piloto derribado en el sector. debes llevarlo a Sharana (20Km)\n\n\n" ..
+            "Captura las bases indicadas para poder rescatar al piloto, Humo verde sobre zona de descargue.\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Buscar y destruir a: Abdul Hakim - MGRS GRID: 42 S WC 28479 32069 \n"..
-            "2. Buscar y destruir a: Mujahid - MGRS GRID: 42 S WC 20305 07967\n"..
-            "3. Buscar y destruir a: Karim Abdel - MGRS GRID: 42 S WC 11122 31084 \n"..
+            "1. Capturar la Base: Sharana.\n"..
+            "2. Capturar la Base: Urgoon Heliport.\n"..
+            "3. Rescatar Piloto Caido\n"..
             "PAGOS:\n" ..
             --"Captura: 0 --\n" ..
-            "Abdul Hakim: 500.000.000\n" ..
-            "Mujahid: 250.000.000\n" ..
-            "Karim Abdel: 50.000.000\n" ..
-            "Mision Completada: 1500.000.000\n\n" ..
+            "Capturar Sharana: 180.000.000\n" ..
+            "Capturar Urgoon Heliport: 180.000.000\n" ..
+            "Rescatar Piloto Caido: 200.000.000\n"..
+            "Mision Completada: 2000.000.000\n\n" ..
             "IMPORTANTE:\n",
             
 
@@ -934,16 +935,16 @@ MDB.MISSIONS = {
             mode = "point", -- point | zone
 
             point = {
-                x = -24742,
-                z = 276896
+                x = -98695,
+                z = 275582
             },
 
             zoneName = nil,
 
-            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            title = "M03 - Operación - Ghost Route",
             text =
-                "MISION 02\n" ..
-                "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
+                "MISION 03\n" ..
+                "Rescatar al piloto derribado en el sector.\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -955,7 +956,7 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         draw = {
             enabled = true,
-            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            title = "M03 - Operación - Ghost Route",
             generalObjective = nil,
             offsetX = 5000,
             offsetZ = 2500,
@@ -970,13 +971,13 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         flags = {
             onActivate = {
-                { flag = 2000, value = 1 },
+                { flag = 3000, value = 1 },
             },
             onSuccess = {
-                { flag = 2001, value = 1 },
+                { flag = 3001, value = 1 },
             },
             onFail = {
-                { flag = 2002, value = 1 },
+                { flag = 3002, value = 1 },
             },
         },
 
@@ -985,23 +986,7 @@ MDB.MISSIONS = {
         -- Estas SI son por mision, no globales.
         ----------------------------------------------------------------
         missionFlagRules = {
-            {
-                id = "M01_REGLA_01",
-                enabled = false,
-
-                conditions = {
-                    { flag = 1000, op = "==", value = 1 },
-                    { flag = 1001, op = "==", value = 1 },
-                },
-
-                onTrue = {
-                    { flag = 1002, value = 1 }
-                },
-
-                onFalse = {
-                    { flag = 1002, value = 0 }
-                }
-            }
+           
         },
 
         ----------------------------------------------------------------
@@ -1068,117 +1053,128 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         secondaryObjectives = {
 
-           --01------------------------------------------------------------------
-     {
-                 id = "OBJ_DESTRUIR_UNIT_01",
-                 name = "Buscar y destruir a: Abdul Hakim - MGRS GRID: 42 S WC 28479 32069 ",
-                 enabled = true,
+            {
+                 id = "OBJ_CAPTURAR_BASE_URGOON",
+                 name = "Capturar: Urgoon Heliport",
+                 drawName = "Capturar: Urgoon Heliport",
+                enabled = true,
                  requiredForMission = true,
             
                  monitor = {
-                     kind = "unit",
-                     unitName = "MT_02_01_TALIBAN",
-                     metric = "alive",
-                     op = "==",
-                     value = 0
-                 },
-
-                 smoke = {
+                     kind = "base_capture",
+                     baseName = "Urgoon Heliport",
+                    op = "==",
+                     coalition = 2,
+            
+                     smoke = {
                          enabled = false,
-                         refreshSeconds = 300,
+                         refreshSeconds = 240,
                          stopOnPass = true,
-                         autoZone = false,
                          autoTarget = true,
-                         zoneColor = "green",
-                         targetColor = "red",
-
-                         -- Puedes sumar marcados manuales extra:
+                         captureColor = "orange"
+            
                          -- items = {
-                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
-                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
-                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         --     { targetKind = "airbase", airbaseName = "Khalkhalah Air Base", color = "orange" },
+                        --     { targetKind = "zone", zoneName = "Z_CAPTURA_154", color = "orange" },
                          -- }
-                     },
+                     }
+                 },
             
                  setFlagOnPass = {
-                   flag = 2003,
-                    value = 1,
+                     flag = 3005,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 3006,
+                     value = 1,
                      elseValue = 0
                  },
             
                  reward = {
                      enabled = true,
                      coalition = 2,
-                     amount = 500000000
-                 }
-             }, 
-       --02------------------------------------------------------------------
-     {
-                 id = "OBJ_DESTRUIR_UNIT_02",
-                 name = "Buscar y destruir a: Mujahid - MGRS GRID: 42 S WC 20305 07967",
-                 enabled = true,
-                 requiredForMission = true,
-            
-                 monitor = {
-                     kind = "unit",
-                     unitName = "MT_02_02_TALIBAN",
-                     metric = "alive",
-                     op = "==",
-                     value = 0
-                 },
-
-                 smoke = {
-                         enabled = false,
-                         refreshSeconds = 300,
-                         stopOnPass = true,
-                         autoZone = false,
-                         autoTarget = true,
-                         zoneColor = "green",
-                         targetColor = "red",
-
-                         -- Puedes sumar marcados manuales extra:
-                         -- items = {
-                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
-                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
-                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
-                         -- }
-                     },
-            
-                 setFlagOnPass = {
-                   flag = 2004,
-                    value = 1,
-                     elseValue = 0
-                 },
-            
-                 reward = {
-                     enabled = true,
-                     coalition = 2,
-                     amount = 250000000
+                     amount = 180000000
                  }
              },
-       --03------------------------------------------------------------------
-     {
-                 id = "OBJ_DESTRUIR_UNIT_03",
-                 name = "Buscar y destruir a: Karim Abdel - MGRS GRID: 42 S WC 11122 31084",
-                 enabled = true,
+
+              {
+                 id = "OBJ_CAPTURAR_BASE_Sharana",
+                 name = "Capturar: Sharana",
+                 drawName = "Capturar: Sharana",
+                enabled = true,
                  requiredForMission = true,
             
                  monitor = {
-                     kind = "unit",
-                     unitName = "MT_02_03_TALIBAN",
-                     metric = "alive",
-                     op = "==",
-                     value = 0
-                 },
-
-                 smoke = {
+                     kind = "base_capture",
+                     baseName = "Sharana",
+                    op = "==",
+                     coalition = 2,
+            
+                     smoke = {
                          enabled = false,
+                         refreshSeconds = 240,
+                         stopOnPass = true,
+                         autoTarget = true,
+                         captureColor = "orange"
+            
+                         -- items = {
+                         --     { targetKind = "airbase", airbaseName = "Khalkhalah Air Base", color = "orange" },
+                        --     { targetKind = "zone", zoneName = "Z_CAPTURA_154", color = "orange" },
+                         -- }
+                     }
+                 },
+            
+                 setFlagOnPass = {
+                     flag = 3007,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 3008,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 180000000
+                 }
+             },
+
+
+           {
+                 id = "RESCUE_PILOT_01",
+                 name = "Rescatar piloto caido",
+                 drawName = "Rescatar piloto caido",
+                 enabled = true,
+                requiredForMission = true,
+            
+                 monitor = {
+                    kind = "unit_alive_in_zone",
+                     unitName = "MT_03_04_Blue-1",
+                     -- o usa un grupo completo:
+                     -- groupName = "US_TROOP_GROUP",
+                     -- groupMode = "any", -- any | all | count
+                     zoneName = "R1",
+                     op = "==",
+                     value = 1,
+
+                     -- Alternativa si no quieres usar zoneName:
+                     -- point = { x = 425249, z = 391031 },
+                     -- radius = 1000,
+
+                     smoke = {
+                         enabled = true,
                          refreshSeconds = 300,
                          stopOnPass = true,
-                         autoZone = false,
+                         autoZone = true,
                          autoTarget = true,
                          zoneColor = "green",
-                         targetColor = "red",
+                         targetColor = "orange",
 
                          -- Puedes sumar marcados manuales extra:
                          -- items = {
@@ -1187,19 +1183,40 @@ MDB.MISSIONS = {
                          --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
                          -- }
                      },
+
+                     cleanupOnPass = {
+                         enabled = true,
+                         delaySeconds = 20,
+
+                         -- auto:
+                         -- si usas groupName destruye el grupo
+                         -- si usas unitName destruye la unidad
+                         targetKind = "auto",
+
+                         -- si al destruir unit falla, intenta destruir su grupo padre
+                         fallbackToGroup = true
+                     }
+                 },
             
                  setFlagOnPass = {
-                   flag = 2005,
-                    value = 1,
+                     flag = 3003,
+                     value = 1,
+                     elseValue = 0
+                 },
+            
+                 setFlagOnActive = {
+                     flag = 3004,
+                     value = 1,
                      elseValue = 0
                  },
             
                  reward = {
                      enabled = true,
-                     coalition = 2,
-                     amount = 50000000
+                    coalition = 2,
+                     amount = 200000000
                  }
-             },                          
+             },
+     
              
         },
 
@@ -1209,7 +1226,214 @@ MDB.MISSIONS = {
         rewards = {
             enabled = true,
             coalition = 2,
-            missionSuccessAmount = 1500000000
+            missionSuccessAmount = 2000000000
+        },
+
+        ----------------------------------------------------------------
+        -- CONDICIONES EXTRA DE EXITO
+        -- Se suman a los objetivos obligatorios
+        ----------------------------------------------------------------
+        successConditions = {
+            -- ejemplo:
+            -- { flag = 2500, op = "==", value = 1 }
+        },
+
+        ----------------------------------------------------------------
+        -- CONDICIONES DE FALLO
+        ----------------------------------------------------------------
+        failConditions = {
+            -- ejemplo:
+            -- { flag = 2999, op = "==", value = 1 }
+        }
+    },
+    
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M03
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+ ----------------------------------------------------------------
+
+    {
+        id = "M04",
+        order = 4,
+        enabled = false,
+
+                name = "Operación - Iron Valley",
+        shortName = "M04",
+        generalObjective = "Rescatar al piloto derribado en el sector.\n",
+                            "Humo Naranja sobre el objetivo a rescatar\n",
+                        
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Rescatar al piloto derribado en el sector. debes llevarlo a Sharana (20Km)\n\n\n" ..
+            "Captura las bases indicadas para poder rescatar al piloto, Humo verde sobre zona de descargue.\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Capturar la Base: Sharana.\n"..
+            "2. Capturar la Base: Urgoon Heliport.\n"..
+            "3. Rescatar Piloto Caido\n"..
+            "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+            "Capturar Sharana: 180.000.000\n" ..
+            "Capturar Urgoon Heliport: 180.000.000\n" ..
+            "Rescatar Piloto Caido: 200.000.000\n"..
+            "Mision Completada: 2000.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
+
+        autoStart = true,
+
+        ----------------------------------------------------------------
+        -- CONDICIONES EXTRA DE ACTIVACION
+        -- La secuencia base ya valida que la anterior este completada.
+        ----------------------------------------------------------------
+        activationConditions = {
+            -- ejemplo:
+            -- { flag = 1500, op = "==", value = 1 }
+        },
+
+        ----------------------------------------------------------------
+        -- MARK EN F10
+        -- mode = "point" o "zone"
+        ----------------------------------------------------------------
+        map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = -98695,
+                z = 275582
+            },
+
+            zoneName = nil,
+
+            title = "M04 - Operación - Iron Valley",
+            text =
+                "MISION 04\n" ..
+                "Rescatar al piloto derribado en el sector.\n"..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+        ----------------------------------------------------------------
+        -- DRAW DINAMICO EN F10
+        -- Se posiciona tomando como ancla el punto de map y sumando offsetX/Z
+        -- Muestra solo objetivos obligatorios pendientes:
+        -- enabled = true y requiredForMission = true
+        ----------------------------------------------------------------
+        draw = {
+            enabled = true,
+            title = "M04 - Operación - Iron Valley",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+
+        ----------------------------------------------------------------
+        -- FLAGS DE ESTADO DE ESTA MISION
+        ----------------------------------------------------------------
+        flags = {
+            onActivate = {
+                { flag = 4000, value = 1 },
+            },
+            onSuccess = {
+                { flag = 4001, value = 1 },
+            },
+            onFail = {
+                { flag = 4002, value = 1 },
+            },
+        },
+
+        ----------------------------------------------------------------
+        -- REGLAS INTERNAS DE FLAGS DE ESTA MISION
+        -- Estas SI son por mision, no globales.
+        ----------------------------------------------------------------
+        missionFlagRules = {
+           
+        },
+
+        ----------------------------------------------------------------
+        -- VALIDADORES TECNICOS
+        -- Sirven para chequeos auxiliares y seteo de flags
+        -- No completan la mision solos, salvo que uses esas flags
+        -- en successConditions o en reglas internas.
+        ----------------------------------------------------------------
+        validators = {
+            warehouse = {
+                -- ejemplo:
+                -- {
+                --     key = "SALIDA_AIM120",
+                --     baseName = "BASE_AQUI",
+                --     category = "weapon",
+                --     itemName = "AIM-120C",
+                --     removedAtLeast = 8,
+                --     setFlagOnPass = {
+                --         flag = 2010,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            },
+
+            groupChecks = {
+                -- ejemplo:
+                -- {
+                --     key = "GRUPO_ESCOLTA_VIVO",
+                --     groupName = "GrupoEscolta_AQUI",
+                --     metric = "aliveUnits", -- aliveUnits | totalUnits | lifeSum | lifePercent
+                --     op = ">=",
+                --     value = 1,
+                --     setFlagOnPass = {
+                --         flag = 2002,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            },
+
+            unitChecks = {
+                -- ejemplo:
+                -- {
+                --     key = "UNIDAD_RADAR_VIVA",
+                --     unitName = "Radar_AQUI",
+                --     metric = "alive", -- alive | life | life0 | lifePercent
+                --     op = "==",
+                --     value = 1,
+                --     setFlagOnPass = {
+                --         flag = 2003,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            }
+        },
+
+        ----------------------------------------------------------------
+        -- OBJETIVOS SECUNDARIOS
+        -- Cada objetivo puede pagar o no
+        -- Cada objetivo puede poner flags o no
+        -- Cada objetivo puede ser obligatorio o no
+        ----------------------------------------------------------------
+        secondaryObjectives = {
+
+            
+     
+             
+        },
+
+        ----------------------------------------------------------------
+        -- PAGO FINAL POR COMPLETAR LA MISION
+        ----------------------------------------------------------------
+        rewards = {
+            enabled = true,
+            coalition = 2,
+            missionSuccessAmount = 2000000000
         },
 
         ----------------------------------------------------------------
@@ -1229,6 +1453,7 @@ MDB.MISSIONS = {
             -- { flag = 2999, op = "==", value = 1 }
         }
     },    
+
 
 }
 

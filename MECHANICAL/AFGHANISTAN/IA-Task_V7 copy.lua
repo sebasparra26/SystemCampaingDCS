@@ -4,16 +4,6 @@ if not mist or not mist.cloneGroup or not mist.getGroupRoute or not mist.goRoute
 end
 
 ----------------------------------------------------------------
--- IA-Task_V8.lua
--- Base: IA-Task_V7.lua
--- Cambio V8:
--- - Agrega combustible ilimitado como Advanced Waypoint Action
---   dentro de los waypoints de ruta creados por buildRouteFromTemplate().
--- - No toca controller:setCommand despues del spawn.
--- - No modifica la clonacion de templates.
-----------------------------------------------------------------
-
-----------------------------------------------------------------
 -- AJUSTES GENERALES
 ----------------------------------------------------------------
 local DEBUG = false
@@ -29,11 +19,6 @@ local ARM_STOP_MONITOR_AT_AGL = 10
 local RTB_CRUISE_ALT = 10500      -- Angels 30 en metros
 local RTB_CRUISE_SPEED = 700     -- m/s
 local RTB_CLIMB_OFFSET_NM = 250   -- distancia del waypoint de subida hacia casa
-
--- HDEV V8
--- Inserta combustible ilimitado como Advanced Waypoint Action dentro de la ruta creada.
--- No toca el clone directo ni usa controller:setCommand despues del spawn.
-local ENABLE_UNLIMITED_FUEL_WP_ACTION = true
 
 ----------------------------------------------------------------
 -- PERFILES DE MISION
@@ -62,10 +47,10 @@ local TASK_PROFILES = {
             hornet = { "CAP_HORNET_A" }
         },
         maxActive = 3,
-        cooldownSeconds = 30 * 60,
+        cooldownSeconds = 20 * 60,
         orbitAltitude = 10000,
         orbitSpeed = 300,
-       zoneRadius = 90000,
+       zoneRadius = 55000,
         ingressOffsetNm = 20,
         targetTypes = { "Air" },
         rtbAfterTaskSeconds = 60 * 60
@@ -127,7 +112,7 @@ local TASK_PROFILES = {
         maxActive = 4,
         cooldownSeconds = 20 * 60,
         ingressAltitude = 10000,
-        ingressSpeed = 650,
+        ingressSpeed = 700,
         ingressOffsetNm = 80,
         egressOffsetNm = -40,
         attackQty = 1,
@@ -645,109 +630,6 @@ local function buildEmptyComboTask()
     }
 end
 
-----------------------------------------------------------------
--- HDEV V8 - COMBUSTIBLE ILIMITADO EN WAYPOINTS
-----------------------------------------------------------------
-local function buildUnlimitedFuelWrappedAction()
-    return {
-        id = "WrappedAction",
-        enabled = true,
-        auto = false,
-        number = 1,
-        params = {
-            action = {
-                id = "SetUnlimitedFuel",
-                params = {
-                    value = true
-                }
-            }
-        }
-    }
-end
-
-local function comboTaskAlreadyHasUnlimitedFuel(comboTask)
-    if not comboTask or comboTask.id ~= "ComboTask" then
-        return false
-    end
-
-    local tasks = comboTask.params and comboTask.params.tasks or nil
-    if type(tasks) ~= "table" then
-        return false
-    end
-
-    for _, task in ipairs(tasks) do
-        local action = task and task.params and task.params.action or nil
-        if task and task.id == "WrappedAction" and action and action.id == "SetUnlimitedFuel" then
-            return true
-        end
-    end
-
-    return false
-end
-
-local function renumberComboTasks(comboTask)
-    if not comboTask or comboTask.id ~= "ComboTask" then
-        return
-    end
-
-    local tasks = comboTask.params and comboTask.params.tasks or nil
-    if type(tasks) ~= "table" then
-        return
-    end
-
-    for i, task in ipairs(tasks) do
-        if type(task) == "table" then
-            task.number = i
-        end
-    end
-end
-
-local function addUnlimitedFuelWrappedActionToWaypoint(wp)
-    if not ENABLE_UNLIMITED_FUEL_WP_ACTION then
-        return
-    end
-
-    if not wp then
-        return
-    end
-
-    if not wp.task then
-        wp.task = buildEmptyComboTask()
-    end
-
-    -- Importante:
-    -- Solo insertamos en tareas ComboTask directas del waypoint.
-    -- No abrimos ControlledTask para no romper Orbit/stopCondition de CAP/CAS.
-    if wp.task.id ~= "ComboTask" then
-        return
-    end
-
-    wp.task.params = wp.task.params or {}
-    wp.task.params.tasks = wp.task.params.tasks or {}
-
-    if comboTaskAlreadyHasUnlimitedFuel(wp.task) then
-        renumberComboTasks(wp.task)
-        return
-    end
-
-    table.insert(wp.task.params.tasks, 1, buildUnlimitedFuelWrappedAction())
-    renumberComboTasks(wp.task)
-end
-
-local function applyUnlimitedFuelToRouteWaypoints(route)
-    if not ENABLE_UNLIMITED_FUEL_WP_ACTION then
-        return
-    end
-
-    if type(route) ~= "table" then
-        return
-    end
-
-    for i = 1, #route do
-        addUnlimitedFuelWrappedActionToWaypoint(route[i])
-    end
-end
-
 local function buildControlledTask(taskToRun, durationSeconds)
     return {
         id = "ControlledTask",
@@ -1078,11 +960,6 @@ local function buildRouteFromTemplate(templateName, profile, markPoint)
             route[5] = buildLandWaypointFromStart(wp1)
         end
     end
-
-    -- HDEV V8:
-    -- Aqui ya existen todos los waypoints generados por el script.
-    -- Se agrega combustible ilimitado como Advanced Waypoint Action antes de enviar la ruta.
-    applyUnlimitedFuelToRouteWaypoints(route)
 
     return route, {
         ipPoint = { x = ipX, z = ipY },
