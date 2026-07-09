@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
--- HDEV_CTLDDeploymentPersistence_KOLA.lua
--- Version 2.6.7 - FIX UNPACK: no wrapper sobre ctld.spawnCrateGroup
+-- HDEV_CTLDDeploymentPersistence_AFGHANISTAN.lua
+-- Version 2.6.6
 --
 -- Persistencia de despliegues CTLD + FOB PACKAGE static heliport estilo Mission Editor.
 --
@@ -38,7 +38,7 @@ local CTDP = HDEV_CTLDDeploymentPersistence
 CTDP.CONFIG = {
     DEBUG = false,
 
-    FILE_PATH = lfs.writedir() .. "Config\\HorizontDev\\KOLA\\SystemCTLDDeploymentPersistenceKola.json",
+    FILE_PATH = lfs.writedir() .. "Config\\HorizontDev\\AFGHANISTAN\\SystemCTLDDeploymentPersistenceAfghanistan.json",
 
     INJECT_DURATION = 30,
     INJECT_INTERVAL = 1,
@@ -937,7 +937,6 @@ CTDP.STATE = CTDP.STATE or {
     injectedFobsThisSession = {},
 
     wrapperInstalled = false,
-    callbackInstalled = false,
     fobWrapperInstalled = false,
     eventHandlerRegistered = false,
     suppressFobCapture = false
@@ -1888,7 +1887,7 @@ local function recordCtldSpawnedGroup(groupName, typesFromCtld, heliName)
         enabled = true,
         alive = true,
         source = "CTLD",
-        captureMethod = "ctld_callback",
+        captureMethod = "spawnCrateGroup_wrapper",
         reason = reason,
         crateUnit = mainType,
         crateDesc = mainDesc,
@@ -3017,74 +3016,39 @@ end
 ----------------------------------------------------------------
 -- WRAPPERS CTLD
 ----------------------------------------------------------------
-local function removeLegacySpawnWrapperIfPresent()
-    -- IMPORTANTE:
-    -- Versiones anteriores de este archivo envolvian ctld.spawnCrateGroup.
-    -- Esa funcion es critica para Unpack Any Crate, Patriot FULL, Gepard, AA FULL
-    -- y multicrates. No se debe tocar.
-    if ctld and ctld._HDEV_CTDP_originalSpawnCrateGroup then
-        ctld.spawnCrateGroup = ctld._HDEV_CTDP_originalSpawnCrateGroup
-        ctld._HDEV_CTDP_originalSpawnCrateGroup = nil
-        CTDP.STATE.wrapperInstalled = false
-        env.info("[CTLD_PERSIST] Wrapper viejo sobre ctld.spawnCrateGroup removido/restaurado.")
-        if CTDP.CONFIG.DEBUG then
-            trigger.action.outText("[CTLD_PERSIST] Wrapper viejo ctld.spawnCrateGroup removido.", 8)
+local function installCtldSpawnWrapper()
+    if CTDP.STATE.wrapperInstalled then return end
+    if ctld._HDEV_CTDP_originalSpawnCrateGroup then CTDP.STATE.wrapperInstalled = true return end
+
+    ctld._HDEV_CTDP_originalSpawnCrateGroup = ctld.spawnCrateGroup
+    ctld.spawnCrateGroup = function(_heli, _positions, _types, _hdgs)
+        local spawnedGroup = ctld._HDEV_CTDP_originalSpawnCrateGroup(_heli, _positions, _types, _hdgs)
+        local groupName, heliName = nil, nil
+        local typesCopy = {}
+
+        if spawnedGroup and spawnedGroup.getName then
+            local okName, resultName = pcall(function() return spawnedGroup:getName() end)
+            if okName then groupName = resultName end
         end
-    end
-end
-
-local function installCtldSpawnCallback()
-    if CTDP.STATE.callbackInstalled then return end
-
-    removeLegacySpawnWrapperIfPresent()
-
-    if not ctld or type(ctld.addCallback) ~= "function" then
-        warn("No se pudo instalar callback CTLD: ctld.addCallback no disponible.")
-        return
-    end
-
-    ctld.addCallback(function(args)
-        if not args then return end
-
-        local action = tostring(args.action or "")
-        if action ~= "unpack" and action ~= "repair" and action ~= "rearm" then
-            return
-        end
-
-        local spawnedGroup = args.spawnedGroup
-        if type(spawnedGroup) == "table" and spawnedGroup.getName == nil then
-            spawnedGroup = spawnedGroup[1]
-        end
-
-        if not spawnedGroup or not spawnedGroup.getName then
-            return
-        end
-
-        local okName, groupName = pcall(function() return spawnedGroup:getName() end)
-        if not okName or not groupName or groupName == "" then
-            return
-        end
-
-        local heliName = nil
-        if args.unit and args.unit.getName then
-            local okHeli, resultHeli = pcall(function() return args.unit:getName() end)
+        if _heli and _heli.getName then
+            local okHeli, resultHeli = pcall(function() return _heli:getName() end)
             if okHeli then heliName = resultHeli end
         end
+        for _, t in ipairs(_types or {}) do typesCopy[#typesCopy + 1] = t end
 
-        local typesCopy = {}
-        if args.crate and args.crate.details and args.crate.details.unit then
-            typesCopy[#typesCopy + 1] = args.crate.details.unit
+        if groupName then
+            timer.scheduleFunction(function()
+                recordCtldSpawnedGroup(groupName, typesCopy, heliName)
+                return nil
+            end, nil, timer.getTime() + 1)
+        else
+            log("CTLD spawneo algo, pero no pude leer el nombre del grupo.", 8)
         end
+        return spawnedGroup
+    end
 
-        timer.scheduleFunction(function()
-            recordCtldSpawnedGroup(groupName, typesCopy, heliName)
-            return nil
-        end, nil, timer.getTime() + 1)
-    end)
-
-    CTDP.STATE.callbackInstalled = true
-    CTDP.STATE.wrapperInstalled = false
-    log("Callback CTLD instalado para capturar unpack/repair/rearm sin tocar ctld.spawnCrateGroup.", 8)
+    CTDP.STATE.wrapperInstalled = true
+    log("Wrapper instalado sobre ctld.spawnCrateGroup.", 8)
 end
 
 local function installCtldFobWrapper()
@@ -3540,13 +3504,13 @@ local function start()
     cleanRuntimeFields(CTDP.STATE.doc)
     buildCtldIndexes()
     rebuildIndexes()
-    installCtldSpawnCallback()
+    installCtldSpawnWrapper()
     installCtldFobWrapper()
     registerDeathEventHandler()
 
     timer.scheduleFunction(mainLoop, nil, timer.getTime() + 1)
 
-    log("Sistema iniciado V2.6.7 FIX UNPACK + DRONES/FARP. Inyectando JSON durante " .. tostring(CTDP.CONFIG.INJECT_DURATION) .. " segundos.", 10)
+    log("Sistema iniciado V2.6.1 RUNTIME HELIPORT + WAREHOUSE. Inyectando JSON durante " .. tostring(CTDP.CONFIG.INJECT_DURATION) .. " segundos.", 10)
 end
 
 start()

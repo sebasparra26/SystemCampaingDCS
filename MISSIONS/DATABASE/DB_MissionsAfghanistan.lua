@@ -17,7 +17,7 @@ MDB.MISSIONS = {
     {
         id = "M01",
         order = 1,
-        enabled = true,
+        enabled = false,
 
         name = "Operación - Asamblea Bajo Fuego",
         shortName = "M01",
@@ -247,7 +247,7 @@ MDB.MISSIONS = {
             -- 2 = azul
             ------------------------------------------------------------
              {
-                 id = "OBJ_CAPTURAR_BASE",
+                 id = "OBJ_CAPTURAR_BASE_KABUL",
                  name = "Capturar Kabul",
                  drawName = "Capturar base: Kabul",
                 enabled = true,
@@ -292,7 +292,7 @@ MDB.MISSIONS = {
                  }
              },
  {
-                 id = "OBJ_CAPTURAR_BASE",
+                 id = "OBJ_CAPTURAR_BASE_BAGRAM",
                  name = "Capturar Bagram",
                  drawName = "Capturar base: Bagram",
                 enabled = true,
@@ -325,7 +325,7 @@ MDB.MISSIONS = {
                  },
             
                  setFlagOnActive = {
-                     flag = 1008,
+                     flag = 1009,
                      value = 1,
                      elseValue = 0
                  },
@@ -337,7 +337,7 @@ MDB.MISSIONS = {
                  }
              },
              {
-                 id = "OBJ_CAPTURAR_BASE",
+                 id = "OBJ_CAPTURAR_BASE_BAYMAN",
                  name = "Capturar Bagram",
                  drawName = "Capturar base: Bamyan",
                 enabled = true,
@@ -364,13 +364,13 @@ MDB.MISSIONS = {
                  },
             
                  setFlagOnPass = {
-                     flag = 1009,
+                     flag = 1010,
                      value = 1,
                      elseValue = 0
                  },
             
                  setFlagOnActive = {
-                     flag = 1010,
+                     flag = 1011,
                      value = 1,
                      elseValue = 0
                  },
@@ -538,7 +538,7 @@ MDB.MISSIONS = {
     {
         id = "M02",
         order = 2,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - El Invierno No Tendrá Santuario",
         shortName = "M02",
@@ -877,6 +877,358 @@ MDB.MISSIONS = {
             -- { flag = 2999, op = "==", value = 1 }
         }
     },
+
+----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M03
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+ ----------------------------------------------------------------
+
+    {
+        id = "M03",
+        order = 3,
+        enabled = true,
+
+                name = "Operación - El Invierno No Tendrá Santuario",
+        shortName = "M02",
+        generalObjective = "En la region de Gardez tendra lugar una reunion de lideres Talibanes de algo nivel. destruyelos! \n",
+                            "Humo Rojo sobre objetivos prioritarios\n",
+                        
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Ubica a los lideres Talibanes en la region de Gardez\n\n\n" ..
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Buscar y destruir a: Abdul Hakim - MGRS GRID: 42 S WC 28479 32069 \n"..
+            "2. Buscar y destruir a: Mujahid - MGRS GRID: 42 S WC 20305 07967\n"..
+            "3. Buscar y destruir a: Karim Abdel - MGRS GRID: 42 S WC 11122 31084 \n"..
+            "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+            "Abdul Hakim: 500.000.000\n" ..
+            "Mujahid: 250.000.000\n" ..
+            "Karim Abdel: 50.000.000\n" ..
+            "Mision Completada: 1500.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
+
+        autoStart = true,
+
+        ----------------------------------------------------------------
+        -- CONDICIONES EXTRA DE ACTIVACION
+        -- La secuencia base ya valida que la anterior este completada.
+        ----------------------------------------------------------------
+        activationConditions = {
+            -- ejemplo:
+            -- { flag = 1500, op = "==", value = 1 }
+        },
+
+        ----------------------------------------------------------------
+        -- MARK EN F10
+        -- mode = "point" o "zone"
+        ----------------------------------------------------------------
+        map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = -24742,
+                z = 276896
+            },
+
+            zoneName = nil,
+
+            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            text =
+                "MISION 02\n" ..
+                "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+        ----------------------------------------------------------------
+        -- DRAW DINAMICO EN F10
+        -- Se posiciona tomando como ancla el punto de map y sumando offsetX/Z
+        -- Muestra solo objetivos obligatorios pendientes:
+        -- enabled = true y requiredForMission = true
+        ----------------------------------------------------------------
+        draw = {
+            enabled = true,
+            title = "M02 - Operación - El Invierno No Tendrá Santuario",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+
+        ----------------------------------------------------------------
+        -- FLAGS DE ESTADO DE ESTA MISION
+        ----------------------------------------------------------------
+        flags = {
+            onActivate = {
+                { flag = 2000, value = 1 },
+            },
+            onSuccess = {
+                { flag = 2001, value = 1 },
+            },
+            onFail = {
+                { flag = 2002, value = 1 },
+            },
+        },
+
+        ----------------------------------------------------------------
+        -- REGLAS INTERNAS DE FLAGS DE ESTA MISION
+        -- Estas SI son por mision, no globales.
+        ----------------------------------------------------------------
+        missionFlagRules = {
+            {
+                id = "M01_REGLA_01",
+                enabled = false,
+
+                conditions = {
+                    { flag = 1000, op = "==", value = 1 },
+                    { flag = 1001, op = "==", value = 1 },
+                },
+
+                onTrue = {
+                    { flag = 1002, value = 1 }
+                },
+
+                onFalse = {
+                    { flag = 1002, value = 0 }
+                }
+            }
+        },
+
+        ----------------------------------------------------------------
+        -- VALIDADORES TECNICOS
+        -- Sirven para chequeos auxiliares y seteo de flags
+        -- No completan la mision solos, salvo que uses esas flags
+        -- en successConditions o en reglas internas.
+        ----------------------------------------------------------------
+        validators = {
+            warehouse = {
+                -- ejemplo:
+                -- {
+                --     key = "SALIDA_AIM120",
+                --     baseName = "BASE_AQUI",
+                --     category = "weapon",
+                --     itemName = "AIM-120C",
+                --     removedAtLeast = 8,
+                --     setFlagOnPass = {
+                --         flag = 2010,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            },
+
+            groupChecks = {
+                -- ejemplo:
+                -- {
+                --     key = "GRUPO_ESCOLTA_VIVO",
+                --     groupName = "GrupoEscolta_AQUI",
+                --     metric = "aliveUnits", -- aliveUnits | totalUnits | lifeSum | lifePercent
+                --     op = ">=",
+                --     value = 1,
+                --     setFlagOnPass = {
+                --         flag = 2002,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            },
+
+            unitChecks = {
+                -- ejemplo:
+                -- {
+                --     key = "UNIDAD_RADAR_VIVA",
+                --     unitName = "Radar_AQUI",
+                --     metric = "alive", -- alive | life | life0 | lifePercent
+                --     op = "==",
+                --     value = 1,
+                --     setFlagOnPass = {
+                --         flag = 2003,
+                --         value = 1,
+                --         elseValue = 0
+                --     }
+                -- }
+            }
+        },
+
+        ----------------------------------------------------------------
+        -- OBJETIVOS SECUNDARIOS
+        -- Cada objetivo puede pagar o no
+        -- Cada objetivo puede poner flags o no
+        -- Cada objetivo puede ser obligatorio o no
+        ----------------------------------------------------------------
+        secondaryObjectives = {
+
+           --01------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_01",
+                 name = "Buscar y destruir a: Abdul Hakim - MGRS GRID: 42 S WC 28479 32069 ",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "MT_02_01_TALIBAN",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = false,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2003,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 500000000
+                 }
+             }, 
+       --02------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_02",
+                 name = "Buscar y destruir a: Mujahid - MGRS GRID: 42 S WC 20305 07967",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "MT_02_02_TALIBAN",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = false,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2004,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 250000000
+                 }
+             },
+       --03------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_UNIT_03",
+                 name = "Buscar y destruir a: Karim Abdel - MGRS GRID: 42 S WC 11122 31084",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "MT_02_03_TALIBAN",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = false,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2005,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 50000000
+                 }
+             },                          
+             
+        },
+
+        ----------------------------------------------------------------
+        -- PAGO FINAL POR COMPLETAR LA MISION
+        ----------------------------------------------------------------
+        rewards = {
+            enabled = true,
+            coalition = 2,
+            missionSuccessAmount = 1500000000
+        },
+
+        ----------------------------------------------------------------
+        -- CONDICIONES EXTRA DE EXITO
+        -- Se suman a los objetivos obligatorios
+        ----------------------------------------------------------------
+        successConditions = {
+            -- ejemplo:
+            -- { flag = 2500, op = "==", value = 1 }
+        },
+
+        ----------------------------------------------------------------
+        -- CONDICIONES DE FALLO
+        ----------------------------------------------------------------
+        failConditions = {
+            -- ejemplo:
+            -- { flag = 2999, op = "==", value = 1 }
+        }
+    },    
 
 }
 

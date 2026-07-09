@@ -399,6 +399,13 @@ MD.UNIT_DEFS = {
         aliases = { "s300cp", "s300command" }
     },
 
+    {
+    type = "CHAP_PantsirS1",
+    countryId = CID.RUSSIA,
+    preferredSide = 1,
+    aliases = { "pantsir", "pantsirs1", "sa22", "sa-22", "chappantsir", "chap_pantsir" }
+},
+
     ----------------------------------------------------------------
     -- MODERNOS AZULES
     ----------------------------------------------------------------
@@ -954,6 +961,8 @@ MD.UNIT_DEFS = {
         preferredSide = 2,
         aliases = { "soldieruk", "infuk", "infbr", "britishsoldier" }
     }
+
+
 }
 
 ----------------------------------------------------------------

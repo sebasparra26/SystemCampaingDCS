@@ -501,7 +501,7 @@ ctld.cratesRequiredForFOB = 5 -- The amount of crates required to build a FOB. O
 -- To build the FOB entirely out of small crates you will need ctld.cratesRequiredForFOB * 3
 
 ctld.troopPickupAtFOB = true -- if true, troops can also be picked up at a created FOB
-ctld.buildTimeFOB = 300 --time in seconds for the FOB to be built
+ctld.buildTimeFOB = 60 --time in seconds for the FOB to be built
 ctld.crateWaitTime = 0 -- time in seconds to wait before you can spawn another crate
 ctld.forceCrateToBeMoved = true -- a crate must be picked up at least once and moved before it can be unpacked. Helps to reduce crate spam
 ctld.radioSound = "beacon.ogg" -- the name of the sound file to use for the FOB radio beacons. If this isnt added to the mission BEACONS WONT WORK!
@@ -1370,7 +1370,7 @@ ctld.spawnableCrates = {
         -- End of BLUE MQ-9 Repear
 
         --- RED MQ-1A Predator
-        { weight = 1006.11, desc = ctld.i18n_translate("RQ-1A Predator - $ 10,000,000"), unit = "RQ-1A Predator", side = 1 },
+        { weight = 1006.11, desc = ctld.i18n_translate("RQ-1A Predator - $ 10,000,000"), unit = "RQ-1A Predator", side = 2 },
         -- End of RED MQ-1A Predator
     },
 }
@@ -4120,7 +4120,7 @@ function ctld.unpackFOBCrates(_crates, _heli)
 
             --catch divide by 0
             if _smallFobCrates > 0 then
-                _totalCrates = _bigFobCrates + (_smallFobCrates/3.0)
+                _totalCrates = _bigFobCrates + (_smallFobCrates/10.0)
             else
                 _totalCrates = _bigFobCrates
             end
