@@ -1263,7 +1263,7 @@ MDB.MISSIONS = {
 
                 name = "Operación - Iron Valley",
         shortName = "M04",
-        generalObjective = "Rescatar al piloto derribado en el sector.\n",
+        generalObjective = "Destruye los Depositos de armas de los Insurgentes\n",
                             "Humo Naranja sobre el objetivo a rescatar\n",
                         
 

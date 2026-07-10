@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
 -- CTLD_Persistance.lua
 -- HDEV CTLD Passive Persistence
--- VERSION: 2.8.0_PASSIVE_SAFE_FARP_DRONE
+-- VERSION: 2.9.0_PASSIVE_SAFE_FARP_DRONE_FIX
 --
 -- CARGA:
 -- 1) mist_4_5_128.lua
@@ -95,6 +95,29 @@ CTDP.CONFIG = CTDP.CONFIG or {
         ORBIT_ALT = 3500,
         ORBIT_PATTERN = "Circle",
         ORBIT_RADIUS = 1500,
+
+        -- Datos obligatorios para que DCS acepte un avion creado dinamicamente.
+        PAYLOAD_FUEL = 1300,
+        PAYLOAD_FLARE = 0,
+        PAYLOAD_CHAFF = 0,
+        PAYLOAD_GUN = 100,
+        MIN_AGL = 800,
+        FREQUENCY = 124.0,
+        MODULATION = 0,
+
+        -- mist.dynAdd devuelve una tabla aunque coalition.addGroup no haya creado
+        -- realmente el grupo. Por eso verificamos el objeto vivo antes de marcarlo
+        -- como restaurado.
+        RESTORE_VERIFY_RETRIES = 12,
+        RESTORE_VERIFY_INTERVAL = 0.5,
+        JTAC_START_DELAY = 2,
+
+        -- Recupera solamente drones que la version anterior marco muertos
+        -- pocos segundos despues de una falsa restauracion (mist.dynAdd devolvio tabla, pero DCS
+        -- nunca creo el grupo). No revive drones destruidos por eventos reales.
+        REVIVE_REGRESSION_MISSING_ON_EXPORT = true,
+        REGRESSION_MAX_SECONDS_AFTER_INJECT = 120,
+
         TYPES = {
             ["MQ-9 Reaper"] = true,
             ["MQ-9_Reaper"] = true,
@@ -890,6 +913,10 @@ CTDP.STATE = CTDP.STATE or {
     passiveSeenGroups = {},
     injectedGroupsThisSession = {},
     injectedFobsThisSession = {},
+
+    pendingSpawnVerification = {},
+    droneActivationPending = {},
+    droneJtacStarted = {},
 }
 
 ----------------------------------------------------------------
@@ -1153,7 +1180,7 @@ end
 ----------------------------------------------------------------
 local function defaultDoc()
     return {
-        version = "2.8.0_PASSIVE_SAFE_FARP_DRONE",
+        version = "2.9.0_PASSIVE_SAFE_FARP_DRONE_FIX",
         updatedBy = "DCS",
         updatedAt = now(),
         counters = {
@@ -1168,7 +1195,7 @@ end
 
 local function normalizeDoc(doc)
     if type(doc) ~= "table" then doc = defaultDoc() end
-    doc.version = doc.version or "2.8.0_PASSIVE_SAFE_FARP_DRONE"
+    doc.version = "2.9.0_PASSIVE_SAFE_FARP_DRONE_FIX"
     doc.updatedBy = "DCS"
     doc.updatedAt = tonumber(doc.updatedAt) or now()
     doc.counters = doc.counters or {}
@@ -1367,124 +1394,64 @@ local function groupContainsJtac(groupName)
     return groupContainsPredicate(groupName, isJtacType)
 end
 
-local function protectControllerAsDrone(controller)
-    if not controller then return end
-    pcall(function() controller:setCommand({ id = "SetImmortal", params = { value = true } }) end)
-    pcall(function() controller:setCommand({ id = "SetInvisible", params = { value = true } }) end)
-    pcall(function() controller:setCommand({ id = "SetUnlimitedFuel", params = { value = true } }) end)
-    pcall(function() controller:setOption(AI.Option.Air.id.ROE, AI.Option.Air.val.ROE.WEAPON_HOLD) end)
-    pcall(function() controller:setOption(AI.Option.Air.id.REACTION_ON_THREAT, AI.Option.Air.val.REACTION_ON_THREAT.NO_REACTION) end)
+local function getTerrainAltMSL(x, z)
+    local ok, h = pcall(function()
+        return land.getHeight({ x = tonumber(x) or 0, y = tonumber(z) or 0 })
+    end)
+    if ok and type(h) == "number" then return h end
+    return 0
 end
 
-local function pushDroneOrbitTask(groupName)
-    local grp = groupExistsByName(groupName)
-    if not grp then return false end
-    local okCtrl, ctrl = pcall(function() return grp:getController() end)
-    if not okCtrl or not ctrl then return false end
+local function getSafeDroneAltitude(x, z, requestedAlt)
+    local configured = tonumber(requestedAlt) or tonumber(CTDP.CONFIG.DRONES.ORBIT_ALT) or 3500
+    local minimum = getTerrainAltMSL(x, z) + (tonumber(CTDP.CONFIG.DRONES.MIN_AGL) or 800)
+    if configured < minimum then return minimum end
+    return configured
+end
 
-    local task = {
-        id = "ComboTask",
-        params = {
-            tasks = {
-                [1] = {
-                    enabled = true,
-                    auto = false,
-                    id = "WrappedAction",
-                    number = 1,
-                    params = {
-                        action = {
-                            id = "Orbit",
-                            params = {
-                                pattern = CTDP.CONFIG.DRONES.ORBIT_PATTERN or "Circle",
-                                speed = tonumber(CTDP.CONFIG.DRONES.ORBIT_SPEED) or 80,
-                                altitude = tonumber(CTDP.CONFIG.DRONES.ORBIT_ALT) or 3500,
-                            }
-                        }
-                    }
-                },
-                [2] = {
-                    enabled = true,
-                    auto = false,
-                    id = "WrappedAction",
-                    number = 2,
-                    params = {
-                        action = {
-                            id = "EPLRS",
-                            params = { value = true, groupId = 1 }
-                        }
-                    }
-                }
-            }
-        }
+local function makeDronePayload()
+    return {
+        pylons = {},
+        fuel = tonumber(CTDP.CONFIG.DRONES.PAYLOAD_FUEL) or 1300,
+        flare = tonumber(CTDP.CONFIG.DRONES.PAYLOAD_FLARE) or 0,
+        chaff = tonumber(CTDP.CONFIG.DRONES.PAYLOAD_CHAFF) or 0,
+        gun = tonumber(CTDP.CONFIG.DRONES.PAYLOAD_GUN) or 100,
     }
-
-    pcall(function() ctrl:setTask(task) end)
-    return true
 end
 
-local function applyDroneProtectionNow(groupName)
-    if not groupName or groupName == "" then return false end
-    if not groupContainsDrone(groupName) then return false end
-
-    local grp = groupExistsByName(groupName)
-    if not grp then return false end
-
-    local okCtrl, ctrl = pcall(function() return grp:getController() end)
-    if okCtrl and ctrl then protectControllerAsDrone(ctrl) end
-
-    local okUnits, units = pcall(function() return grp:getUnits() end)
-    if okUnits and units then
-        for _, unit in ipairs(units) do
-            if unit and unit:isExist() and unit.getController then
-                local okUCtrl, uCtrl = pcall(function() return unit:getController() end)
-                if okUCtrl and uCtrl then protectControllerAsDrone(uCtrl) end
-            end
-        end
+local function makeDroneCallsign(side, index)
+    index = tonumber(index) or 1
+    local flight = ((index - 1) % 4) + 1
+    if tonumber(side) == coalition.side.RED then
+        return { [1] = 1, [2] = flight, [3] = 1, name = "Enfield" .. tostring(flight) .. "1" }
     end
-
-    pushDroneOrbitTask(groupName)
-
-    if ctld and type(ctld.JTACStart) == "function" then
-        local code = tonumber(CTDP.CONFIG.DRONES.DEFAULT_CODE) or 1688
-        pcall(function() ctld.JTACStart(groupName, code) end)
-    end
-
-    log("Dron protegido/JTAC iniciado: " .. tostring(groupName), 6)
-    return true
+    return { [1] = 2, [2] = flight, [3] = 1, name = "Springfield" .. tostring(flight) .. "1" }
 end
 
-local function scheduleDroneProtection(groupName)
-    if not groupName or groupName == "" then return end
-    local retries = tonumber(CTDP.CONFIG.DRONES.PROTECTION_RETRIES) or 12
-    local interval = tonumber(CTDP.CONFIG.DRONES.PROTECTION_INTERVAL) or 1
-    local count = 0
-
-    local function tick()
-        count = count + 1
-        applyDroneProtectionNow(groupName)
-        if count < retries then return timer.getTime() + interval end
-        return nil
-    end
-
-    timer.scheduleFunction(tick, nil, timer.getTime() + interval)
+local function resolveDroneJtacCode(dep)
+    return tonumber(dep and (dep.jtacCode or dep.jtacLaserCode))
+        or tonumber(CTDP.CONFIG.DRONES.DEFAULT_CODE)
+        or 1688
 end
 
-local function buildDroneRoute(x, z)
-    local alt = tonumber(CTDP.CONFIG.DRONES.ORBIT_ALT) or 3500
+local function buildDroneRoute(x, z, requestedAlt)
+    local alt = getSafeDroneAltitude(x, z, requestedAlt)
     local speed = tonumber(CTDP.CONFIG.DRONES.ORBIT_SPEED) or 80
     return {
         points = {
             [1] = {
-                x = x,
-                y = z,
+                x = tonumber(x) or 0,
+                y = tonumber(z) or 0,
                 alt = alt,
                 alt_type = "BARO",
                 speed = speed,
                 action = "Turning Point",
                 type = "Turning Point",
                 ETA = 0,
-                ETA_locked = false,
+                ETA_locked = true,
                 speed_locked = true,
+                formation_template = "",
+                properties = { addopt = {} },
                 task = {
                     id = "ComboTask",
                     params = {
@@ -1496,24 +1463,31 @@ local function buildDroneRoute(x, z)
                                 number = 1,
                                 params = {
                                     action = {
-                                        id = "Orbit",
-                                        params = {
-                                            pattern = CTDP.CONFIG.DRONES.ORBIT_PATTERN or "Circle",
-                                            speed = speed,
-                                            altitude = alt,
-                                        }
+                                        id = "EPLRS",
+                                        params = { value = true, groupId = 0 }
                                     }
                                 }
                             },
                             [2] = {
                                 enabled = true,
                                 auto = false,
-                                id = "WrappedAction",
+                                id = "Orbit",
                                 number = 2,
                                 params = {
+                                    pattern = CTDP.CONFIG.DRONES.ORBIT_PATTERN or "Circle",
+                                    speed = speed,
+                                    altitude = alt,
+                                }
+                            },
+                            [3] = {
+                                enabled = true,
+                                auto = false,
+                                id = "WrappedAction",
+                                number = 3,
+                                params = {
                                     action = {
-                                        id = "EPLRS",
-                                        params = { value = true, groupId = 1 }
+                                        id = "Option",
+                                        params = { name = 6, value = true }
                                     }
                                 }
                             }
@@ -1523,6 +1497,166 @@ local function buildDroneRoute(x, z)
             }
         }
     }
+end
+
+local function deploymentRecordContainsDrone(dep)
+    if not dep then return false end
+    if dep.ctldRole == "DRONE_JTAC" then return true end
+    for _, typeName in ipairs(dep.types or {}) do
+        if isDroneType(typeName) then return true end
+    end
+    local units = dep.groupData and dep.groupData.units or {}
+    for _, unitData in ipairs(units) do
+        if isDroneType(unitData and unitData.type) then return true end
+    end
+    return false
+end
+
+local function repairRegressionDroneRecords()
+    if CTDP.CONFIG.DRONES.REVIVE_REGRESSION_MISSING_ON_EXPORT ~= true then return 0 end
+    local repaired = 0
+    for _, dep in pairs((CTDP.STATE.doc and CTDP.STATE.doc.deployments) or {}) do
+        -- Esta firma identifica el fallo inmediato de 2.8.0:
+        -- hubo intento de inyeccion y, dentro del limite configurado, el export
+        -- lo marco missing_on_export.
+        if dep
+            and dep.alive == false
+            and dep.destroyReason == "missing_on_export"
+            and dep.lastInjectedAt ~= nil
+            and dep.destroyedAt ~= nil
+            and ((tonumber(dep.destroyedAt) or 0) - (tonumber(dep.lastInjectedAt) or 0))
+                <= (tonumber(CTDP.CONFIG.DRONES.REGRESSION_MAX_SECONDS_AFTER_INJECT) or 120)
+            and deploymentRecordContainsDrone(dep)
+        then
+            dep.alive = true
+            dep.destroyedAt = nil
+            dep.destroyReason = nil
+            dep.ctldRole = "DRONE_JTAC"
+            dep.jtacCode = resolveDroneJtacCode(dep)
+            dep.jtacLaserCode = dep.jtacCode
+            dep.updatedAt = now()
+            repaired = repaired + 1
+            CTDP.STATE.dirty = true
+        end
+    end
+    if repaired > 0 then
+        log("Registros de drones recuperados del fallo 2.8.0: " .. tostring(repaired), 10)
+    end
+    return repaired
+end
+
+local function protectControllerAsDrone(controller)
+    if not controller then return false end
+    pcall(function() controller:setCommand({ id = "SetImmortal", params = { value = true } }) end)
+    pcall(function() controller:setCommand({ id = "SetInvisible", params = { value = true } }) end)
+    pcall(function() controller:setCommand({ id = "SetUnlimitedFuel", params = { value = true } }) end)
+    pcall(function() controller:setOption(AI.Option.Air.id.ROE, AI.Option.Air.val.ROE.WEAPON_HOLD) end)
+    pcall(function() controller:setOption(AI.Option.Air.id.REACTION_ON_THREAT, AI.Option.Air.val.REACTION_ON_THREAT.NO_REACTION) end)
+    return true
+end
+
+local function pushDroneOrbitMission(groupName)
+    local grp = groupExistsByName(groupName)
+    if not grp then return false end
+
+    local okUnit, unit = pcall(function() return grp:getUnit(1) end)
+    if not okUnit or not unit or not unit:isExist() then return false end
+
+    local okPoint, point = pcall(function() return unit:getPoint() end)
+    if not okPoint or not point then return false end
+
+    local alt = getSafeDroneAltitude(point.x, point.z, point.y)
+    local missionTask = {
+        id = "Mission",
+        params = {
+            route = buildDroneRoute(point.x, point.z, alt)
+        }
+    }
+
+    local okCtrl, ctrl = pcall(function() return grp:getController() end)
+    if not okCtrl or not ctrl then return false end
+
+    local okTask = pcall(function() ctrl:setTask(missionTask) end)
+    return okTask
+end
+
+local function startCtldJtacOnce(dep, groupName)
+    if not groupName or groupName == "" then return false end
+    if CTDP.STATE.droneJtacStarted[groupName] then return true end
+    if not groupContainsDrone(groupName) then return false end
+    if not ctld or type(ctld.JTACStart) ~= "function" then return false end
+
+    local code = resolveDroneJtacCode(dep)
+    local ok = pcall(function() ctld.JTACStart(groupName, code) end)
+    if ok then
+        CTDP.STATE.droneJtacStarted[groupName] = true
+        if dep then
+            dep.ctldRole = "DRONE_JTAC"
+            dep.jtacCode = code
+            dep.jtacLaserCode = code
+            dep.updatedAt = now()
+            CTDP.STATE.dirty = true
+        end
+        log("Dron registrado una sola vez como JTAC: " .. tostring(groupName) .. " | codigo " .. tostring(code), 6)
+        return true
+    end
+    return false
+end
+
+local function applyDroneProtectionNow(dep, groupName, forceMission)
+    if not groupName or groupName == "" then return false end
+    if not groupContainsDrone(groupName) then return false end
+
+    local grp = groupExistsByName(groupName)
+    if not grp then return false end
+
+    local okCtrl, ctrl = pcall(function() return grp:getController() end)
+    if not okCtrl or not ctrl then return false end
+    protectControllerAsDrone(ctrl)
+
+    local okUnits, units = pcall(function() return grp:getUnits() end)
+    if okUnits and units then
+        for _, unit in ipairs(units) do
+            if unit and unit:isExist() and unit.getController then
+                local okUCtrl, uCtrl = pcall(function() return unit:getController() end)
+                if okUCtrl and uCtrl then protectControllerAsDrone(uCtrl) end
+            end
+        end
+    end
+
+    if forceMission ~= false then pushDroneOrbitMission(groupName) end
+    return true
+end
+
+local function scheduleDroneProtection(dep, groupName)
+    if not groupName or groupName == "" then return end
+    if CTDP.STATE.droneActivationPending[groupName] then return end
+
+    CTDP.STATE.droneActivationPending[groupName] = true
+    local retries = tonumber(CTDP.CONFIG.DRONES.PROTECTION_RETRIES) or 12
+    local interval = tonumber(CTDP.CONFIG.DRONES.PROTECTION_INTERVAL) or 1
+    local count = 0
+
+    local function tick()
+        count = count + 1
+        local protected = applyDroneProtectionNow(dep, groupName, true)
+        if protected then
+            CTDP.STATE.droneActivationPending[groupName] = nil
+            local delay = tonumber(CTDP.CONFIG.DRONES.JTAC_START_DELAY) or 2
+            timer.scheduleFunction(function()
+                startCtldJtacOnce(dep, groupName)
+                return nil
+            end, nil, timer.getTime() + delay)
+            return nil
+        end
+
+        if count < retries then return timer.getTime() + interval end
+        CTDP.STATE.droneActivationPending[groupName] = nil
+        warn("No se pudo activar proteccion/JTAC del dron: " .. tostring(groupName))
+        return nil
+    end
+
+    timer.scheduleFunction(tick, nil, timer.getTime() + interval)
 end
 
 ----------------------------------------------------------------
@@ -1616,6 +1750,23 @@ local function captureGroupData(grp, forcedName)
     if #groupUnits == 0 then return nil end
 
     countryValue = tonumber(countryValue) or countryForCoalition(coalitionValue)
+
+    -- El JSON debe quedar autosuficiente. Un avion dinamico no puede depender de
+    -- mist.getPayload(nombreRuntime), porque ese nombre no existe en la DB del ME.
+    if containsDrone then
+        for i, unitData in ipairs(groupUnits) do
+            if isDroneType(unitData.type) then
+                unitData.alt = getSafeDroneAltitude(unitData.x, unitData.y, unitData.alt)
+                unitData.alt_type = "BARO"
+                unitData.speed = tonumber(CTDP.CONFIG.DRONES.ORBIT_SPEED) or 80
+                unitData.playerCanDrive = nil
+                unitData.psi = -(tonumber(unitData.heading) or 0)
+                unitData.payload = makeDronePayload()
+                unitData.callsign = makeDroneCallsign(coalitionValue, i)
+                unitData.onboard_num = string.format("%03d", i)
+            end
+        end
+    end
 
     local task = "Ground Nothing"
     if containsDrone then
@@ -1723,10 +1874,11 @@ local function recordCtldSpawnedGroup(groupName)
 
     if containsDrone or groupContainsDrone(groupName) then
         dep.ctldRole = "DRONE_JTAC"
-        dep.jtacCode = dep.jtacCode or tonumber(CTDP.CONFIG.DRONES.DEFAULT_CODE) or 1688
+        dep.jtacCode = dep.jtacCode or dep.jtacLaserCode or tonumber(CTDP.CONFIG.DRONES.DEFAULT_CODE) or 1688
+        dep.jtacLaserCode = dep.jtacLaserCode or dep.jtacCode
         if CTDP.CONFIG.DRONES.PROTECT_ON_CAPTURE then
-            applyDroneProtectionNow(groupName)
-            scheduleDroneProtection(groupName)
+            applyDroneProtectionNow(dep, groupName, false)
+            scheduleDroneProtection(dep, groupName)
         end
     elseif groupContainsJtac(groupName) then
         dep.ctldRole = "JTAC"
@@ -2171,38 +2323,135 @@ local function prepareGroupDataForRestore(dep)
     data.groupId = mist.getNextGroupId()
     data.name = groupName
     data.groupName = nil
+    data.clone = nil
     data.country = tonumber(dep.country) or tonumber(data.country) or tonumber(data.countryId) or countryForCoalition(dep.coalition)
     data.countryId = data.country
     data.coalition = tonumber(dep.coalition) or tonumber(data.coalition) or getCoalitionFromCountry(data.country) or coalition.side.BLUE
 
     local isDrone = dep.ctldRole == "DRONE_JTAC"
-    for _, t in ipairs(dep.types or {}) do if isDroneType(t) then isDrone = true end end
-
-    if isDrone then
-        data.category = Group.Category.AIRPLANE
-        data.task = "Reconnaissance"
-        local u = data.units and data.units[1]
-        if u then
-            u.alt = tonumber(CTDP.CONFIG.DRONES.ORBIT_ALT) or 3500
-            u.alt_type = "BARO"
-            data.route = buildDroneRoute(tonumber(u.x) or 0, tonumber(u.y) or 0)
+    for _, t in ipairs(dep.types or {}) do
+        if isDroneType(t) then isDrone = true end
+    end
+    if not isDrone then
+        for _, unit in ipairs(data.units or {}) do
+            if isDroneType(unit.type) then isDrone = true break end
         end
     end
 
-    for i, unit in ipairs(data.units or {}) do
-        unit.unitId = mist.getNextUnitId()
-        unit.name = unit.name or (groupName .. " Unit " .. tostring(i))
+    if isDrone then
+        dep.ctldRole = "DRONE_JTAC"
+        dep.jtacCode = resolveDroneJtacCode(dep)
+        dep.jtacLaserCode = dep.jtacCode
+
+        data.category = Group.Category.AIRPLANE
+        data.task = "Reconnaissance"
+        data.uncontrolled = false
+        data.lateActivation = false
+        data.communication = true
+        data.radioSet = false
+        data.frequency = tonumber(CTDP.CONFIG.DRONES.FREQUENCY) or 124.0
+        data.modulation = tonumber(CTDP.CONFIG.DRONES.MODULATION) or 0
+        data.tasks = {}
+
+        local first = data.units and data.units[1]
+        if not first then return nil end
+
+        local safeAlt = getSafeDroneAltitude(first.x, first.y, first.alt)
+        for i, unit in ipairs(data.units or {}) do
+            unit.unitId = mist.getNextUnitId()
+            unit.name = groupName .. " unit" .. tostring(i)
+            unit.life = nil
+            unit.life0 = nil
+            unit.playerCanDrive = nil
+            unit.skill = unit.skill or "Excellent"
+            unit.speed = tonumber(CTDP.CONFIG.DRONES.ORBIT_SPEED) or 80
+            unit.alt = safeAlt
+            unit.alt_type = "BARO"
+            unit.heading = tonumber(unit.heading) or 0
+            unit.psi = -unit.heading
+            unit.payload = makeDronePayload()
+            unit.callsign = makeDroneCallsign(data.coalition, i)
+            unit.onboard_num = unit.onboard_num or string.format("%03d", i)
+        end
+
+        data.route = buildDroneRoute(tonumber(first.x) or 0, tonumber(first.y) or 0, safeAlt)
+    else
+        for i, unit in ipairs(data.units or {}) do
+            unit.unitId = mist.getNextUnitId()
+            unit.name = unit.name or (groupName .. " Unit " .. tostring(i))
+            unit.life = nil
+            unit.life0 = nil
+        end
     end
 
     return data, isDrone
 end
 
+local function finalizeInjectedDeployment(dep, spawnedName, isDrone)
+    local grp = groupExistsByName(spawnedName)
+    if not grp or not groupHasAliveUnits(spawnedName) then return false end
+
+    dep.alive = true
+    dep.activeGroupName = spawnedName
+    dep.runtimeGroupName = spawnedName
+    dep.lastInjectedAt = now()
+    dep.lastSeenAt = now()
+    dep.updatedAt = now()
+    dep.destroyedAt = nil
+    dep.destroyReason = nil
+    CTDP.STATE.injectedGroupsThisSession[spawnedName] = true
+    CTDP.STATE.pendingSpawnVerification[dep.id] = nil
+    indexDeployment(dep)
+
+    if isDrone then
+        dep.ctldRole = "DRONE_JTAC"
+        dep.jtacCode = resolveDroneJtacCode(dep)
+        dep.jtacLaserCode = dep.jtacCode
+        if CTDP.CONFIG.DRONES.PROTECT_ON_RESTORE then
+            scheduleDroneProtection(dep, spawnedName)
+        end
+    end
+
+    CTDP.STATE.dirty = true
+    writeState(false)
+    log("Deployment verificado y restaurado: " .. tostring(dep.id) .. " | " .. tostring(spawnedName), 8)
+    return true
+end
+
+local function scheduleDeploymentVerification(dep, spawnedName, isDrone)
+    if not dep or not dep.id then return end
+    if CTDP.STATE.pendingSpawnVerification[dep.id] then return end
+
+    CTDP.STATE.pendingSpawnVerification[dep.id] = true
+    local retries = tonumber(CTDP.CONFIG.DRONES.RESTORE_VERIFY_RETRIES) or 12
+    local interval = tonumber(CTDP.CONFIG.DRONES.RESTORE_VERIFY_INTERVAL) or 0.5
+    local attempt = 0
+
+    local function verify()
+        attempt = attempt + 1
+        if finalizeInjectedDeployment(dep, spawnedName, isDrone) then return nil end
+
+        if attempt < retries then return timer.getTime() + interval end
+
+        CTDP.STATE.pendingSpawnVerification[dep.id] = nil
+        warn(
+            "mist.dynAdd devolvio datos pero DCS no creo el grupo " .. tostring(spawnedName) ..
+            " | deployment=" .. tostring(dep.id) ..
+            " | tipo=" .. tostring(dep.types and dep.types[1] or "desconocido")
+        )
+        return nil
+    end
+
+    timer.scheduleFunction(verify, nil, timer.getTime() + interval)
+end
+
 local function injectDeployment(dep)
     if not dep or dep.alive == false then return false end
     if not dep.groupData then return false end
+    if dep.id and CTDP.STATE.pendingSpawnVerification[dep.id] then return false end
 
     local groupName = dep.runtimeGroupName or dep.activeGroupName or dep.originalGroupName
-    if groupName and groupExistsByName(groupName) then
+    if groupName and groupExistsByName(groupName) and groupHasAliveUnits(groupName) then
         dep.activeGroupName = groupName
         dep.lastSeenAt = now()
         indexDeployment(dep)
@@ -2222,21 +2471,12 @@ local function injectDeployment(dep)
     if type(result) == "string" then spawnedName = result end
     if type(result) == "table" then spawnedName = result.name or result.groupName or spawnedName end
 
-    dep.activeGroupName = spawnedName
-    dep.runtimeGroupName = spawnedName
-    dep.lastInjectedAt = now()
-    dep.lastSeenAt = now()
-    dep.updatedAt = now()
-    CTDP.STATE.injectedGroupsThisSession[spawnedName] = true
-    indexDeployment(dep)
+    -- No marcamos lastSeenAt ni lastInjectedAt hasta comprobar que Group.getByName
+    -- devuelve un grupo vivo. MIST puede devolver una tabla aunque DCS rechace el avion.
+    if finalizeInjectedDeployment(dep, spawnedName, isDrone) then return true end
 
-    if isDrone and CTDP.CONFIG.DRONES.PROTECT_ON_RESTORE then
-        scheduleDroneProtection(spawnedName)
-    end
-
-    CTDP.STATE.dirty = true
-    log("Deployment restaurado: " .. tostring(dep.id) .. " | " .. tostring(spawnedName), 8)
-    return true
+    scheduleDeploymentVerification(dep, spawnedName, isDrone)
+    return false
 end
 
 local function restoreFob(fob)
@@ -2291,6 +2531,7 @@ end
 ----------------------------------------------------------------
 local function updateDeploymentFromWorld(dep)
     if not dep or dep.alive == false then return end
+    if dep.id and CTDP.STATE.pendingSpawnVerification[dep.id] then return end
     local groupName = dep.activeGroupName or dep.runtimeGroupName or dep.originalGroupName
     local grp = groupExistsByName(groupName)
 
@@ -2470,8 +2711,8 @@ function CTDP.forceProtectDrones()
     for _, dep in pairs((CTDP.STATE.doc and CTDP.STATE.doc.deployments) or {}) do
         if dep and dep.alive ~= false and dep.ctldRole == "DRONE_JTAC" then
             local groupName = dep.activeGroupName or dep.runtimeGroupName or dep.originalGroupName
-            applyDroneProtectionNow(groupName)
-            scheduleDroneProtection(groupName)
+            applyDroneProtectionNow(dep, groupName, false)
+            scheduleDroneProtection(dep, groupName)
         end
     end
 end
@@ -2502,7 +2743,7 @@ function CTDP.showStatus()
     end
 
     trigger.action.outText(
-        "CTLD_Persistance 2.8.0 PASSIVE SAFE FARP/DRONE\n" ..
+        "CTLD_Persistance 2.9.0 PASSIVE SAFE FARP/DRONE FIX\n" ..
         "Deployments Total: " .. tostring(total) .. "\n" ..
         "Deployments Vivos: " .. tostring(alive) .. "\n" ..
         "Deployments Muertos: " .. tostring(dead) .. "\n" ..
@@ -2562,19 +2803,23 @@ local function start()
     CTDP.STATE.lastExport = -9999
     CTDP.STATE.injectedGroupsThisSession = {}
     CTDP.STATE.injectedFobsThisSession = {}
+    CTDP.STATE.pendingSpawnVerification = {}
+    CTDP.STATE.droneActivationPending = {}
+    CTDP.STATE.droneJtacStarted = {}
     CTDP.STATE.passivePendingGroups = {}
     CTDP.STATE.passiveSeenGroups = {}
 
     -- Seguridad: no se toca ninguna funcion interna de CTLD.
 
     loadState()
+    repairRegressionDroneRecords()
     buildCtldIndexes()
     rebuildIndexes()
     installPassiveCtldCaptureModule()
 
     timer.scheduleFunction(mainLoop, nil, timer.getTime() + 1)
 
-    log("CTLD_Persistance 2.8.0 PASSIVE SAFE FARP/DRONE iniciado. Sin wrappers CTLD.", 10)
+    log("CTLD_Persistance 2.9.0 PASSIVE SAFE FARP/DRONE FIX iniciado. Sin wrappers CTLD.", 10)
 end
 
 start()
