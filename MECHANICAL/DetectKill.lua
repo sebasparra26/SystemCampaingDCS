@@ -52,10 +52,10 @@ CAS.includeShips = true
 -- Se usa si NO existe precio exacto en rewardByType
 --------------------------------------------------------
 CAS.defaultRewardByKind = {
-    infantry   = 5000,
-    vehicle    = 500000,
-    plane      = 2000000,
-    helicopter = 1000000,
+    infantry   = 10000000,
+    vehicle    = 10000000,
+    plane      = 100000000,
+    helicopter = 20000000,
     ship       = 30000000
 }
 

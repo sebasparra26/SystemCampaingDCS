@@ -1813,8 +1813,8 @@ MDB.MISSIONS = {
                 id = "OBJ_MULTI_WAREHOUSE",
                 name = "Sacar aviones y armamento",
                 drawName = "Sacar aviones y armamento",
-                enabled = true,
-                requiredForMission = true,
+                enabled = false,
+                requiredForMission = false,
 
                 monitor = {
                     kind = "warehouse",

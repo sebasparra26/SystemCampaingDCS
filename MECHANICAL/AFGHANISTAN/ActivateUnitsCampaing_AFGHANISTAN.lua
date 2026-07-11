@@ -128,6 +128,7 @@ local activacionesPorFlag = {
             
             "Pers_Group_01",
             "Pers_Group_02",
+            "Pers_Group_03",
         }
     },
 -------------------------MISSIONS
@@ -179,6 +180,36 @@ local activacionesPorFlag = {
             "MT_03_11",
         }
     },
+
+        [4000] = {
+        valor = 1,
+        grupos = {
+            "MT_04_01",
+            "MT_04_02",
+            "MT_04_03",
+            "MT_04_04",
+            "MT_04_05",
+            "MT_04_06",
+            "MT_04_07",
+            "MT_04_08",
+            "MT_04_09",
+          
+
+        
+        }
+    },
+
+     [5000] = {
+        valor = 1,
+        grupos = {
+            "MT_05_01",
+            "MT_05_02",
+            "MT_05_03",
+            "MT_05_04",
+            "MT_05_05",
+}
+    },
+
 
 }
 
