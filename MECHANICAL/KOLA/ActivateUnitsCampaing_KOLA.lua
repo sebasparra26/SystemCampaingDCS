@@ -233,9 +233,9 @@ local activacionesPorFlag = {
     [2600] = {
         valor = 1,
         grupos = {
-            "Command_TGT_01",
-            "Command_TGT_02",
-            "Command_TGT_03",
+            "Command_TGT_04",
+            "Command_TGT_05",
+            "Command_TGT_06",
             "TGT21",
             "Scort_01",
             "Scort_02",

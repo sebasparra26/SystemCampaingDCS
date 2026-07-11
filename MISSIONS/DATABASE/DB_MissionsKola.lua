@@ -1685,7 +1685,7 @@ MDB.MISSIONS = {
             
                  monitor = {
                      kind = "unit",
-                     unitName = "Command_TGT_01",
+                     unitName = "Command_TGT_04",
                      metric = "alive",
                      op = "==",
                      value = 0
@@ -1729,7 +1729,7 @@ MDB.MISSIONS = {
             
                  monitor = {
                      kind = "unit",
-                     unitName = "Command_TGT_02",
+                     unitName = "Command_TGT_05",
                      metric = "alive",
                      op = "==",
                      value = 0
@@ -1773,7 +1773,7 @@ MDB.MISSIONS = {
             
                  monitor = {
                      kind = "unit",
-                     unitName = "Command_TGT_03",
+                     unitName = "Command_TGT_06",
                      metric = "alive",
                      op = "==",
                      value = 0
