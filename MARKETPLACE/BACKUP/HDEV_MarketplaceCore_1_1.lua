@@ -429,7 +429,7 @@ function Marketplace.resolvePending(key, pendingId)
     if bestName then
         Marketplace.knownBirths[bestName] = true
         trackDeliveryGroup(cfg, bestName, pending.airport, pending.subKey, pending.template)
-        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 120)
+        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 60)
         cfg.state.pending[pendingId] = nil
         mpLog("Entrega enlazada a grupo: " .. bestName .. " | " .. pending.airport)
         return nil
