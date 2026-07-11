@@ -249,8 +249,8 @@ local activacionesPorFlag = {
         valor = 2,
         grupos = {
             "BEAR_AWACS",
-            "RU_SCORT_02",
-            "RU_SCORT_03",
+            "RU_SCORT_06",
+            "RU_SCORT_07",
             "TGT01",
             "TGT02",
             "TGT03",

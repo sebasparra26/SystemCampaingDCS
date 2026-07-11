@@ -1880,6 +1880,171 @@ MDB.MISSIONS = {
             
          }
      },
+
+  ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    -- PLANTILLA BASE PARA M07
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    ----------------------------------------------------------------
+    {
+         id = "M07",
+         order = 7,
+         enabled = true,
+    
+        name = "Operación - A la caza del OSO",
+        shortName = "M07",
+        generalObjective = "Busca al OSO en la zona\n\n"..
+                           "Su ultima ubicación conocida es a bordo del ojo del cielo (A50)\n\n\n" ,
+
+        briefing =
+            "OBJETIVO:\n" ..
+            "Busca y destruye al OSO con todos los medios disponibles.\n\n\n" ..
+            
+
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Destruye al OSO.\n" ..
+
+
+            "PAGOS:\n" ..
+            "Destruye al OSO: 100.000.000\n" ..
+ 
+            "Mision Completada: 5000.000.000\n\n",
+            --"Captura: 0 --\n" ..
+         
+           
+
+        autoStart = true,
+    
+         --activationConditions = {
+             --{ flag = 2101, op = "==", value = 1 }
+         --},
+    
+         map = {
+            enabled = true,
+            mode = "point", -- point | zone
+
+            point = {
+                x = 295150,
+                z = 510464
+            },
+
+            zoneName = nil,
+
+            title = "M07 - Operación - A la caza del OSO",
+            text =
+                "MISION 07\n" ..
+                "Destruye al OSO.\n" ..
+                "Busca y destruye al OSO en la zona.\n\n\n" ..
+                "Revisa F10 > Sistema de Misiones"
+        },
+
+         draw = {
+            enabled = true,
+            title = "M07 - Operación - A la caza del OSO",
+            generalObjective = nil,
+            offsetX = 5000,
+            offsetZ = 2500,
+            fontSize = 11,
+            textColor = "black",
+            fillColor = {176, 133, 0, 100},
+            coalition = -1
+        },
+    
+        flags = {
+             onActivate = {
+                { flag = 2700, value = 1 },
+             },
+            onSuccess = {
+                { flag = 2701, value = 1 },
+            },
+            onFail = {
+                { flag = 2702, value = 1 },
+            }
+        },
+    
+        missionFlagRules = {
+         },
+    
+         validators = {
+             warehouse = {
+             },
+             groupChecks = {
+             },
+             unitChecks = {
+                
+             }
+         },
+    
+         secondaryObjectives = {
+--01------------------------------------------------------------------
+
+--02------------------------------------------------------------------
+
+--03------------------------------------------------------------------
+ 
+--04------------------------------------------------------------------
+     {
+                 id = "OBJ_DESTRUIR_AL_OSO",
+                 name = "Destruir al OSO",
+                 enabled = true,
+                 requiredForMission = true,
+            
+                 monitor = {
+                     kind = "unit",
+                     unitName = "BEAR_AWACS",
+                     metric = "alive",
+                     op = "==",
+                     value = 0
+                 },
+
+                 smoke = {
+                         enabled = true,
+                         refreshSeconds = 300,
+                         stopOnPass = true,
+                         autoZone = false,
+                         autoTarget = true,
+                         zoneColor = "green",
+                         targetColor = "red",
+
+                         -- Puedes sumar marcados manuales extra:
+                         -- items = {
+                         --     { targetKind = "zone", zoneName = "ACA", color = "green" },
+                         --     { targetKind = "unit", unitName = "US_TROOP", color = "white" },
+                         --     { targetKind = "group", groupName = "US_TROOP_GROUP", color = "white" },
+                         -- }
+                     },
+            
+                 setFlagOnPass = {
+                   flag = 2730,
+                    value = 1,
+                     elseValue = 0
+                 },
+            
+                 reward = {
+                     enabled = true,
+                     coalition = 2,
+                     amount = 100000000
+                 }
+             }, 
+--05------------------------------------------------------------------
+       
+         },
+    
+        rewards = {
+             enabled = true,
+             coalition = 2,
+             missionSuccessAmount = 5000000000
+         },
+
+         successConditions = {
+         },
+    
+         failConditions = {
+            
+         }
+     },    
 }
 
 

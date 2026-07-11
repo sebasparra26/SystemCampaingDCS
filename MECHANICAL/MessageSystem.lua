@@ -68,19 +68,19 @@ MSG.MESSAGES = {
     {
         id = "EWR_BLUE_FREQ",
 
-        enabled = false,
+        enabled = true,
 
         target = "blue",
 
         text =
-            "EWR ACTIVO\n" ..
-            "Frecuencia: 251.000 MHz UHF\n" ..
-            "Use esta frecuencia para coordinacion de alerta temprana.",
+            "El OSO a sido destruido\n" ..
+            "Campaña Finalizada\n" ..
+            "RTB a todas las unidades",
 
         showFor = 15,
-        repeatEvery = 300,
+        repeatEvery = 30,
 
-        flag = 100,
+        flag = 2701,
         op = "==",
         value = 1,
 

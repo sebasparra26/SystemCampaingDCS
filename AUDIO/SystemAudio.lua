@@ -282,6 +282,19 @@ SF.RULES = {
         fireAtStart = false
     },
 
+      {
+        key = "FinishMission",
+        flag = {2701},
+        value = 1,
+        mode = "any",
+        target = "all",
+        sound = "Audio/fail.ogg",
+        text = "La misión a Finalizado",
+        textTime = 500,
+        delay = 0,
+        fireAtStart = false
+    },
+
     {
         key = "SecundaryMission",
         flag = {2000, 2004, 2001, 2006, 2008, 2010, 2012, 2014, 2015, 2017, 2019, 2021, 2022, 2024},
