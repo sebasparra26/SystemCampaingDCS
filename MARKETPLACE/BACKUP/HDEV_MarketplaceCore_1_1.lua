@@ -363,7 +363,7 @@ function Marketplace.registerCoalition(key, cfg)
     cfg.itemsPerPage = cfg.itemsPerPage or 8
     cfg.deliveryDestroyDelay = cfg.deliveryDestroyDelay or 20
     cfg.monitorInterval = cfg.monitorInterval or 5
-    cfg.cooldownSeconds = cfg.cooldownSeconds or 120
+    cfg.cooldownSeconds = cfg.cooldownSeconds or 45
     cfg.deliveryMinAlt = cfg.deliveryMinAlt or 100
     cfg.deliveryStopSpeed = cfg.deliveryStopSpeed or 1
     cfg.searchBirthRadius = cfg.searchBirthRadius or 5000
