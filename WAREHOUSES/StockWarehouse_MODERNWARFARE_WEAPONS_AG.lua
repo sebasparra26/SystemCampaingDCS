@@ -78,14 +78,14 @@ tipoAviones["ECM-DATALINK-PACK"] = {
     costo = 11700000,
 
     misc = {
-        ["ALQ-184 Long - ECM Pod"]  = {ws = {4, 15, 45, 968}, cantidad = 2},
-        ["BARAX - ECM Pod"]  = {ws = {4, 15, 45, 1762}, cantidad = 1},
-        ["ALQ-131 - ECM Pod Rack"]  = {ws = {4, 15, 45, 25}, cantidad = 2},
-        ["AWW-13 DATALINK POD"]  = {ws = {4, 15, 44, 424}, cantidad = 1},
-        ["AN/AAQ-13 LANTIRN NAV POD"]  = {ws = {4, 15, 44, 1717}, cantidad = 1},
-        ["DATALINK POD"]  = {ws = {4, 15, 44, 461}, cantidad = 1},
-        ["L-081 Fantasmagoria ELINT pod"]  = {ws = {4, 15, 44, 65}, cantidad = 2},
-        ["KG-600"]  = {ws = {4, 15, 45, 462}, cantidad = 1}
+        ["ALQ-184 Long - ECM Pod"]  = {ws = {4, 15, 45, 968}, cantidad = 4},
+        ["BARAX - ECM Pod"]  = {ws = {4, 15, 45, 1762}, cantidad = 4},
+        ["ALQ-131 - ECM Pod Rack"]  = {ws = {4, 15, 45, 25}, cantidad = 4},
+        ["AWW-13 DATALINK POD"]  = {ws = {4, 15, 44, 424}, cantidad = 4},
+        ["AN/AAQ-13 LANTIRN NAV POD"]  = {ws = {4, 15, 44, 1717}, cantidad = 4},
+        ["DATALINK POD"]  = {ws = {4, 15, 44, 461}, cantidad = 4},
+        ["L-081 Fantasmagoria ELINT pod"]  = {ws = {4, 15, 44, 65}, cantidad = 4},
+        ["KG-600"]  = {ws = {4, 15, 45, 462}, cantidad = 4}
     
     }
 }
@@ -93,10 +93,10 @@ tipoAviones["COUNTERMEASURES"] = {
     costo = 9900000,
 
     misc = {
-        ["Eclair-M 4/2 : 32 flares 36 chaffs"]  = {ws = {4, 15, 48, 1170}, cantidad = 2},
-        ["ALE-40 Dispensers (30 Flares + 60 Chaff)"]  = {ws = {4, 15, 44, 2140}, cantidad = 6},
-        ["Expanded Chaff Adapter"]  = {ws = {4, 15, 44, 2287}, cantidad = 2},
-        ["ASO-2 - countermeasures pod"]  = {ws = {4, 15, 48, 666}, cantidad = 6}
+        ["Eclair-M 4/2 : 32 flares 36 chaffs"]  = {ws = {4, 15, 48, 1170}, cantidad = 20},
+        ["ALE-40 Dispensers (30 Flares + 60 Chaff)"]  = {ws = {4, 15, 44, 2140}, cantidad = 20},
+        ["Expanded Chaff Adapter"]  = {ws = {4, 15, 44, 2287}, cantidad = 20},
+        ["ASO-2 - countermeasures pod"]  = {ws = {4, 15, 48, 666}, cantidad = 20}
     
     }
 }
@@ -125,7 +125,7 @@ tipoAviones["MK82"] = {
     bombas = {
         ["Mk-82 - 500lb GP Bomb LD "]  = {ws = {4, 5, 9, 31}, cantidad = 20},
         ["Mk-82 - 500lb GP Bomb LD2 "]  = {ws = {4, 5, 32, 31}, cantidad = 20},
-        ["Mk-82 - Snakeeye 500lb GP Bomb HD   "]  = {ws = {4, 5, 9, 79}, cantidad = 10}
+        ["Mk-82 - Snakeeye 500lb GP Bomb HD   "]  = {ws = {4, 5, 9, 79}, cantidad = 20}
        }
 }
 tipoAviones["WALLEYE"] = {
@@ -133,7 +133,7 @@ tipoAviones["WALLEYE"] = {
 
     bombas_guiadas = {
         ["AGM-62 Walleye I"]  = {ws = {4, 5, 36, 459}, cantidad = 10},
-        ["AGM-62 Walleye II"]  = {ws = {4, 5, 36, 47}, cantidad = 5}
+        ["AGM-62 Walleye II"]  = {ws = {4, 5, 36, 47}, cantidad = 10}
        }
 }
 tipoAviones["GBUL"] = {
@@ -141,8 +141,8 @@ tipoAviones["GBUL"] = {
 
     bombas_guiadas = {
         ["GBU-12 - 500lb Laser Guided Bomb"]  = {ws = {4, 5, 36, 38}, cantidad = 20},
-        ["GBU-10 - 2000lb Laser Guided Bomb"]  = {ws = {4, 5, 36, 36}, cantidad = 4},
-        ["GBU-24A/B Paveway III - 2000lb Laser Guided Bomb"]  = {ws = {4, 5, 36, 41}, cantidad = 1}
+        ["GBU-10 - 2000lb Laser Guided Bomb"]  = {ws = {4, 5, 36, 36}, cantidad = 10},
+        ["GBU-24A/B Paveway III - 2000lb Laser Guided Bomb"]  = {ws = {4, 5, 36, 41}, cantidad = 4}
        }
 }
 tipoAviones["GBUJ"] = {
@@ -158,8 +158,8 @@ tipoAviones["JSOW"] = {
     costo = 6400000,
 
     bombas_guiadas = {
-        ["AGM-154A - JSOW CEB (CBU-type)"]  = {ws = {4, 4, 8, 280}, cantidad = 4},
-        ["AGM-154C - JSOW Unitary BROACH"]  = {ws = {4, 4, 8, 132}, cantidad = 2}
+        ["AGM-154A - JSOW CEB (CBU-type)"]  = {ws = {4, 4, 8, 280}, cantidad = 8},
+        ["AGM-154C - JSOW Unitary BROACH"]  = {ws = {4, 4, 8, 132}, cantidad = 8}
     }
 }
 tipoAviones["FAB"] = {
@@ -269,16 +269,17 @@ tipoAviones["ATGM01"] = {
     costo = 2220000,
 
     misiles_guiados = {
-        ["AGM-65D - Maverick D (IIR ASM)"]  = {ws = {4, 4, 8, 77}, cantidad = 6},
-        ["AGM-65E - Maverick E (Laser)"]  = {ws = {4, 4, 8, 70}, cantidad = 6}
+        ["AGM-65D - Maverick D (IIR ASM)"]  = {ws = {4, 4, 8, 77}, cantidad = 20},
+        ["AGM-65E - Maverick E (Laser)"]  = {ws = {4, 4, 8, 70}, cantidad = 20},
+        ["AGM-65L - Maverick L (Laser)"]  = {ws = {4, 4, 8, 272}, cantidad = 20}
        }
 }
 tipoAviones["ATGM02"] = {
     costo = 4250000,
 
     misiles_guiados = {
-        ["AGM-114L Hellfire"]  = {ws = {4, 4, 8, 59}, cantidad = 20},
-        ["AGM-114K Hellfire"]  = {ws = {4, 4, 8, 39}, cantidad = 10}
+        ["AGM-114L Hellfire"]  = {ws = {4, 4, 8, 59}, cantidad = 40},
+        ["AGM-114K Hellfire"]  = {ws = {4, 4, 8, 39}, cantidad = 40}
        }
 }
 tipoAviones["ATGM03"] = {
@@ -301,25 +302,25 @@ tipoAviones["ATGM05"] = {
     costo = 3400000,
 
     misiles_guiados = {
-        ["AGM-65H - Maverick H (CCD imp ASM)"]  = {ws = {4, 4, 8, 138}, cantidad = 8},
-        ["AGM-65F - Maverick F (IIR ASM)"]  = {ws = {4, 4, 8, 271}, cantidad = 8},
+        ["AGM-65H - Maverick H (CCD imp ASM)"]  = {ws = {4, 4, 8, 138}, cantidad = 20},
+        ["AGM-65F - Maverick F (IIR ASM)"]  = {ws = {4, 4, 8, 271}, cantidad = 20},
        }
 }
 tipoAviones["COHETES01"] = {
     costo = 4260000,
 
     misiles_guiados = {
-        ["Laser Guided Rkts, 70 mm Hydra 70 M151 HE APKWS"]  = {ws = {4, 4, 8, 292}, cantidad = 60},
-        ["Laser Guided Rkts, 70 mm Hydra 70 M282 MPP APKWS"]  = {ws = {4, 4, 8, 293}, cantidad = 60}
+        ["Laser Guided Rkts, 70 mm Hydra 70 M151 HE APKWS"]  = {ws = {4, 4, 8, 292}, cantidad = 200},
+        ["Laser Guided Rkts, 70 mm Hydra 70 M282 MPP APKWS"]  = {ws = {4, 4, 8, 293}, cantidad = 200}
        }
 }
 tipoAviones["COHETES02"] = {
     costo = 900000,
 
     cohetes = {
-        ["UnGd Rkts, 70 mm Hydra 70 M151 HE"]  = {ws = {4, 7, 33, 147}, cantidad = 60},
-        ["UnGd Rkts, 70 mm Hydra 70 Mk 5 HEAT"]  = {ws = {4, 7, 33, 145}, cantidad = 60},
-        ["UnGd Rkts, 70 mm Hydra 70 Mk1 HE"]  = {ws = {4, 7, 33, 144}, cantidad = 60}
+        ["UnGd Rkts, 70 mm Hydra 70 M151 HE"]  = {ws = {4, 7, 33, 147}, cantidad = 400},
+        ["UnGd Rkts, 70 mm Hydra 70 Mk 5 HEAT"]  = {ws = {4, 7, 33, 145}, cantidad = 400},
+        ["UnGd Rkts, 70 mm Hydra 70 Mk1 HE"]  = {ws = {4, 7, 33, 144}, cantidad = 400}
         
        }
 }
@@ -367,14 +368,14 @@ tipoAviones["BK90"] = {
     costo = 1800000,
 
     misiles = {
-        ["BK90 MJ1 - MJ2"]  = {ws = {4, 4, 8, 11031}, cantidad = 4}
+        ["BK90 MJ1 - MJ2"]  = {ws = {4, 4, 8, 11031}, cantidad = 10}
        }
 }
 tipoAviones["RB15"] = {
     costo = 2200000,
 
     misiles = {
-        ["RB-15F"]  = {ws = {4, 4, 8, 11093}, cantidad = 2}
+        ["RB-15F"]  = {ws = {4, 4, 8, 11093}, cantidad = 10}
        }
 }
 tipoAviones["SNIPER_POD"] = {

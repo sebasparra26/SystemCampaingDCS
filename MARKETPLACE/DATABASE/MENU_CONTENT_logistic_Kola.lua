@@ -445,7 +445,7 @@ subvariantesAvion = {
     --ATGMGUIADOS
     ["ATGMGUIADOS"] = {
         ["MAVERIK AGM-65D / E"] = "ATGM01",
-        ["Hellfire AGM-114 L / K "] = "ATGM02",
+        ["Hellfire AGM-114 L/ E/ K "] = "ATGM02",
         ["9M120/F - 9M127 Vikhr"] = "ATGM03",
         ["HOT-3 ATGM"] = "ATGM04",
         ["MAVERIK AGM-65H / F"] = "ATGM05"
@@ -905,7 +905,7 @@ nombresSubvariantes = {
     ["SEAD05"] = "AGM 122 Sidearm",
     --ATGMGUIADOS
     ["ATGM01"] = "MAVERIK AGM-65D / E",
-    ["ATGM02"] = "Hellfire AGM-114 L / K ",
+    ["ATGM02"] = "Hellfire AGM-114 L/ E/ K ",
     ["ATGM03"] = "9M120/F - 9M127 Vikhr",
     ["ATGM04"] = "HOT-3 ATGM",
     ["ATGM05"] = "MAVERIK AGM-65H / F",
