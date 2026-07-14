@@ -363,7 +363,8 @@ function Marketplace.registerCoalition(key, cfg)
     cfg.itemsPerPage = cfg.itemsPerPage or 8
     cfg.deliveryDestroyDelay = cfg.deliveryDestroyDelay or 20
     cfg.monitorInterval = cfg.monitorInterval or 5
-    cfg.cooldownSeconds = cfg.cooldownSeconds or 45
+    --cfg.cooldownSeconds = cfg.cooldownSeconds or 30
+    cfg.cooldownSeconds = 20
     cfg.deliveryMinAlt = cfg.deliveryMinAlt or 100
     cfg.deliveryStopSpeed = cfg.deliveryStopSpeed or 1
     cfg.searchBirthRadius = cfg.searchBirthRadius or 5000
@@ -429,7 +430,7 @@ function Marketplace.resolvePending(key, pendingId)
     if bestName then
         Marketplace.knownBirths[bestName] = true
         trackDeliveryGroup(cfg, bestName, pending.airport, pending.subKey, pending.template)
-        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 45)
+        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 30)
         cfg.state.pending[pendingId] = nil
         mpLog("Entrega enlazada a grupo: " .. bestName .. " | " .. pending.airport)
         return nil
