@@ -105,16 +105,16 @@ tipoAviones["TARGETING"] = {
 
     misc = {
         ["AN/AAQ-28 LITENING - Targeting Pod"]  = {ws = {4, 15, 44, 101}, cantidad = 4},
-        ["AN/AAQ-28 LITENING - Targeting Pod2"]  = {ws = {4, 15, 44, 425}, cantidad = 2},
-        ["AN/ASQ-28 ATFLIR - Targeting Pod"]  = {ws = {4, 15, 44, 426}, cantidad = 2},
-        ["AN/AAQ-14 LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 1718}, cantidad = 2},
-        ["LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 486}, cantidad = 2},
-        ["AN/AVQ-23 Pave Spike - Targeting Pod Rack"]  = {ws = {4, 15, 44, 2148}, cantidad = 1},
-        ["AVIC WMD7 FLIR/LDT POD"]  = {ws = {4, 15, 44, 463}, cantidad = 1},
-        ["AN/ASQ-213 - HARM Targeting System"]  = {ws = {4, 15, 44, 808}, cantidad = 2},
-        ["Mercury LLTV pod"]  = {ws = {4, 15, 44, 19}, cantidad = 2},
-        ["Tactial Airborne Recon Pod System"]  = {ws = {4, 15, 44, 2286}, cantidad = 2},
-        ["AN/APG-78 FCR/RFI"]  = {ws = {4, 15, 44, 2114}, cantidad = 2}
+        ["AN/AAQ-28 LITENING - Targeting Pod2"]  = {ws = {4, 15, 44, 425}, cantidad = 4},
+        ["AN/ASQ-28 ATFLIR - Targeting Pod"]  = {ws = {4, 15, 44, 426}, cantidad = 4},
+        ["AN/AAQ-14 LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 1718}, cantidad = 4},
+        ["LANTIRN TGT Pod"]  = {ws = {4, 15, 44, 486}, cantidad = 4},
+        ["AN/AVQ-23 Pave Spike - Targeting Pod Rack"]  = {ws = {4, 15, 44, 2148}, cantidad = 4},
+        ["AVIC WMD7 FLIR/LDT POD"]  = {ws = {4, 15, 44, 463}, cantidad = 4},
+        ["AN/ASQ-213 - HARM Targeting System"]  = {ws = {4, 15, 44, 808}, cantidad = 4},
+        ["Mercury LLTV pod"]  = {ws = {4, 15, 44, 19}, cantidad = 4},
+        ["Tactial Airborne Recon Pod System"]  = {ws = {4, 15, 44, 2286}, cantidad = 4},
+        ["AN/APG-78 FCR/RFI"]  = {ws = {4, 15, 44, 2114}, cantidad = 4}
        
     
     }

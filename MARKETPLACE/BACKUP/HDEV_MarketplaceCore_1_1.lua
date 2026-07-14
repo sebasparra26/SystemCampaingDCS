@@ -107,7 +107,7 @@ end
 local function cleanupBirths(now)
     now = now or timer.getTime()
     for groupName, data in pairs(Marketplace.births) do
-        if not data or (now - (data.time or 0)) > 120 then
+        if not data or (now - (data.time or 0)) > 45 then
             Marketplace.births[groupName] = nil
         end
     end
@@ -429,7 +429,7 @@ function Marketplace.resolvePending(key, pendingId)
     if bestName then
         Marketplace.knownBirths[bestName] = true
         trackDeliveryGroup(cfg, bestName, pending.airport, pending.subKey, pending.template)
-        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 60)
+        cfg.state.cooldowns[pending.airport] = timer.getTime() + (cfg.cooldownSeconds or 45)
         cfg.state.pending[pendingId] = nil
         mpLog("Entrega enlazada a grupo: " .. bestName .. " | " .. pending.airport)
         return nil

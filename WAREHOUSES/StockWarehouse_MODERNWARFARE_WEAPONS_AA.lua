@@ -12,7 +12,7 @@ tipoAviones["FOX01PACK_01"] = {
     costo = 5750000,
 
     misiles = {
-        ["AIM-7M"]  = {ws = {4, 4, 7, 21}, cantidad = 10},
+        ["AIM-7M"]  = {ws = {4, 4, 7, 21}, cantidad = 20},
         ["AIM-7P"]  = {ws = {4, 4, 7, 135}, cantidad = 20}
     }
 }
@@ -21,7 +21,7 @@ tipoAviones["FOX01PACK_02"] = {
 
     misiles = {
         ["R-27ER"]  = {ws = {4, 4, 7, 14}, cantidad = 20},
-        ["R-27R"]  = {ws = {4, 4, 7, 13}, cantidad = 10}
+        ["R-27R"]  = {ws = {4, 4, 7, 13}, cantidad = 20}
     }
 }
 tipoAviones["FOX01PACK_03"] = {
@@ -29,7 +29,7 @@ tipoAviones["FOX01PACK_03"] = {
 
     misiles = {
         ["Matra Super 530D"]  = {ws = {4, 4, 7, 368}, cantidad = 20},
-        ["S530F"]  = {ws = {4, 4, 7, 409}, cantidad = 10}
+        ["S530F"]  = {ws = {4, 4, 7, 409}, cantidad = 20}
     }
 }
 -- ===============================
@@ -41,7 +41,7 @@ tipoAviones["FOX02PACK_01"] = {
     misiles = {
         ["AIM-9B"]  = {ws = {4, 4, 7, 265}, cantidad = 20},
         ["RB-24"]  = {ws = {4, 4, 7, 11037}, cantidad = 20},
-        ["AIM-9J"]  = {ws = {4, 4, 7, 371}, cantidad = 10}
+        ["AIM-9J"]  = {ws = {4, 4, 7, 371}, cantidad = 20}
     }
 }
 tipoAviones["FOX02PACK_02"] = {
@@ -49,8 +49,8 @@ tipoAviones["FOX02PACK_02"] = {
 
     misiles = {
         ["AIM-9P"]  = {ws = {4, 4, 7, 135}, cantidad = 20},
-        ["RB-24J"]  = {ws = {4, 4, 7, 11038}, cantidad = 10},
-        ["AIM-9P3"]  = {ws = {4, 4, 7, 412}, cantidad = 10}
+        ["RB-24J"]  = {ws = {4, 4, 7, 11038}, cantidad = 20},
+        ["AIM-9P3"]  = {ws = {4, 4, 7, 412}, cantidad = 20}
     }
 }
 tipoAviones["FOX02PACK_03"] = {
@@ -58,14 +58,14 @@ tipoAviones["FOX02PACK_03"] = {
 
     misiles = {
         ["AIM-9L"]  = {ws = {4, 4, 7, 267}, cantidad = 20},
-        ["AIM-9M"]  = {ws = {4, 4, 7, 22}, cantidad = 10}
+        ["AIM-9M"]  = {ws = {4, 4, 7, 22}, cantidad = 20}
     }
 }
 tipoAviones["FOX02PACK_10"] = {
     costo = 5000000,
 
     misiles = {
-        ["AIM-9X"]  = {ws = {4, 4, 7, 136}, cantidad = 10}
+        ["AIM-9X"]  = {ws = {4, 4, 7, 136}, cantidad = 20}
     }
 }
 tipoAviones["FOX02PACK_04"] = {
@@ -73,7 +73,7 @@ tipoAviones["FOX02PACK_04"] = {
 
     misiles = {
         ["R-60M"]  = {ws = {4, 4, 7, 10}, cantidad = 20},
-        ["R-73"]  = {ws = {4, 4, 7, 18}, cantidad = 10}
+        ["R-73"]  = {ws = {4, 4, 7, 18}, cantidad = 20}
     }
 }
 tipoAviones["FOX02PACK_05"] = {
@@ -130,7 +130,7 @@ tipoAviones["FOX03PACK_01"] = {
     costo = 10890000,
 
     misiles = {
-        ["AIM-120B"]  = {ws = {4, 4, 7, 24}, cantidad = 10},
+        ["AIM-120B"]  = {ws = {4, 4, 7, 24}, cantidad = 20},
         ["AIM-120C"]  = {ws = {4, 4, 7, 106}, cantidad = 20}
        }
 }
@@ -138,8 +138,8 @@ tipoAviones["FOX03PACK_02"] = {
     costo = 20300000,
 
     misiles = {
-        ["AIM-54A-Mk47"]  = {ws = {4, 4, 7, 320}, cantidad = 15},
-        ["AIM-54C-Mk47"]  = {ws = {4, 4, 7, 322}, cantidad = 15}
+        ["AIM-54A-Mk47"]  = {ws = {4, 4, 7, 320}, cantidad = 20},
+        ["AIM-54C-Mk47"]  = {ws = {4, 4, 7, 322}, cantidad = 20}
        }
 }
 tipoAviones["FOX03PACK_03"] = {
