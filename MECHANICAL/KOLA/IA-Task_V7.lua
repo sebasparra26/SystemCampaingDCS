@@ -123,7 +123,7 @@ local TASK_PROFILES = {
         selectorTemplates = {
             f117 = { "STRIKE_A"},
             f15   = { "STRIKE_B" },
-            F150 = { "STRIKE_C"},
+            b52 = { "STRIKE_C"},
             b1b  = { "STRIKE_D" }
         },
         maxActive = 4,
