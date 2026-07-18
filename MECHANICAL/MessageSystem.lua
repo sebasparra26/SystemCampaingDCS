@@ -66,6 +66,28 @@ MSG.MESSAGES = {
     -- EWR azul activo con bandera 100 valor 1
     ----------------------------------------------------------------
     {
+        id = "EWR_BLUE_FREQ_01",
+
+        enabled = true,
+
+        target = "blue",
+
+        text =
+            "OSAMA BIEN LADEN A SIDO DADO DE BAJA\n" ..
+            "Campaña Finalizada\n" ..
+            "RTB a todas las unidades",
+
+        showFor = 10,
+        repeatEvery = 15,
+
+        flag = 9005,
+        op = "==",
+        value = 1,
+
+        sendOnActivate = true
+    },
+
+    {
         id = "EWR_BLUE_FREQ",
 
         enabled = true,
@@ -206,10 +228,12 @@ MSG.MESSAGES = {
         target = "all",
 
         text =
-            "MAGIC - AWACS\n" ..
-            "Freq = 265.200 MHz",
+            "EXILIADOS SERVER 1\n" ..
+            "MAGIC - AWACS: Freq = 265.200 MHz\n" ..
+            "UNICOM: Freq = 228.000 MHz\n" ..
+            "Recuerde revisar las tareas activas en el menu F10.",
 
-        showFor = 8,
+        showFor = 6,
         repeatEvery = 400,
 
         sendOnActivate = true

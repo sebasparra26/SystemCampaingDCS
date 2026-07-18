@@ -210,6 +210,25 @@ local PATROL_DEFINITIONS = {
         debug = DEFAULT_DEBUG
     },
 
+                 {
+        name = "PATRULLA_RUSSIAN_11",
+        templates = { "Patrol_IA_RUSSIA_17"},
+        clonePrefix = "RUSSIA hel ",
+        activationFlag = 110,
+        activationValue = 1,
+        ownCoalition = coalition.side.RED,
+        enemyCoalition = coalition.side.BLUE,
+        ownUnitIndex = 1,
+        enemyUnitIndex = 1,
+        monitorUnitIndex = 1,
+        detectionRange = 40 * NM_TO_METERS,
+        engageRange = 30 * NM_TO_METERS,
+        altitudeArm = DEFAULT_ALTITUDE_ARM,
+        stopSpeed = DEFAULT_STOP_SPEED,
+        allowedCategories = CATEGORY_SETS.AIR_ONLY,
+        debug = DEFAULT_DEBUG
+    },
+
 
 
 

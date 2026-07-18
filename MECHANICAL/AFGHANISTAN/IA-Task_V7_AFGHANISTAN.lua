@@ -4,13 +4,17 @@ if not mist or not mist.cloneGroup or not mist.getGroupRoute or not mist.goRoute
 end
 
 ----------------------------------------------------------------
--- IA-Task_V8.lua
--- Base: IA-Task_V7.lua
--- Cambio V8:
--- - Agrega combustible ilimitado como Advanced Waypoint Action
---   dentro de los waypoints de ruta creados por buildRouteFromTemplate().
--- - No toca controller:setCommand despues del spawn.
--- - No modifica la clonacion de templates.
+-- IA-Task_V9_AFGHANISTAN_AUTO_RUNWAY.lua
+-- Base: IA-Task_V8.lua
+-- Cambios V9:
+-- - Conserva combustible ilimitado como Advanced Waypoint Action.
+-- - Agrega el sistema AUTO RED CAS de Normandia.
+-- - El perfil cas_red_auto ahora ejecuta BombingRunway contra la pista
+--   del aeropuerto azul seleccionado automaticamente.
+-- - Configuracion de ataque replicada desde Mission Editor:
+--     Weapon = Bombs, Rel Qty = Quarter, Attack Qty = 4,
+--     Group Attack = false, Direction = disabled,
+--     Altitude Above = 2999 ft.
 ----------------------------------------------------------------
 
 ----------------------------------------------------------------
@@ -107,12 +111,43 @@ local TASK_PROFILES = {
         },
         maxActive = 2,
         cooldownSeconds = 20 * 60,
-        orbitAltitude = 7000,
+        orbitAltitude = 3000,
         orbitSpeed = 300,
-        zoneRadius = 18000,
-        ingressOffsetNm = 8,
+        zoneRadius = 25000,
+        ingressOffsetNm = 20,
         targetTypes = { "Ground Units" },
-        rtbAfterTaskSeconds = 10 * 60
+        rtbAfterTaskSeconds = 20 * 60
+    },
+
+    cas_red_auto = {
+        displayName = "ATAQUE PISTA ROJO AUTO",
+        mode = "bombing_runway",
+
+        -- Plantillas rojas. Deben llevar bombas y admitir la tarea Runway Attack.
+        templates = { "RED_CAS_A", "RED_CAS_B"},
+        selectorTemplates = {},
+
+        maxActive = 1,
+        cooldownSeconds = 60,
+
+        -- Ruta de aproximacion. 20 NM ayuda a que la IA se alinee con la pista.
+        ingressAltitude = 10000,
+        ingressSpeed = 400,
+        ingressOffsetNm = 50,
+        egressOffsetNm = 40,
+
+        -- Equivalente a la configuracion mostrada en Mission Editor.
+        weaponType = "auto",              -- Bombs
+        expend = "all",            -- Rel Qty: Quarter
+        attackQty = 1,
+        attackQtyLimit = true,
+        groupAttack = false,
+        directionEnabled = false,
+        direction = 0,
+        altitudeEnabled = true,
+        attackAltitude = 3000 * 0.3048, -- 2999 ft = 914.0952 m
+
+        rtbAfterAttack = true
     },
 
     strike = {
@@ -889,6 +924,36 @@ local function buildBombPointComboTask(profile, pointVec2)
     }
 end
 
+local function buildBombingRunwayComboTask(profile, runwayId)
+    runwayId = tonumber(runwayId)
+    if not runwayId then
+        return nil
+    end
+
+    return {
+        id = "ComboTask",
+        params = {
+            tasks = {
+                [1] = {
+                    id = "BombingRunway",
+                    params = {
+                        runwayId = runwayId,
+                        weaponType = profile.weaponType or 2032,
+                        expend = profile.expend or "Quarter",
+                        attackQty = profile.attackQty or 4,
+                        attackQtyLimit = (profile.attackQtyLimit ~= false),
+                        groupAttack = (profile.groupAttack == true),
+                        directionEnabled = (profile.directionEnabled == true),
+                        direction = profile.direction or 0,
+                        altitudeEnabled = (profile.altitudeEnabled == true),
+                        altitude = profile.attackAltitude or (2999 * 0.3048)
+                    }
+                }
+            }
+        }
+    }
+end
+
 local function buildEscortTask(profile, targetGroup)
     return {
         id = "Escort",
@@ -980,7 +1045,7 @@ local function buildWaypointTaskForProfile(profile, pointVec2)
     return buildEmptyComboTask()
 end
 
-local function buildRouteFromTemplate(templateName, profile, markPoint)
+local function buildRouteFromTemplate(templateName, profile, markPoint, taskContext)
     local templateRoute = mist.getGroupRoute(templateName, true)
     if not templateRoute or not templateRoute[1] then
         return nil, "La plantilla no tiene ruta definida en el editor: " .. templateName
@@ -1037,6 +1102,32 @@ local function buildRouteFromTemplate(templateName, profile, markPoint)
 
     if profile.mode == "bomb_point" then
         wpIP.task = buildBombPointComboTask(profile, pointVec2)
+
+        route[2] = wpIP
+        route[3] = wpEgress
+
+        if profile.rtbAfterAttack then
+            if not wp1.airdromeId and not wp1.helipadId and not wp1.linkUnit then
+                return nil, "La plantilla no tiene referencia valida para regresar a casa (airdromeId/helipadId/linkUnit): " .. templateName
+            end
+
+            route[4] = buildRTBClimbWaypoint({ x = egX, z = egY }, wp1)
+            route[5] = buildLandWaypointFromStart(wp1)
+        end
+
+    elseif profile.mode == "bombing_runway" then
+        local runwayId = taskContext and tonumber(taskContext.runwayId) or nil
+        if not runwayId then
+            return nil, "No se pudo resolver runwayId para el aeropuerto objetivo."
+        end
+
+        local runwayTask = buildBombingRunwayComboTask(profile, runwayId)
+        if not runwayTask then
+            return nil, "No se pudo construir la tarea BombingRunway."
+        end
+
+        -- La orden se activa desde el IP; DCS usa runwayId para seleccionar la pista real.
+        wpIP.task = runwayTask
 
         route[2] = wpIP
         route[3] = wpEgress
@@ -1323,7 +1414,7 @@ local function assignTaskToClone(taskId)
         return
     end
 
-    local route, metaOrErr = buildRouteFromTemplate(rec.templateName, profile, rec.point)
+    local route, metaOrErr = buildRouteFromTemplate(rec.templateName, profile, rec.point, rec)
     if not route then
         rec.state = "ERROR: " .. tostring(metaOrErr or "no se pudo crear la ruta")
         rec.finished = true
@@ -1401,7 +1492,7 @@ local function createTask(keyword, argData, point, markId, originalText)
 
     local allowed, reason = canUseCategory(keyword)
     if not allowed then
-        trigger.action.outText(reason, 10)
+        --trigger.action.outText(reason, 1)
         return false
     end
 
@@ -1439,6 +1530,9 @@ local function createTask(keyword, argData, point, markId, originalText)
         finished = false,
         lastDistance = nil,
         targetGroupName = nil,
+
+        targetAirportName = argData and argData.targetAirportName or nil,
+        runwayId = argData and tonumber(argData.runwayId) or nil,
 
         casTargetGroupName = nil,
         casAttackAssigned = false,
@@ -1483,6 +1577,542 @@ local function createTask(keyword, argData, point, markId, originalText)
 
     return true
 end
+
+----------------------------------------------------------------
+-- AUTO RED CAS / BOMBING RUNWAY POR BANDERAS DE AEROPUERTO
+-- Adaptado desde IA-Task de Normandia.
+-- Detecta aeropuertos con bandera en valor 2 y lanza un ataque rojo
+-- BombingRunway contra la pista real del aeropuerto seleccionado.
+----------------------------------------------------------------
+local AUTO_RED_CAS = AUTO_RED_CAS or {
+    ENABLED = true,
+    DEBUG = false,
+
+    PROFILE_KEY = "cas_red_auto",
+
+    -- Intervalo despues de un lanzamiento exitoso.
+    INTERVAL_SECONDS = 60 * 60,
+
+    START_DELAY = 20,
+    RETRY_SECONDS = 45,
+    ERROR_RETRY_SECONDS = 45,
+
+    FLAG_MIN = 100,
+    FLAG_MAX = 124,
+    TARGET_FLAG_VALUE = 2,
+
+    USE_AIRPORTS_TABLE_FIRST = true,
+    USE_CONTROL_AEROPUERTOS = true,
+    USE_INFO_VALOR_FALLBACK = true,
+    AVOID_SAME_TARGET_TWICE = true,
+
+    SHOW_DEBUG_MENU = false,
+
+    USE_FLAG_HOOK = true,
+    USE_HEARTBEAT = true,
+    USE_TIMER_DIRECT = true,
+    TIMER_PULSE_SECONDS = 15,
+
+    MIN_SECONDS_BETWEEN_ATTEMPTS = 8
+}
+
+local AUTO_RED_CAS_STATE = AUTO_RED_CAS_STATE or {
+    started = false,
+    seeded = false,
+    armed = false,
+    nextCheckAt = nil,
+    lastAttemptAt = -999999,
+    lastTargetName = nil,
+    launches = 0,
+    lastLaunchAt = nil,
+    lastResult = "SIN_INICIAR",
+    lastPulseSource = "N/A",
+    flagHookInstalled = false,
+    originalSetUserFlag = nil
+}
+
+local function autoRedCasLog(msg, seconds)
+    env.info("[AUTO_RED_RUNWAY] " .. tostring(msg))
+    if AUTO_RED_CAS.DEBUG then
+        trigger.action.outText("[AUTO RED RUNWAY] " .. tostring(msg), seconds or 8)
+    end
+end
+
+local function autoRedCasNow()
+    if timer and timer.getTime then
+        return timer.getTime()
+    end
+    return 0
+end
+
+local function autoRedCasAbsNow()
+    if timer and timer.getAbsTime then
+        return timer.getAbsTime()
+    end
+    return autoRedCasNow()
+end
+
+local function autoRedCasSeedRandom()
+    -- No usa math.randomseed porque puede estar sanitizado en DCS.
+    AUTO_RED_CAS_STATE.seeded = true
+end
+
+local function autoRedCasGetFlagValue(flag)
+    flag = tonumber(flag)
+    if not flag then
+        return 0
+    end
+
+    local ok, value = pcall(function()
+        return trigger.misc.getUserFlag(flag)
+    end)
+
+    if ok then
+        return tonumber(value) or 0
+    end
+
+    return 0
+end
+
+local function autoRedCasNormalizePoint(p)
+    if not p then
+        return nil
+    end
+
+    local x = tonumber(p.x) or 0
+    local z = tonumber(p.z or p.y) or 0
+    local y = tonumber(p.y) or 0
+
+    if y == 0 and land and land.getHeight then
+        local ok, h = pcall(function()
+            return land.getHeight({ x = x, y = z })
+        end)
+        if ok and type(h) == "number" then
+            y = h
+        end
+    end
+
+    return { x = x, y = y, z = z }
+end
+
+local function autoRedCasFindAirbaseByName(airbaseName)
+    if not airbaseName or airbaseName == "" then
+        return nil
+    end
+
+    if Airbase and Airbase.getByName then
+        local okAB, ab = pcall(function()
+            return Airbase.getByName(airbaseName)
+        end)
+        if okAB and ab then
+            return ab
+        end
+    end
+
+    local ok, bases = pcall(function()
+        return world.getAirbases()
+    end)
+    if not ok or type(bases) ~= "table" then
+        return nil
+    end
+
+    for i = 1, #bases do
+        local ab = bases[i]
+        if ab and ab.getName then
+            local okName, name = pcall(function()
+                return ab:getName()
+            end)
+            if okName and name == airbaseName then
+                return ab
+            end
+        end
+    end
+
+    return nil
+end
+
+local function autoRedCasFindAirbasePointByName(airbaseName)
+    local ab = autoRedCasFindAirbaseByName(airbaseName)
+    if not ab or not ab.getPoint then
+        return nil
+    end
+
+    local okPoint, p = pcall(function()
+        return ab:getPoint()
+    end)
+    if okPoint and p then
+        return autoRedCasNormalizePoint(p)
+    end
+
+    return nil
+end
+
+local function autoRedCasGetAirbaseId(airbaseName)
+    local ab = autoRedCasFindAirbaseByName(airbaseName)
+    if not ab or not ab.getID then
+        return nil
+    end
+
+    local okId, id = pcall(function()
+        return ab:getID()
+    end)
+    if okId then
+        return tonumber(id)
+    end
+
+    return nil
+end
+
+local function autoRedCasGetAirportPoint(airportName)
+    if AUTO_RED_CAS.USE_AIRPORTS_TABLE_FIRST
+        and type(aeropuertos) == "table"
+        and type(aeropuertos[airportName]) == "table" then
+
+        local data = aeropuertos[airportName]
+        if data.position then
+            return autoRedCasNormalizePoint(data.position)
+        end
+        if data.point then
+            return autoRedCasNormalizePoint(data.point)
+        end
+    end
+
+    if type(estadoBanderasAeropuertos) == "table"
+        and type(estadoBanderasAeropuertos[airportName]) == "table" then
+
+        local info = estadoBanderasAeropuertos[airportName]
+        if info.position then
+            return autoRedCasNormalizePoint(info.position)
+        end
+        if info.point then
+            return autoRedCasNormalizePoint(info.point)
+        end
+    end
+
+    return autoRedCasFindAirbasePointByName(airportName)
+end
+
+local function autoRedCasAirportIsTarget(airportName, info)
+    if type(info) ~= "table" then
+        return false, nil, nil
+    end
+
+    local flag = tonumber(info.bandera)
+    if not flag or flag < AUTO_RED_CAS.FLAG_MIN or flag > AUTO_RED_CAS.FLAG_MAX then
+        return false, flag, nil
+    end
+
+    local value = autoRedCasGetFlagValue(flag)
+
+    if value ~= AUTO_RED_CAS.TARGET_FLAG_VALUE and AUTO_RED_CAS.USE_INFO_VALOR_FALLBACK then
+        local infoValue = tonumber(info.valor)
+        if infoValue == AUTO_RED_CAS.TARGET_FLAG_VALUE then
+            value = infoValue
+        end
+    end
+
+    if value ~= AUTO_RED_CAS.TARGET_FLAG_VALUE and AUTO_RED_CAS.USE_CONTROL_AEROPUERTOS then
+        if type(controlAeropuertos) == "table" and tonumber(controlAeropuertos[airportName]) == AUTO_RED_CAS.TARGET_FLAG_VALUE then
+            value = AUTO_RED_CAS.TARGET_FLAG_VALUE
+        elseif type(coalicionPorBase) == "table" and tonumber(coalicionPorBase[airportName]) == AUTO_RED_CAS.TARGET_FLAG_VALUE then
+            value = AUTO_RED_CAS.TARGET_FLAG_VALUE
+        end
+    end
+
+    return value == AUTO_RED_CAS.TARGET_FLAG_VALUE, flag, value
+end
+
+local function autoRedCasCollectTargets()
+    local targets = {}
+
+    if type(estadoBanderasAeropuertos) ~= "table" then
+        AUTO_RED_CAS_STATE.lastResult = "No existe estadoBanderasAeropuertos"
+        return targets
+    end
+
+    for airportName, info in pairs(estadoBanderasAeropuertos) do
+        local isTarget, flag, value = autoRedCasAirportIsTarget(airportName, info)
+        if isTarget then
+            local point = autoRedCasGetAirportPoint(airportName)
+            local runwayId = autoRedCasGetAirbaseId(airportName)
+
+            if point and runwayId then
+                targets[#targets + 1] = {
+                    name = airportName,
+                    flag = flag,
+                    value = value,
+                    point = point,
+                    runwayId = runwayId
+                }
+            elseif not point then
+                autoRedCasLog("Objetivo sin punto: " .. tostring(airportName), 6)
+            else
+                autoRedCasLog("Objetivo sin runwayId: " .. tostring(airportName), 6)
+            end
+        end
+    end
+
+    return targets
+end
+
+local function autoRedCasEnsureCategory()
+    local profile = TASK_PROFILES[AUTO_RED_CAS.PROFILE_KEY]
+    if not profile then
+        AUTO_RED_CAS_STATE.lastResult = "No existe perfil " .. tostring(AUTO_RED_CAS.PROFILE_KEY)
+        autoRedCasLog(AUTO_RED_CAS_STATE.lastResult, 10)
+        return false
+    end
+
+    if not categoryState[AUTO_RED_CAS.PROFILE_KEY] then
+        categoryState[AUTO_RED_CAS.PROFILE_KEY] = {
+            activeTaskIds = {},
+            nextAvailableAt = 0,
+            maxActive = profile.maxActive or 1
+        }
+    end
+
+    return true
+end
+
+local function autoRedCasPickTarget(targets)
+    if not targets or #targets == 0 then
+        return nil
+    end
+
+    if AUTO_RED_CAS.AVOID_SAME_TARGET_TWICE
+        and #targets > 1
+        and AUTO_RED_CAS_STATE.lastTargetName then
+
+        local filtered = {}
+        for i = 1, #targets do
+            if targets[i].name ~= AUTO_RED_CAS_STATE.lastTargetName then
+                filtered[#filtered + 1] = targets[i]
+            end
+        end
+        if #filtered > 0 then
+            return filtered[math.random(1, #filtered)]
+        end
+    end
+
+    return targets[math.random(1, #targets)]
+end
+
+local function autoRedCasLaunch()
+    if not AUTO_RED_CAS.ENABLED then
+        AUTO_RED_CAS_STATE.lastResult = "Modulo desactivado"
+        return false
+    end
+
+    autoRedCasSeedRandom()
+
+    if not autoRedCasEnsureCategory() then
+        return false
+    end
+
+    local targets = autoRedCasCollectTargets()
+    if #targets == 0 then
+        AUTO_RED_CAS_STATE.lastResult =
+            "Sin objetivos: banderas " ..
+            tostring(AUTO_RED_CAS.FLAG_MIN) .. "-" ..
+            tostring(AUTO_RED_CAS.FLAG_MAX) ..
+            " en valor " .. tostring(AUTO_RED_CAS.TARGET_FLAG_VALUE)
+        autoRedCasLog(AUTO_RED_CAS_STATE.lastResult, 6)
+        return false
+    end
+
+    local selected = autoRedCasPickTarget(targets)
+    if not selected then
+        AUTO_RED_CAS_STATE.lastResult = "No se pudo seleccionar objetivo"
+        return false
+    end
+
+    local argData = {
+        rawArg = "AUTO_RED_RUNWAY " .. tostring(selected.name),
+        selector = nil,
+        delaySeconds = 0,
+        targetAirportName = selected.name,
+        runwayId = selected.runwayId
+    }
+
+    local ok = createTask(
+        AUTO_RED_CAS.PROFILE_KEY,
+        argData,
+        selected.point,
+        nil,
+        "AUTO_RED_RUNWAY -> " .. tostring(selected.name)
+    )
+
+    if ok then
+        AUTO_RED_CAS_STATE.launches = (AUTO_RED_CAS_STATE.launches or 0) + 1
+        AUTO_RED_CAS_STATE.lastTargetName = selected.name
+        AUTO_RED_CAS_STATE.lastLaunchAt = autoRedCasAbsNow()
+        AUTO_RED_CAS_STATE.lastResult = "BombingRunway lanzado contra " .. tostring(selected.name)
+
+        autoRedCasLog(
+            "Ataque de pista rojo lanzado contra: " .. tostring(selected.name) ..
+            " | runwayId=" .. tostring(selected.runwayId) ..
+            " | bandera " .. tostring(selected.flag) ..
+            "=" .. tostring(selected.value) ..
+            " | candidatos: " .. tostring(#targets),
+            12
+        )
+    else
+        AUTO_RED_CAS_STATE.lastResult = "Bloqueado por limite/cooldown contra " .. tostring(selected.name)
+        autoRedCasLog(AUTO_RED_CAS_STATE.lastResult, 8)
+    end
+
+    return ok
+end
+
+local function autoRedCasShowStatus()
+    local targets = autoRedCasCollectTargets()
+    local lines = {
+        "AUTO RED RUNWAY AFGHANISTAN",
+        "Estado: " .. tostring(AUTO_RED_CAS.ENABLED and "ACTIVO" or "DESACTIVADO"),
+        "Perfil: " .. tostring(AUTO_RED_CAS.PROFILE_KEY),
+        "Tarea: BombingRunway",
+        "Intervalo exitoso: " .. tostring(math.floor((AUTO_RED_CAS.INTERVAL_SECONDS or 0) / 60)) .. " min",
+        "Rango banderas: " .. tostring(AUTO_RED_CAS.FLAG_MIN) .. "-" .. tostring(AUTO_RED_CAS.FLAG_MAX),
+        "Valor objetivo: " .. tostring(AUTO_RED_CAS.TARGET_FLAG_VALUE),
+        "Lanzamientos: " .. tostring(AUTO_RED_CAS_STATE.launches or 0),
+        "Ultimo objetivo: " .. tostring(AUTO_RED_CAS_STATE.lastTargetName or "N/A"),
+        "Ultimo resultado: " .. tostring(AUTO_RED_CAS_STATE.lastResult or "N/A"),
+        "Ultimo pulso: " .. tostring(AUTO_RED_CAS_STATE.lastPulseSource or "N/A"),
+        "Objetivos disponibles ahora: " .. tostring(#targets)
+    }
+
+    for i = 1, #targets do
+        lines[#lines + 1] =
+            "- " .. tostring(targets[i].name) ..
+            " | runwayId " .. tostring(targets[i].runwayId) ..
+            " | flag " .. tostring(targets[i].flag) ..
+            "=" .. tostring(targets[i].value)
+    end
+
+    trigger.action.outText(table.concat(lines, "\n"), 20)
+end
+
+local function autoRedCasPulse(source, force)
+    if not AUTO_RED_CAS.ENABLED then
+        return false
+    end
+
+    local now = autoRedCasNow()
+    AUTO_RED_CAS_STATE.lastPulseSource = source or "unknown"
+
+    if not AUTO_RED_CAS_STATE.armed then
+        AUTO_RED_CAS_STATE.armed = true
+        AUTO_RED_CAS_STATE.started = true
+        AUTO_RED_CAS_STATE.nextCheckAt = now + (AUTO_RED_CAS.START_DELAY or 20)
+        AUTO_RED_CAS_STATE.lastResult = "Armado por " .. tostring(source or "unknown")
+        autoRedCasLog(
+            "Armado automatico por " .. tostring(source or "unknown") ..
+            ". Primer chequeo en " .. tostring(AUTO_RED_CAS.START_DELAY or 20) .. " s.",
+            8
+        )
+
+        if not force then
+            return false
+        end
+
+        AUTO_RED_CAS_STATE.nextCheckAt = now
+    end
+
+    if not force and AUTO_RED_CAS_STATE.nextCheckAt and now < AUTO_RED_CAS_STATE.nextCheckAt then
+        return false
+    end
+
+    if not force and AUTO_RED_CAS_STATE.lastAttemptAt then
+        local dt = now - AUTO_RED_CAS_STATE.lastAttemptAt
+        if dt < (AUTO_RED_CAS.MIN_SECONDS_BETWEEN_ATTEMPTS or 8) then
+            return false
+        end
+    end
+
+    AUTO_RED_CAS_STATE.lastAttemptAt = now
+
+    local okCall, launched = pcall(autoRedCasLaunch)
+    if not okCall then
+        AUTO_RED_CAS_STATE.lastResult = "ERROR AUTO: " .. tostring(launched)
+        autoRedCasLog(AUTO_RED_CAS_STATE.lastResult, 10)
+        AUTO_RED_CAS_STATE.nextCheckAt = now + (AUTO_RED_CAS.ERROR_RETRY_SECONDS or 45)
+        return false
+    end
+
+    if launched then
+        AUTO_RED_CAS_STATE.nextCheckAt = now + (AUTO_RED_CAS.INTERVAL_SECONDS or 3600)
+    else
+        AUTO_RED_CAS_STATE.nextCheckAt = now + (AUTO_RED_CAS.RETRY_SECONDS or 45)
+    end
+
+    return launched and true or false
+end
+
+local function autoRedCasHeartbeat(now)
+    if AUTO_RED_CAS.USE_HEARTBEAT then
+        autoRedCasPulse("heartbeat", false)
+    end
+end
+
+local function autoRedCasTimerDirect(_, now)
+    if AUTO_RED_CAS.USE_TIMER_DIRECT then
+        autoRedCasPulse("timer", false)
+        return timer.getTime() + (AUTO_RED_CAS.TIMER_PULSE_SECONDS or 15)
+    end
+    return nil
+end
+
+local function autoRedCasInstallFlagHook()
+    if not AUTO_RED_CAS.USE_FLAG_HOOK then
+        return
+    end
+
+    if AUTO_RED_CAS_STATE.flagHookInstalled then
+        return
+    end
+
+    if not trigger or not trigger.action or not trigger.action.setUserFlag then
+        return
+    end
+
+    local original = trigger.action.setUserFlag
+    AUTO_RED_CAS_STATE.originalSetUserFlag = original
+
+    trigger.action.setUserFlag = function(flag, value)
+        local result = original(flag, value)
+
+        local nFlag = tonumber(flag)
+        local nValue = tonumber(value)
+        if nFlag and nValue
+            and nFlag >= AUTO_RED_CAS.FLAG_MIN
+            and nFlag <= AUTO_RED_CAS.FLAG_MAX
+            and nValue == AUTO_RED_CAS.TARGET_FLAG_VALUE then
+
+            if not AUTO_RED_CAS_STATE.armed then
+                AUTO_RED_CAS_STATE.nextCheckAt = autoRedCasNow()
+            end
+            autoRedCasPulse("setUserFlag:" .. tostring(nFlag), false)
+        end
+
+        return result
+    end
+
+    AUTO_RED_CAS_STATE.flagHookInstalled = true
+    autoRedCasLog(
+        "Hook setUserFlag instalado para banderas " ..
+        tostring(AUTO_RED_CAS.FLAG_MIN) .. "-" .. tostring(AUTO_RED_CAS.FLAG_MAX) .. ".",
+        8
+    )
+end
+
+autoRedCasInstallFlagHook()
+
+if AUTO_RED_CAS.USE_TIMER_DIRECT then
+    timer.scheduleFunction(autoRedCasTimerDirect, nil, timer.getTime() + 5)
+end
+
+-- Primer intento inmediato.
+autoRedCasPulse("load", true)
 
 ----------------------------------------------------------------
 -- MENU F10
@@ -1622,6 +2252,11 @@ local menuRoot = missionCommands.addSubMenu(MENU_NAME)
 missionCommands.addCommand("Ver tareas asignadas", menuRoot, showAssignedTasks)
 --missionCommands.addCommand("Limpiar tareas destruidas", menuRoot, cleanDestroyedTasks)
 missionCommands.addCommand("Ver perfiles disponibles", menuRoot, showProfiles)
+
+if AUTO_RED_CAS.SHOW_DEBUG_MENU then
+    missionCommands.addCommand("AUTO RED RUNWAY - Estado", menuRoot, autoRedCasShowStatus)
+    missionCommands.addCommand("AUTO RED RUNWAY - Lanzar ahora", menuRoot, autoRedCasLaunch)
+end
 --missionCommands.addCommand("Ver estado por categoria", menuRoot, showCategoryStatus)
 --missionCommands.addCommand("Ayuda sintaxis", menuRoot, showHelp)
 
@@ -1629,6 +2264,10 @@ missionCommands.addCommand("Ver perfiles disponibles", menuRoot, showProfiles)
 -- HEARTBEAT
 ----------------------------------------------------------------
 local function heartbeat(_, now)
+    now = now or timer.getTime()
+
+    autoRedCasHeartbeat(now)
+
     for _, id in ipairs(getTaskIdsSorted()) do
         local rec = activeTasks[id]
         if rec then
@@ -2010,7 +2649,6 @@ end
 world.addEventHandler(markHandler)
 
 trigger.action.outText(
-    "Tasking IA cargado.",
-    
+    "Tasking IA Afghanistan V9 cargado. Combustible ilimitado + AUTO RED BombingRunway activos.",
     12
 )

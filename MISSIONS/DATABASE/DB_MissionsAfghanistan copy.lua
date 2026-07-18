@@ -17,34 +17,33 @@ MDB.MISSIONS = {
     {
         id = "M01",
         order = 1,
-        enabled = true,
+        enabled = false,
 
         name = "Operación - Shadow Gate",
         shortName = "M01",
-        generalObjective =
-            "La cacería comienza en el corredor central de Afganistán. Un radar EWR protege una red de comunicaciones entre Bagram, Kabul y Bamyan. Destruye el radar y captura las tres bases para abrir el primer corredor de inteligencia y descubrir quién se oculta detrás de esas transmisiones.\n",
+        generalObjective = "Retoma el control sobre la zona entre Bagram, Kabul y Bayman Captura las bases.\n",
+                           
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "Inteligencia ha detectado transmisiones cifradas entre Bagram, Kabul y Bamyan. Un radar de alerta temprana permite al enemigo vigilar toda la región y cortar cualquier intento de seguimiento. La seguridad de esta red indica que protege a un objetivo de gran importancia.\n\n" ..
-            "MISIÓN:\n" ..
-            "Destruye el EWR y captura las tres bases. Una vez asegurado el corredor, nuestros equipos podrán rastrear los mensajes y reconstruir el movimiento de los mensajeros enemigos.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Tomar el control de la zona, Destruir el RADAR y capturar las bases\n\n\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Destruir el EWR.\n" ..
-            "2. Capturar la base de Bagram.\n" ..
-            "3. Capturar la base de Kabul.\n" ..
-            "4. Capturar la base de Bamyan.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "Los registros recuperados en estas bases podrían revelar la primera pista sobre la red que mantiene oculto a Osama bin Laden.\n\n" ..
+            "1. Destruir el EWR.\n"..
+            "2. Capturar la Base: Bagram.\n"..
+            "3. Capturar la Base: Kabul.\n"..
+            "3. Capturar la Base: bayman.\n"..
             "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
             "Objetivo EWR: 40.000.000\n" ..
             "Capturar Bagram: 100.000.000\n" ..
             "Capturar Kabul: 100.000.000\n" ..
-            "Capturar Bamyan: 100.000.000\n" ..
-            "Misión completada: 200.000.000\n\n" ..
-            "REFERENCIA OPERATIVA:\n" ..
-            "Lat Long Decimal Minutes: N 34°47.620'   E 69°11.237'\n" ..
-            "MGRS GRID: 42 S WD 17132 50179\n" ..
-            "Altitud: 1538 m / 5046 pies\n",
+            "Capturar Bayman: 100.000.000\n" ..
+            "Mision Completada: 200.000.000\n\n" ..
+            "IMPORTANTE:\n" ..
+            "Coordenadas:\n" ..
+            "Lat Long Decimal Minutes: N 34°47.620'   E 69°11.237'\n"..
+                            "MGRS GRID: 42 S WD 17132 50179\n"..
+                            "Altitude: 1538 m / 5046 feet\n",
 
         autoStart = true,
 
@@ -74,8 +73,8 @@ MDB.MISSIONS = {
 
             title = "M01 - Operación - Shadow Gate",
             text =
-                "MISIÓN 01 - LA PUERTA DE ENTRADA\n" ..
-                "Destruye el EWR y captura Bagram, Kabul y Bamyan. Abre el corredor que permitirá seguir la red de comunicaciones enemiga.\n" ..
+                "MISION 01\n" ..
+                "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -539,31 +538,29 @@ MDB.MISSIONS = {
     {
         id = "M02",
         order = 2,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Black Ridge",
         shortName = "M02",
-        generalObjective =
-            "Las transmisiones recuperadas en Shadow Gate revelan una reunión de tres líderes talibanes en Gardez. Neutralízalos antes de que se dispersen: cada uno controla una parte de la red de mensajeros que protege al objetivo principal.\n" ..
-            "Humo rojo sobre los objetivos prioritarios.\n",
+        generalObjective = "En la region de Gardez tendra lugar una reunion de lideres Talibanes de algo nivel. destruyelos! \n",
+                            "Humo Rojo sobre objetivos prioritarios\n",
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "Los archivos recuperados en Bagram, Kabul y Bamyan mencionan una reunión secreta en Gardez. Abdul Hakim administra rutas de transporte, Mujahid coordina la seguridad de los mensajeros y Karim Abdel controla varios refugios clandestinos. Juntos protegen el movimiento de un individuo identificado únicamente como 'El Huésped'.\n\n" ..
-            "MISIÓN:\n" ..
-            "Localiza y neutraliza a los tres líderes antes de que abandonen la región. Sus radios, vehículos y documentos pueden revelar la ruta utilizada por los mensajeros de alto nivel.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Ubica a los lideres Talibanes en la region de Gardez\n\n\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Buscar y destruir a Abdul Hakim - MGRS GRID: 42 S WC 28479 32069.\n" ..
-            "2. Buscar y destruir a Mujahid - MGRS GRID: 42 S WC 20305 07967.\n" ..
-            "3. Buscar y destruir a Karim Abdel - MGRS GRID: 42 S WC 11122 31084.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "La información encontrada permitirá seguir a uno de los mensajeros que podría conducirnos hasta la estructura encargada de ocultar a Osama bin Laden.\n\n" ..
+            "1. Buscar y destruir a: Abdul Hakim - MGRS GRID: 42 S WC 28479 32069 \n"..
+            "2. Buscar y destruir a: Mujahid - MGRS GRID: 42 S WC 20305 07967\n"..
+            "3. Buscar y destruir a: Karim Abdel - MGRS GRID: 42 S WC 11122 31084 \n"..
             "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
             "Abdul Hakim: 500.000.000\n" ..
             "Mujahid: 250.000.000\n" ..
             "Karim Abdel: 50.000.000\n" ..
-            "Misión completada: 1500.000.000\n\n" ..
-            "IMPORTANTE:\n" ..
-            "Humo rojo sobre los objetivos prioritarios.\n",
+            "Mision Completada: 1500.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -593,8 +590,8 @@ MDB.MISSIONS = {
 
             title = "M02 - Operación - Black Ridge",
             text =
-                "MISIÓN 02 - LOS GUARDIANES DEL SECRETO\n" ..
-                "Localiza y neutraliza a los tres líderes reunidos en Gardez. Sus documentos pueden revelar la ruta de los mensajeros.\n" ..
+                "MISION 02\n" ..
+                "Retoma el control sobre la zona entre Bagram y Kabul, Captura las bases.\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -893,31 +890,30 @@ MDB.MISSIONS = {
     {
         id = "M03",
         order = 3,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Ghost Route",
         shortName = "M03",
-        generalObjective =
-            "Un avión de reconocimiento siguió la ruta descubierta en Gardez y fue derribado. Captura Sharana y Urgoon Heliport, rescata al piloto y llévalo vivo hasta Sharana. Él conserva imágenes del convoy que transportaba a un mensajero de alto nivel.\n" ..
-            "Humo naranja sobre el piloto y humo verde sobre la zona de entrega.\n",
+        generalObjective = "Rescatar al piloto derribado en el sector.\n",
+                            "Humo Naranja sobre el objetivo a rescatar\n",
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "Después de Black Ridge, un avión de reconocimiento siguió a un convoy vinculado con la red de mensajeros. La aeronave fue derribada, pero el piloto sobrevivió y logró conservar las fotografías, coordenadas y grabaciones obtenidas durante la persecución. El enemigo ya lo está buscando.\n\n" ..
-            "MISIÓN:\n" ..
-            "Captura Sharana y Urgoon Heliport para abrir un corredor de extracción. Localiza al piloto, recógelo y transpórtalo vivo hasta Sharana, aproximadamente a 20 km.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Rescatar al piloto derribado en el sector. debes llevarlo a Sharana (20Km)\n\n\n" ..
+            "Captura las bases indicadas para poder rescatar al piloto, Humo verde sobre zona de descargue.\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Capturar la base de Sharana.\n" ..
-            "2. Capturar Urgoon Heliport.\n" ..
-            "3. Rescatar al piloto caído y llevarlo a Sharana.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "La inteligencia que transporta el piloto puede identificar los puntos de reabastecimiento utilizados por el mensajero y acercarnos a la red que oculta a Osama bin Laden.\n\n" ..
+            "1. Capturar la Base: Sharana.\n"..
+            "2. Capturar la Base: Urgoon Heliport.\n"..
+            "3. Rescatar Piloto Caido\n"..
             "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
             "Capturar Sharana: 180.000.000\n" ..
             "Capturar Urgoon Heliport: 180.000.000\n" ..
-            "Rescatar piloto caído: 200.000.000\n" ..
-            "Misión completada: 2000.000.000\n\n" ..
-            "IMPORTANTE:\n" ..
-            "Humo naranja sobre el objetivo a rescatar y humo verde sobre la zona de descarga.\n",
+            "Rescatar Piloto Caido: 200.000.000\n"..
+            "Mision Completada: 2000.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -947,8 +943,8 @@ MDB.MISSIONS = {
 
             title = "M03 - Operación - Ghost Route",
             text =
-                "MISIÓN 03 - EL HOMBRE QUE VIO LA RUTA\n" ..
-                "Captura Sharana y Urgoon Heliport. Rescata al piloto derribado y recupera la inteligencia que transporta.\n" ..
+                "MISION 03\n" ..
+                "Rescatar al piloto derribado en el sector.\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -1263,32 +1259,31 @@ MDB.MISSIONS = {
     {
         id = "M04",
         order = 4,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Iron Valley",
         shortName = "M04",
-        generalObjective =
-            "Las imágenes recuperadas del piloto revelan siete depósitos insurgentes alrededor de Tarinkot. Destrúyelos y captura la base: estos almacenes abastecen la red de mensajeros y permiten que el objetivo cambie de refugio sin dejar rastro.\n" ..
-            "Lat Long Precise: N 32°36'49.94   E 65°52'31.85\n" ..
-            "Lat Long Decimal Minutes: N 32°36.832'   E 65°52.530'\n" ..
-            "MGRS GRID: 41 S QS 69830 12133\n",
+        generalObjective = "Destruye los 7 Depositos de armas de los Insurgentes\n"..
+                            "Lat Long Precise: N 32°36'49.94   E 65°52'31.85\n"..
+                            "Lat Long Decimal Minutes: N 32°36.832'   E 65°52.530'\n"..
+                            "MGRS GRID: 41 S QS 69830 12133'\n",
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "La información recuperada en Ghost Route identifica siete depósitos de armas en la región de Tarinkot, 70 millas al norte de Kandahar. Además de abastecer a las fuerzas insurgentes, funcionan como puntos de intercambio donde los mensajeros cambian vehículos, reciben combustible y obtienen nuevas instrucciones.\n\n" ..
-            "MISIÓN:\n" ..
-            "Destruye los siete depósitos y captura Tarinkot. La pérdida de esta infraestructura obligará a la red enemiga a utilizar rutas improvisadas y dejará expuestos a sus operadores.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Destruir los depositos de armas de los insurgentes en la región Tarinkot, 70 millas al norte de Kandahar\n\n\n" ..
+            "Captura la base de  Tarinkot luego del ataque\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Destruir los siete depósitos de armas.\n" ..
-            "2. Capturar la base de Tarinkot.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "Los manifiestos de transporte almacenados en Tarinkot pueden revelar hacia dónde se está desplazando la red que protege a Osama bin Laden.\n\n" ..
+            "1. Destruir los Depositos de armas\n"..
+            "2. Capturar la Base: Tarinkot\n"..
+
             "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
+
             "Capturar Tarinkot: 200.000.000\n" ..
-            "Misión completada: 1500.000.000\n\n" ..
-            "REFERENCIA OPERATIVA:\n" ..
-            "Lat Long Precise: N 32°36'49.94   E 65°52'31.85\n" ..
-            "Lat Long Decimal Minutes: N 32°36.832'   E 65°52.530'\n" ..
-            "MGRS GRID: 41 S QS 69830 12133\n",
+            "Mision Completada: 1500.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -1318,8 +1313,8 @@ MDB.MISSIONS = {
 
             title = "M04 - Operación - Iron Valley",
             text =
-                "MISIÓN 04 - CORTAR LA CADENA\n" ..
-                "Destruye los siete depósitos insurgentes y captura Tarinkot para cortar la cadena logística de los mensajeros.\n" ..
+                "MISION 04\n" ..
+                "Destruye los 7 Depositos de armas de los Insurgentes Y recupera Tarinkot\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -1824,67 +1819,80 @@ MDB.MISSIONS = {
     {
         id = "M05",
         order = 5,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Dust Hammer",
         shortName = "M05",
-        generalObjective =
-            "Tras la caída de los depósitos, tres formaciones de artillería intentan destruir Tarinkot y borrar los documentos recuperados. Localízalas y neutralízalas antes de que eliminen la siguiente pista de la cacería.\n" ..
-            "Lat Long Precise: N 32°04'24.07   E 65°41'53.51\n" ..
-            "Lat Long Decimal Minutes: N 32°04.401'   E 65°41.891'\n" ..
-            "MGRS GRID: 41 S QR 54697 51752\n",
+        generalObjective = "Destruye la artilleria enemiga que nos ataca en Tarinkot\n"..
+                            "Lat Long Precise: N 32°04'24.07   E 65°41'53.51\n"..
+                            "Lat Long Decimal Minutes: N 32°04.401'   E 65°41.891'\n"..
+                            "MGRS GRID: 41 S QR 54697 51752\n",
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "Después de Iron Valley, el enemigo inició un ataque coordinado contra Tarinkot. Las baterías están disparando sobre las instalaciones donde se analizan los documentos recuperados. No es una simple represalia: intentan borrar las pruebas antes de que podamos descubrir el siguiente punto de la red.\n\n" ..
-            "MISIÓN:\n" ..
-            "Localiza y destruye las tres formaciones de artillería. Uno de sus puestos de mando transmite órdenes hacia Kandahar y puede revelar quién está reorganizando las rutas de escape.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Destruye la artilleria enemiga que nos ataca en Tarinkot\n\n\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Destruir el emplazamiento de artillería 01.\n" ..
-            "2. Destruir el emplazamiento de artillería 02.\n" ..
-            "3. Destruir el emplazamiento de artillería 03.\n\n" ..
-            "COORDENADAS APROXIMADAS:\n\n" ..
-            "Ubicación 1\n" ..
-            "Lat Long Precise: N 32°08'52.20   E 65°26'52.26\n" ..
-            "Lat Long Decimal Minutes: N 32°08.870'   E 65°26.871\n" ..
-            "MGRS GRID: 41 S QR 30871 59447\n" ..
-            "Altitud: 1582 m / 5189 pies\n\n" ..
-            "Ubicación 2\n" ..
-            "Lat Long Precise: N 31°59'01.42   E 65°28'22.67\n" ..
-            "Lat Long Decimal Minutes: N 31°59.023'   E 65°28.377'\n" ..
-            "MGRS GRID: 41 R QR 33658 41304\n" ..
-            "Altitud: 1577 m / 5175 pies\n\n" ..
-            "Ubicación 3\n" ..
-            "Lat Long Precise: N 32°04'27.87   E 65°35'14.92\n" ..
-            "Lat Long Decimal Minutes: N 32°04.464'   E 65°35.248'\n" ..
-            "MGRS GRID: 41 S QR 44240 51613\n" ..
-            "Altitud: 1563 m / 5127 pies\n\n" ..
-            "Ubicación 4\n" ..
-            "Lat Long Precise: N 32°11'45.11   E 65°38'18.60\n" ..
-            "Lat Long Decimal Minutes: N 32°11.751'   E 65°38.310'\n" ..
-            "MGRS GRID: 41 S QR 48727 65198\n" ..
-            "Altitud: 1863 m / 6113 pies\n\n" ..
-            "Ubicación 5\n" ..
-            "Lat Long Precise: N 32°00'48.96   E 65°40'03.90\n" ..
-            "Lat Long Decimal Minutes: N 32°00.816'   E 65°40.065'\n" ..
-            "MGRS GRID: 41 S QR 51986 45054\n" ..
-            "Altitud: 1468 m / 4817 pies\n\n" ..
-            "Ubicación 6\n" ..
-            "Lat Long Precise: N 32°03'30.72   E 65°44'43.25\n" ..
-            "Lat Long Decimal Minutes: N 32°03.512'   E 65°44.720'\n" ..
-            "MGRS GRID: 41 S QR 59191 50221\n" ..
-            "Altitud: 1488 m / 4882 pies\n\n" ..
-            "Ubicación 7\n" ..
-            "Lat Long Precise: N 32°02'30.38   E 65°46'38.37\n" ..
-            "Lat Long Decimal Minutes: N 32°02.506'   E 65°46.639'\n" ..
-            "MGRS GRID: 41 S QR 62259 48439\n" ..
-            "Altitud: 1454 m / 4770 pies\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "El equipo de comunicaciones del puesto de mando puede señalar la célula que está coordinando el traslado del objetivo.\n\n" ..
+            "1. Destruir los emplazamientos de artilleria - 1\n"..
+            "2. Destruir los emplazamientos de artilleria - 2\n"..
+            "3. Destruir los emplazamientos de artilleria - 3\n"..
+
+
+            "Coordenadas Aporximadas\n\n"..
+            "Ubicación 1\n"..
+            "Lat Long Precise: N 32°08'52.20   E 65°26'52.26\n"..
+            "Lat Long Decimal Minutes: N 32°08.870'   E 65°26.871\n"..
+            "MGRS GRID: 41 S QR 30871 59447\n"..
+            "Altitude: 1582 m / 5189 feet\n\n"..
+            
+            "Ubicación 2\n"..
+            "Lat Long Precise: N 31°59'01.42   E 65°28'22.67\n"..
+            "Lat Long Decimal Minutes: N 31°59.023'   E 65°28.377'\n"..
+            "MGRS GRID: 41 R QR 33658 41304\n"..
+            "Altitude: 1577 m / 5175 feet\n\n"..
+
+            "Ubicación 3\n"..
+            "Lat Long Precise: N 32°04'27.87   E 65°35'14.92\n"..
+            "Lat Long Decimal Minutes: N 32°04.464'   E 65°35.248'\n"..
+            "MGRS GRID: 41 S QR 44240 51613\n"..
+            "Altitude: 1563 m / 5127 feet\n\n"..
+
+            "Ubicación 4\n"..
+            "Lat Long Precise: N 32°11'45.11   E 65°38'18.60\n"..
+            "Lat Long Decimal Minutes: N 32°11.751'   E 65°38.310'\n"..
+            "MGRS GRID: 41 S QR 48727 65198\n"..
+            "Altitude: 1863 m / 6113 feet\n\n"..
+
+            "Ubicación 5\n"..
+            "Lat Long Precise: N 32°00'48.96   E 65°40'03.90\n"..
+            "Lat Long Decimal Minutes: N 32°00.816'   E 65°40.065'\n"..
+            "MGRS GRID: 41 S QR 51986 45054\n"..
+            "Altitude: 1468 m / 4817 feet\n\n"..
+
+            "Ubicación 6\n"..
+            "Lat Long Precise: N 32°03'30.72   E 65°44'43.25\n"..
+            "Lat Long Decimal Minutes: N 32°03.512'   E 65°44.720'\n"..
+            "MGRS GRID: 41 S QR 59191 50221\n"..
+            "Altitude: 1488 m / 4882 feet\n\n"..
+
+            "Ubicación 7\n"..
+            "Lat Long Precise: N 32°02'30.38   E 65°46'38.37\n"..
+            "Lat Long Decimal Minutes: N 32°02.506'   E 65°46.639'\n"..
+            "MGRS GRID: 41 S QR 62259 48439\n"..
+            "Altitude: 1454 m / 4770 feet\n\n"..
+
+
+            
+
             "PAGOS:\n" ..
-            "Emplazamiento de artillería 1: 200.000.000\n" ..
-            "Emplazamiento de artillería 2: 200.000.000\n" ..
-            "Emplazamiento de artillería 3: 200.000.000\n" ..
-            "Misión completada: 1300.000.000\n",
+            --"Captura: 0 --\n" ..
+
+            "Emplazamiento de artilleria 1: 200.000.000\n" ..
+            "Emplazamiento de artilleria 2: 200.000.000\n" ..
+            "Emplazamiento de artilleria 3: 200.000.000\n" ..
+            "Mision Completada: 1300.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -1912,10 +1920,10 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M05 - Operación - Dust Hammer",
+            title = "M05- Operación - Dust Hammer",
             text =
-                "MISIÓN 05 - BORRAR LAS HUELLAS\n" ..
-                "Destruye las tres formaciones de artillería que atacan Tarinkot y protege la inteligencia recuperada.\n" ..
+                "MISION 05\n" ..
+                "Destruye los 7 Depositos de armas de los Insurgentes Y recupera Tarinkot\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -2166,33 +2174,37 @@ MDB.MISSIONS = {
 {
         id = "M06",
         order = 6,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Copper Viper",
         shortName = "M06",
-        generalObjective =
-            "Las comunicaciones recuperadas en Tarinkot conducen a Kandahar, donde una célula enemiga reorganiza las rutas utilizadas para ocultar al objetivo. Limpia la ciudad y captura la base antes de que sus operadores escapen.\n" ..
-            "Lat Long Precise: N 31°36'28.00   E 65°42'34.02\n" ..
-            "Lat Long Decimal Minutes: N 31°36.466'   E 65°42.567'\n" ..
-            "MGRS GRID: 41 R QR 57049 00149\n",
+        generalObjective = "Toma el control sobre la zona de Kandahar y libera la ciudad.\n"..
+                            "Lat Long Precise: N 31°36'28.00   E 65°42'34.02\n"..
+                            "Lat Long Decimal Minutes: N 31°36.466'   E 65°42.567'\n"..
+                            "MGRS GRID: 41 R QR 57049 00149\n",
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "El puesto de mando destruido durante Dust Hammer transmitía órdenes hacia Kandahar. Allí opera un coordinador conocido como 'El Arquitecto', responsable de reconstruir las rutas de los mensajeros después de la pérdida de Tarinkot.\n\n" ..
-            "MISIÓN:\n" ..
-            "Elimina las fuerzas talibanes alrededor de Kandahar y captura la base aérea. Los equipos de inteligencia registrarán los centros de comunicación y los archivos abandonados durante la retirada.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Toma el control sobre la zona de Kandahar y libera la ciudad.\n\n\n" ..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Limpiar Kandahar de fuerzas talibanes.\n" ..
-            "2. Capturar la base de Kandahar.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "Los archivos de El Arquitecto pueden revelar hacia qué región están trasladando la red que protege a Osama bin Laden.\n\n" ..
+            "1. Limpia la Ciudad\n"..
+            "2. Captura la base de Kandahar\n"..
+
+
+
+
+            
+
             "PAGOS:\n" ..
-            "Limpiar la ciudad de talibanes: 600.000.000\n" ..
+            --"Captura: 0 --\n" ..
+
+            "Limpiar la ciudad de Talibanes: 600.000.000\n" ..
             "Capturar Kandahar: 100.000.000\n" ..
-            "Misión completada: 1200.000.000\n\n" ..
-            "REFERENCIA OPERATIVA:\n" ..
-            "Lat Long Precise: N 31°36'28.00   E 65°42'34.02\n" ..
-            "Lat Long Decimal Minutes: N 31°36.466'   E 65°42.567'\n" ..
-            "MGRS GRID: 41 R QR 57049 00149\n",
+
+            "Mision Completada: 1200.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -2220,10 +2232,10 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M06 - Operación - Copper Viper",
+            title = "M06- Operación - Copper Viper",
             text =
-                "MISIÓN 06 - LA CIUDAD DE LOS MENSAJEROS\n" ..
-                "Libera Kandahar y captura su base aérea. Busca los archivos de la célula que reorganiza las rutas del objetivo.\n" ..
+                "MISION 06\n" ..
+                "Toma el control sobre la zona de Kandahar y libera la ciudad.\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -2451,36 +2463,47 @@ MDB.MISSIONS = {
 {
         id = "M07",
         order = 7,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Silent Spear",
         shortName = "M07",
-        generalObjective =
-            "Los archivos recuperados en Kandahar muestran una retirada hacia Helmand. Captura Camp Bastion y libera Girishk, Lashkar Gah y Garmsir para cerrar las rutas por las que la red podría sacar del país al objetivo.\n",
+        generalObjective = "Toma la base de Camp Bastion y limpia las ciudades de Girishk, Lashkar Gah y Garmsir\n",
+
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "Después de la caída de Kandahar, las fuerzas talibanes se retiraron hacia Girishk, Lashkar Gah y Garmsir. Estas ciudades forman un corredor de escape hacia el sur y el oeste. Si permanece abierto, los mensajeros podrán mover nuevamente al objetivo y desaparecer.\n\n" ..
-            "MISIÓN:\n" ..
-            "Captura Camp Bastion para establecer una base avanzada. Después, elimina las fuerzas enemigas de las tres ciudades y cierra el corredor de Helmand.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Los Talibanes se han reitado hacia las ciudades Girishk, Lashkar Gah y Garmsir.\n" ..
+            "Captura posiciones para realizar el ataque y limpiar las ciudades.\n\n\n"..
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Capturar Camp Bastion.\n\n" ..
-            "2. Liberar Girishk.\n" ..
-            "Lat Long Precise: N 31°49'32.48   E 64°33'53.33\n" ..
-            "MGRS GRID: 41 R PR 48092 22181\n\n" ..
-            "3. Liberar Lashkar Gah.\n" ..
-            "Lat Long Precise: N 31°35'26.88   E 64°22'27.98\n" ..
-            "MGRS GRID: 41 R PQ 30402 95899\n\n" ..
-            "4. Liberar Garmsir.\n" ..
-            "Lat Long Precise: N 31°07'05.55   E 64°12'41.37\n" ..
-            "MGRS GRID: 41 R PQ 15517 43333\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "Cerrar Helmand puede obligar a los operadores enemigos a utilizar su último centro de comunicaciones y exponer la ubicación de la siguiente pista.\n\n" ..
+            "1. Captura Camp Bastion\n\n"..
+            "2. Libera la ciudad de Girishk\n\n"..
+            "Lat Long Precise: N 31°49'32.48   E 64°33'53.33\n"..
+            "MGRS GRID: 41 R PR 48092 22181\n\n"..
+
+
+            "3. Libera la ciudad de Lashkar Gah\n\n"..
+            "Lat Long Precise: N 31°35'26.88   E 64°22'27.98\n"..
+            "MGRS GRID: 41 R PQ 30402 95899\n\n"..
+
+            "4. Libera la ciudad de Garmsir\n\n"..
+            "Lat Long Precise: N 31°07'05.55   E 64°12'41.37\n"..
+            "MGRS GRID: 41 R PQ 15517 43333\n\n"..
+            
+
+            
+
             "PAGOS:\n" ..
+            --"Captura: 0 --\n" ..
             "Capturar Camp Bastion: 500.000.000\n" ..
             "Limpiar la ciudad de Girishk: 200.000.000\n" ..
             "Limpiar la ciudad de Lashkar Gah: 200.000.000\n" ..
             "Limpiar la ciudad de Garmsir: 200.000.000\n" ..
-            "Misión completada: 2000.000.000\n",
+            
+
+            "Mision Completada: 2000.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -2508,10 +2531,11 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M07 - Operación - Silent Spear",
+            title = "M07- Operación - Silent Spear",
             text =
-                "MISIÓN 07 - CERRAR LA SALIDA\n" ..
-                "Captura Camp Bastion y libera Girishk, Lashkar Gah y Garmsir para cerrar el corredor de escape de la red enemiga.\n" ..
+                "MISION 07\n" ..
+                "Los Talibanes se han reitado hacia las ciudades Girishk, Lashkar Gah y Garmsir.\n" ..
+                "Captura posiciones para realizar el ataque y limpiar las ciudades.\n\n\n"..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -2523,7 +2547,7 @@ MDB.MISSIONS = {
         ----------------------------------------------------------------
         draw = {
             enabled = true,
-            title = "M07 - Operación - Silent Spear",
+            title = "M07 - Operación - Copper Viper",
             generalObjective = nil,
             offsetX = 5000,
             offsetZ = 2500,
@@ -2810,23 +2834,34 @@ MDB.MISSIONS = {
 {
         id = "M08",
         order = 8,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Red Dagger",
         shortName = "M08",
-        generalObjective =
-            "La red enemiga ha sido obligada a utilizar su último centro de comunicaciones en Chaghcharan. Captura la base intacta antes de que destruyan los servidores que conectan los refugios del objetivo principal.\n",
+        generalObjective = "Toma la base de Chaghcharan.\n",
+
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "El cierre del corredor de Helmand obligó a los mensajeros a comunicarse con una estación clandestina en Chaghcharan. Desde allí se distribuyen órdenes hacia varios refugios sin revelar cuál de ellos alberga realmente al objetivo.\n\n" ..
-            "MISIÓN:\n" ..
-            "Captura Chaghcharan antes de que el enemigo destruya sus servidores, documentos y equipos de cifrado. Los archivos deben quedar en condiciones de ser analizados.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Toma la base de Chaghcharan.\n" ..
+
             "OBJETIVOS OBLIGATORIOS:\n" ..
-            "1. Capturar Chaghcharan.\n\n" ..
-            "CONEXIÓN CON LA CACERÍA:\n" ..
-            "Este centro puede contener el archivo final con las posibles ubicaciones de Osama bin Laden.\n\n" ..
+            "1. Captura Chaghcharan\n\n"..
+
+            
+
+            
+
             "PAGOS:\n" ..
-            "Misión completada: 3.000.000.000\n",
+            --"Captura: 0 --\n" ..
+            --"Capturar Camp Bastion: 500.000.000\n" ..
+
+            
+
+            "Mision Completada: 3.000.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -2854,10 +2889,10 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M08 - Operación - Red Dagger",
+            title = "M08- Operación - Red Dagger",
             text =
-                "MISIÓN 08 - EL ARCHIVO FINAL\n" ..
-                "Captura Chaghcharan y asegura el centro de comunicaciones antes de que el enemigo destruya sus archivos.\n" ..
+                "MISION 08\n" ..
+                "Toma la base de Chaghcharan.\n" ..
                 "Revisa F10 > Sistema de Misiones"
         },
 
@@ -3053,44 +3088,60 @@ MDB.MISSIONS = {
 {
         id = "M09",
         order = 9,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Night Talon",
         shortName = "M09",
-        generalObjective =
-            "Los archivos recuperados en Chaghcharan revelan diez posibles refugios. Nueve pueden ser señuelos; uno alberga a Osama bin Laden. Investiga y ataca las posiciones antes de que la red comprenda que su archivo fue comprometido.\n\n" ..
-            "Ubicación 01: MGRS GRID: 41 S NT 84037 27160\n" ..
-            "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..
-            "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" ..
-            "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" ..
-            "Ubicación 05: MGRS GRID: 41 S QU 70522 16362\n" ..
-            "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..
-            "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" ..
-            "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..
-            "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" ..
-            "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n",
+        generalObjective = "Hemos descubierto documentos que nos indican 10 posibles ubicaciones de OSAMA BIN LADEN\n"..
+                           "Busca en las posibles locaciones y bombardea los sitios.\n\n"..
+
+                           "Ubicación 01: MGRS GRID: 41 S NT 84037 27160\n" ..
+                "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..  
+                "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" .. 
+                "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" .. 
+                "Ubicación 05: MGRS GRID: 41 S QU 70522 16362\n" ..
+                "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..      
+                "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" .. 
+                "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..  
+                "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" .. 
+                "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n\n\n",
+
+                        
+
         briefing =
-            "SITUACIÓN:\n" ..
-            "La captura de Chaghcharan permitió descifrar un archivo con diez ubicaciones utilizadas por la red durante los últimos meses. Algunas son refugios vacíos, otras pueden estar defendidas y una contiene al hombre que toda esta estructura fue creada para proteger.\n\n" ..
-            "MISIÓN:\n" ..
-            "Investiga las diez posibles ubicaciones, identifica el refugio verdadero y neutraliza a Osama bin Laden. No habrá una segunda oportunidad: cuando el enemigo descubra la filtración intentará trasladarlo nuevamente.\n\n" ..
-            "OBJETIVO OBLIGATORIO:\n" ..
-            "1. Localizar y neutralizar a Osama bin Laden.\n\n" ..
-            "COORDENADAS:\n\n" ..
-            "Ubicación 01: MGRS GRID: 41 S NT 84037 27160\n" ..
-            "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..
-            "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" ..
-            "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" ..
-            "Ubicación 05: MGRS GRID: 41 S QU 70522 16362\n" ..
-            "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..
-            "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" ..
-            "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..
-            "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" ..
-            "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n\n" ..
-            "CIERRE DE LA CACERÍA:\n" ..
-            "Shadow Gate abrió el corredor. Black Ridge expuso a los líderes. Ghost Route recuperó la ruta. Iron Valley destruyó la cadena logística. Dust Hammer protegió la inteligencia. Copper Viper reveló la retirada. Silent Spear cerró las salidas. Red Dagger entregó las ubicaciones. Night Talon debe terminar la cacería.\n\n" ..
+            "OBJETIVO:\n" ..
+            "Encuentra el Escondite de OSAMA BIN LADEN\n" ..
+
+            "OBJETIVOS OBLIGATORIOS:\n" ..
+            "1. Neutraliza al Objetivo\n\n"..
+
+            "COORDENADAS\n\n" ..
+                "Ubicación 01: MGRS GRID: 41 S NT 84037 27160\n" ..
+                "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..  
+                "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" .. 
+                "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" .. 
+                "Ubicación 05: MGRS GRID: 41 S QU 70522 16362\n" ..
+                "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..      
+                "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" .. -- 
+                "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..  
+                "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" .. 
+                "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n" .. 
+
+
+
+            
+
+            
+
             "PAGOS:\n" ..
-            "Misión completada: 3.000.000.000\n",
+            --"Captura: 0 --\n" ..
+            --"Capturar Camp Bastion: 500.000.000\n" ..
+
+            
+
+            "Mision Completada: 3.000.000.000\n\n" ..
+            "IMPORTANTE:\n",
+            
 
         autoStart = true,
 
@@ -3118,20 +3169,20 @@ MDB.MISSIONS = {
 
             zoneName = nil,
 
-            title = "M09 - Operación - Night Talon",  
+            title = "M09- Operación - Night Talon",  
             text =
-                "MISIÓN 09 - EL FINAL DE LA CACERÍA\n" ..
-                "Encuentra el refugio verdadero y neutraliza a Osama bin Laden.\n" ..
+                "MISION 09\n" ..
+                "Encuentra el Escondite de OSAMA BIN LADEN\n" ..
                 "Ubicación 01: MGRS GRID: 41 S NT 84037 27160\n" ..
-                "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..
-                "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" ..
-                "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" ..
+                "Ubicación 02: MGRS GRID: 41 S QT 15435 28678\n" ..  
+                "Ubicación 03: MGRS GRID: 41 S QT 46660 70361\n" .. 
+                "Ubicación 04: MGRS GRID: 41 S QT 12197 94579\n" .. 
                 "Ubicación 05: MGRS GRID: 41 S QU 70522 16362\n" ..
-                "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..
-                "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" ..
-                "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..
-                "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" ..
-                "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n" ..
+                "Ubicación 06: MGRS GRID: 42 S UD 14291 45388\n" ..      
+                "Ubicación 07: MGRS GRID: 42 S UC 03678 51910\n" ..  
+                "Ubicación 08: MGRS GRID: 41 S PT 13032 20596\n" ..  
+                "Ubicación 09: MGRS GRID: 41 S QT 56387 24903\n" .. 
+                "Ubicación 10: MGRS GRID: 42 S TD 72295 16029\n" .. 
                 "Revisa F10 > Sistema de Misiones"
         },
 

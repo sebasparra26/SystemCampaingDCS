@@ -17,7 +17,7 @@ MDB.MISSIONS = {
     {
         id = "M01",
         order = 1,
-        enabled = true,
+        enabled = false,
 
         name = "Operación - Shadow Gate",
         shortName = "M01",
@@ -539,7 +539,7 @@ MDB.MISSIONS = {
     {
         id = "M02",
         order = 2,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Black Ridge",
         shortName = "M02",
@@ -893,7 +893,7 @@ MDB.MISSIONS = {
     {
         id = "M03",
         order = 3,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Ghost Route",
         shortName = "M03",
@@ -1263,7 +1263,7 @@ MDB.MISSIONS = {
     {
         id = "M04",
         order = 4,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Iron Valley",
         shortName = "M04",
@@ -1824,7 +1824,7 @@ MDB.MISSIONS = {
     {
         id = "M05",
         order = 5,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Dust Hammer",
         shortName = "M05",
@@ -2166,7 +2166,7 @@ MDB.MISSIONS = {
 {
         id = "M06",
         order = 6,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Copper Viper",
         shortName = "M06",
@@ -2451,7 +2451,7 @@ MDB.MISSIONS = {
 {
         id = "M07",
         order = 7,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Silent Spear",
         shortName = "M07",
@@ -2810,7 +2810,7 @@ MDB.MISSIONS = {
 {
         id = "M08",
         order = 8,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Red Dagger",
         shortName = "M08",
@@ -3053,7 +3053,7 @@ MDB.MISSIONS = {
 {
         id = "M09",
         order = 9,
-        enabled = true,
+        enabled = false,
 
                 name = "Operación - Night Talon",
         shortName = "M09",
