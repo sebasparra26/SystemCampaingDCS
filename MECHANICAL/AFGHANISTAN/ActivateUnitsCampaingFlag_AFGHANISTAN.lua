@@ -67,11 +67,18 @@ SYS.RANDOM_FLAGS = {
     -- },
 }
 
-SYS.STATE = SYS.STATE or {
-    prevFlags = {},
-    groups = {},
-    prevRandomFlags = {}
-}
+-- Estado compartido seguro.
+-- Cada subtabla se inicializa por separado porque este script puede recargarse
+-- y HDEV_ActivateCTLDByFlag puede conservar un STATE creado por una version anterior.
+SYS.STATE = type(SYS.STATE) == "table" and SYS.STATE or {}
+SYS.STATE.prevFlags = type(SYS.STATE.prevFlags) == "table" and SYS.STATE.prevFlags or {}
+SYS.STATE.groups = type(SYS.STATE.groups) == "table" and SYS.STATE.groups or {}
+SYS.STATE.prevRandomFlags = type(SYS.STATE.prevRandomFlags) == "table" and SYS.STATE.prevRandomFlags or {}
+
+-- Ambos modulos pueden trabajar de manera independiente.
+-- Una tabla vacia es valida y simplemente no ejecuta entradas de ese modulo.
+SYS.ACTIVATIONS = type(SYS.ACTIVATIONS) == "table" and SYS.ACTIVATIONS or {}
+SYS.RANDOM_FLAGS = type(SYS.RANDOM_FLAGS) == "table" and SYS.RANDOM_FLAGS or {}
 
 ----------------------------------------------------------------
 -- LOG
@@ -385,6 +392,20 @@ local function resetRandomResultFlag(args)
 end
 
 local function processRandomBlock(block)
+    if type(block) ~= "table" then
+        return
+    end
+
+    if block.flag == nil or block.resultFlag == nil then
+        log("Entrada RANDOM_FLAGS ignorada: falta flag o resultFlag.", 8)
+        return
+    end
+
+    -- Blindaje adicional por si otra version del script reutiliza el mismo STATE.
+    SYS.STATE.prevRandomFlags = type(SYS.STATE.prevRandomFlags) == "table"
+        and SYS.STATE.prevRandomFlags
+        or {}
+
     local currentValue = getFlagValue(block.flag)
     local previousValue = SYS.STATE.prevRandomFlags[block.flag]
     local targetValue = tonumber(block.triggerValue) or 1
@@ -431,11 +452,21 @@ local function processRandomBlock(block)
 end
 
 local function mainLoop()
-    for _, block in ipairs(SYS.ACTIVATIONS or {}) do
-        processActivationBlock(block)
+    -- MODULO 1: activacion/respawn.
+    -- SYS.ACTIVATIONS puede estar vacia sin afectar el modulo random.
+    for _, block in ipairs(SYS.ACTIVATIONS) do
+        local ok, err = pcall(function()
+            processActivationBlock(block)
+        end)
+
+        if not ok then
+            log("ERROR en modulo activacion/respawn: " .. tostring(err), 10)
+        end
     end
 
-    for _, block in ipairs(SYS.RANDOM_FLAGS or {}) do
+    -- MODULO 2: random de banderas.
+    -- Se procesa siempre, aunque ACTIVATIONS no tenga ninguna entrada o una entrada falle.
+    for _, block in ipairs(SYS.RANDOM_FLAGS) do
         local ok, err = pcall(function()
             processRandomBlock(block)
         end)
