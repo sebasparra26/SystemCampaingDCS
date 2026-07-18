@@ -40,7 +40,7 @@ AIP.cfg = {
     -- "red"    = lo ven solo rojos
     -- "blue"   = lo ven solo azules
     -- "hidden" = no lo ve nadie
-    neutralVisibleTo = "all",
+    neutralVisibleTo = "hidden",
 
     -- Que mostrar
     showLiquids = true,

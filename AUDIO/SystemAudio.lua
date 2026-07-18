@@ -258,7 +258,7 @@ SF.RULES = {
 
     {
         key = "InitMission",
-        flag = {2100, 2200, 2300, 2400, 2500},
+        flag = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000},
         value = 1,
         mode = "any",
         target = "all",
