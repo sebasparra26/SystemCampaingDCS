@@ -22,7 +22,8 @@ MDB.MISSIONS = {
         name = "Operación - Shadow Gate",
         shortName = "M01",
         generalObjective =
-            "La cacería comienza en el corredor central de Afganistán. Un radar EWR protege una red de comunicaciones entre Bagram, Kabul y Bamyan. Destruye el radar y captura las tres bases para abrir el primer corredor de inteligencia y descubrir quién se oculta detrás de esas transmisiones.\n",
+            "La cacería comienza en el corredor central de Afganistán. Un radar EWR protege una red de comunicaciones entre Bagram, Kabul y Bamyan.\n" ..
+            " Destruye el radar y captura las tres bases para abrir el primer corredor de inteligencia y descubrir quién se oculta detrás de esas transmisiones.\n\n",
         briefing =
             "SITUACIÓN:\n" ..
             "Inteligencia ha detectado transmisiones cifradas entre Bagram, Kabul y Bamyan. Un radar de alerta temprana permite al enemigo vigilar toda la región y cortar cualquier intento de seguimiento. La seguridad de esta red indica que protege a un objetivo de gran importancia.\n\n" ..
@@ -544,8 +545,8 @@ MDB.MISSIONS = {
                 name = "Operación - Black Ridge",
         shortName = "M02",
         generalObjective =
-            "Las transmisiones recuperadas en Shadow Gate revelan una reunión de tres líderes talibanes en Gardez. Neutralízalos antes de que se dispersen: cada uno controla una parte de la red de mensajeros que protege al objetivo principal.\n" ..
-            "Humo rojo sobre los objetivos prioritarios.\n",
+            "Las transmisiones recuperadas en Shadow Gate revelan una reunión de tres líderes talibanes en Gardez. \n" ..
+            "Neutralízalos antes de que se dispersen: cada uno controla una parte de la red de mensajeros que protege al objetivo principal.\n",
         briefing =
             "SITUACIÓN:\n" ..
             "Los archivos recuperados en Bagram, Kabul y Bamyan mencionan una reunión secreta en Gardez. Abdul Hakim administra rutas de transporte, Mujahid coordina la seguridad de los mensajeros y Karim Abdel controla varios refugios clandestinos. Juntos protegen el movimiento de un individuo identificado únicamente como 'El Huésped'.\n\n" ..
@@ -898,8 +899,9 @@ MDB.MISSIONS = {
                 name = "Operación - Ghost Route",
         shortName = "M03",
         generalObjective =
-            "Un avión de reconocimiento siguió la ruta descubierta en Gardez y fue derribado. Captura Sharana y Urgoon Heliport, rescata al piloto y llévalo vivo hasta Sharana. Él conserva imágenes del convoy que transportaba a un mensajero de alto nivel.\n" ..
-            "Humo naranja sobre el piloto y humo verde sobre la zona de entrega.\n",
+            "Un avión de reconocimiento siguió la ruta descubierta en Gardez y fue derribado. Captura Sharana y Urgoon Heliport, rescata al piloto y llévalo vivo hasta Sharana.\n" ..
+            " Él conserva imágenes del convoy que transportaba a un mensajero de alto nivel.\n\n" ..
+             "Humo naranja sobre el piloto y humo verde sobre la zona de entrega.\n",
         briefing =
             "SITUACIÓN:\n" ..
             "Después de Black Ridge, un avión de reconocimiento siguió a un convoy vinculado con la red de mensajeros. La aeronave fue derribada, pero el piloto sobrevivió y logró conservar las fotografías, coordenadas y grabaciones obtenidas durante la persecución. El enemigo ya lo está buscando.\n\n" ..
@@ -1268,7 +1270,8 @@ MDB.MISSIONS = {
                 name = "Operación - Iron Valley",
         shortName = "M04",
         generalObjective =
-            "Las imágenes recuperadas del piloto revelan siete depósitos insurgentes alrededor de Tarinkot. Destrúyelos y captura la base: estos almacenes abastecen la red de mensajeros y permiten que el objetivo cambie de refugio sin dejar rastro.\n" ..
+            "Las imágenes recuperadas del piloto revelan siete depósitos insurgentes alrededor de Tarinkot.\n" ..
+            " Destrúyelos y captura la base: estos almacenes abastecen la red de mensajeros y permiten que el objetivo cambie de refugio sin dejar rastro.\n" ..
             "Lat Long Precise: N 32°36'49.94   E 65°52'31.85\n" ..
             "Lat Long Decimal Minutes: N 32°36.832'   E 65°52.530'\n" ..
             "MGRS GRID: 41 S QS 69830 12133\n",
@@ -1829,7 +1832,8 @@ MDB.MISSIONS = {
                 name = "Operación - Dust Hammer",
         shortName = "M05",
         generalObjective =
-            "Tras la caída de los depósitos, tres formaciones de artillería intentan destruir Tarinkot y borrar los documentos recuperados. Localízalas y neutralízalas antes de que eliminen la siguiente pista de la cacería.\n" ..
+            "Tras la caída de los depósitos, tres formaciones de artillería intentan destruir Tarinkot y borrar los documentos recuperados.\n" ..
+            "Localízalas y neutralízalas antes de que eliminen la siguiente pista de la cacería.\n" ..
             "Lat Long Precise: N 32°04'24.07   E 65°41'53.51\n" ..
             "Lat Long Decimal Minutes: N 32°04.401'   E 65°41.891'\n" ..
             "MGRS GRID: 41 S QR 54697 51752\n",
@@ -2171,7 +2175,8 @@ MDB.MISSIONS = {
                 name = "Operación - Copper Viper",
         shortName = "M06",
         generalObjective =
-            "Las comunicaciones recuperadas en Tarinkot conducen a Kandahar, donde una célula enemiga reorganiza las rutas utilizadas para ocultar al objetivo. Limpia la ciudad y captura la base antes de que sus operadores escapen.\n" ..
+            "Las comunicaciones recuperadas en Tarinkot conducen a Kandahar, donde una célula enemiga reorganiza las rutas utilizadas para ocultar al objetivo. \n" ..
+            "Limpia la ciudad y captura la base antes de que sus operadores escapen.\n" ..
             "Lat Long Precise: N 31°36'28.00   E 65°42'34.02\n" ..
             "Lat Long Decimal Minutes: N 31°36.466'   E 65°42.567'\n" ..
             "MGRS GRID: 41 R QR 57049 00149\n",
@@ -2815,7 +2820,8 @@ MDB.MISSIONS = {
                 name = "Operación - Red Dagger",
         shortName = "M08",
         generalObjective =
-            "La red enemiga ha sido obligada a utilizar su último centro de comunicaciones en Chaghcharan. Captura la base intacta antes de que destruyan los servidores que conectan los refugios del objetivo principal.\n",
+            "La red enemiga ha sido obligada a utilizar su último centro de comunicaciones en Chaghcharan. \n" ..
+            "Captura la base intacta antes de que destruyan los servidores que conectan los refugios del objetivo principal.\n",
         briefing =
             "SITUACIÓN:\n" ..
             "El cierre del corredor de Helmand obligó a los mensajeros a comunicarse con una estación clandestina en Chaghcharan. Desde allí se distribuyen órdenes hacia varios refugios sin revelar cuál de ellos alberga realmente al objetivo.\n\n" ..
