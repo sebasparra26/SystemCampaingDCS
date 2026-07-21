@@ -61,9 +61,11 @@ local TASK_PROFILES = {
         mode = "area_engage",
         templates = { "CAP_A", "CAP_B", "CAP_C" },
         selectorTemplates = {
-            f15 = { "CAP_F15_A", "CAP_F15_B" },
-            f16 = { "CAP_F16_A", "CAP_F16_B" },
-            hornet = { "CAP_HORNET_A" }
+            f14 = { "CAP_A"},
+            f15 = { "CAP_B"},
+            f16 = { "CAP_C"},
+            --f16 = { "CAP_F16_A", "CAP_F16_B" },
+            --hornet = { "CAP_HORNET_A" }
         },
         maxActive = 3,
         cooldownSeconds = 30 * 60,
@@ -105,8 +107,8 @@ local TASK_PROFILES = {
         mode = "area_engage",
         templates = { "CAS_A"},
         selectorTemplates = {
-            a10 = { "CAS_A10_A", "CAS_A10_B" },
-            f16 = { "CAS_F16_A" },
+            a10 = { "CAS_A"},
+            f16 = { "CAS_B" },
             su25 = { "CAS_SU25_A" }
         },
         maxActive = 2,
