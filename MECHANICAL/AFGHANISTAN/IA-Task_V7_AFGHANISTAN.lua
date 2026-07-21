@@ -62,8 +62,8 @@ local TASK_PROFILES = {
         templates = { "CAP_A", "CAP_B", "CAP_C" },
         selectorTemplates = {
             f14 = { "CAP_A"},
-            f15 = { "CAP_B"},
-            f16 = { "CAP_C"},
+            f16 = { "CAP_B"},
+            f15 = { "CAP_C"},
             --f16 = { "CAP_F16_A", "CAP_F16_B" },
             --hornet = { "CAP_HORNET_A" }
         },
