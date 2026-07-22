@@ -128,6 +128,16 @@ tipoAviones["F-14B-3"] = {
     nombreAvion = "F-14B - Tomcat - Pack ",
     avion = { ws = {1, 1, 1, 278}, cantidad = 4 },
 }
+tipoAviones["F-14BU-1"] = {
+    costo = 100000000,
+    nombreAvion = "F-14BU - Tomcat - Pack ",
+    avion = { ws = {1, 1, 1, 351}, cantidad = 2 },
+}
+tipoAviones["F-14BU-2"] = {
+    costo = 200000000,
+    nombreAvion = "F-14BU - Tomcat - Pack ",
+    avion = { ws = {1, 1, 1, 351}, cantidad = 4 },
+}
 -- ===============================
 -- F-4E-45MC - Phantom
 -- ===============================

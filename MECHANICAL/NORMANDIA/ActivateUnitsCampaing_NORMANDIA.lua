@@ -118,11 +118,13 @@ local WATCHTOWER_STATE = {
 
 local activacionesPorFlag = {
 
-    [0000] = {
+    [1000] = {
         valor = 1,
         grupos = {
-            --"MT_01_EWR",
-            --"MT_01_SHIP",
+            "MT_01_01",
+            "MT_01_02",
+            "MT_01_03",
+            "MT_01_04",
         }
     },
 
